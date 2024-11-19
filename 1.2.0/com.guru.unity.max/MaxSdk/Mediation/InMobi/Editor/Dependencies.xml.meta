@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 781983c4fa2a74d0ba9a90c229967bac
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/InMobi/Editor/Dependencies.xml
+- al_max_export_path-MaxSdk/Mediation~HEAD/InMobi/Editor/Dependencies.xml
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

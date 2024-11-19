@@ -1,0 +1,9 @@
+{
+  "name": "GuruL10n.Editor",
+  "references": [
+    "I2Localization"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

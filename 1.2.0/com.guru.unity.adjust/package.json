@@ -1,0 +1,14 @@
+{
+  "name": "com.guru.unity.adjust",
+  "displayName": "Guru Adjust",
+  "version": "1.1.1",
+  "description": "Guru 整合 Adjust 插件 (4.38.0)",
+  "unity": "2020.3",
+  "author":{
+    "name": "Guru Game"
+  },
+  "license": "MIT",
+  "category": "Game tool",
+  "dependencies": {
+  }
+}
