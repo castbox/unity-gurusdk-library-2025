@@ -102,10 +102,11 @@ namespace Guru.Editor
         private void ReadServiceConfig()
         {
             var config = EditorGuruServiceIO.LoadConfig();
-            if (config != null)
+            if (config == null)
             {
-                _serviceConfig = config;
+                throw new NullReferenceException("Load <guru-services> failed. Check local file plz.");
             }
+            _serviceConfig = config;
         }
 
         #region Service Checker

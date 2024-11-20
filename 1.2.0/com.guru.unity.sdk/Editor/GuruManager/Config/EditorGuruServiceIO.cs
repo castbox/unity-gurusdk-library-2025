@@ -27,11 +27,7 @@ namespace Guru.Editor
         public static GuruServicesConfig LoadConfig()
         {
             var a = AssetDatabase.FindAssets($"*{SourceConfigFileName}* t:TextAsset", new []{"Assets"});
-            if (a == null || a.Length == 0)
-            {
-                UnityEngine.Debug.Log($"<color=orange>--- Can't find guru-services file</color>");
-            }
-            else
+            if (a.Length > 0)
             {
                 var p = AssetDatabase.GUIDToAssetPath(a[0]);
                 var fp = Path.GetFullPath(p);
@@ -40,6 +36,18 @@ namespace Guru.Editor
                 // UnityEngine.Debug.Log($"<color=#88ff00>--- find services file:{p} \n{t.text}</color>");
                 return JsonMapper.ToObject<GuruServicesConfig>(t.text);
             }
+
+            var dir = new DirectoryInfo(Path.GetFullPath(Application.dataPath));
+            foreach(var f in dir.GetFiles("*.json", SearchOption.TopDirectoryOnly))
+            {
+                if (f.Name.Contains(SourceConfigFileName))
+                {
+                    var json = File.ReadAllText(f.FullName);
+                    return JsonMapper.ToObject<GuruServicesConfig>(json);
+                }
+            }
+            
+            UnityEngine.Debug.Log($"<color=orange>--- Can't find guru-services file</color>");
             return null;
         }
 

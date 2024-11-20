@@ -826,8 +826,6 @@ namespace Guru.Editor
             
             EditorGUILayout.LabelField("搜索项目", GUILayout.Width(60));
             
-
-            
             GUI.SetNextControlName("search_box");
             _searchKeyword = EditorGUILayout.TextField(_searchKeyword).ToLower();
 
@@ -867,9 +865,7 @@ namespace Guru.Editor
             }
             
             EditorGUILayout.EndVertical();
-
-
-     
+            
         }
 
 
@@ -1075,6 +1071,9 @@ namespace Guru.Editor
             var fileName = new FileInfo(source).Name;
             var to = Path.GetFullPath($"{Application.dataPath}/{fileName}");
             File.Copy(source, to);
+            
+            
+            AssetDatabase.Refresh();
             
             // 文件部署
             if (EditorUtility.DisplayDialog("\u2600 GuruServices 更新成功!", 
