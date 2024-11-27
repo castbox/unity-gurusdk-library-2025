@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 9815e36cc42054086bb4ffbac6d0f003
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/MobileFuse
+- al_max_export_path-MaxSdk/Mediation~HEAD/MobileFuse
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

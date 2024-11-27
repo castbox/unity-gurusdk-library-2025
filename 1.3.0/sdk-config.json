@@ -1,0 +1,147 @@
+{
+  "version": "1.3.0",
+  "ts": "1732711805",
+  "desc": "升级自打点库升级，添加震动库， RemoteConfig 管理器重构",
+  "packages": {
+    "com.coffee.upm-git-extension": {
+      "group": "third-party",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.android.appbundle": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.external-dependency-manager": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.analytics": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.app": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.auth": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.crashlytics": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.dynamic-links": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.firestore": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.messaging": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.remote-config": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.play.common": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.play.core": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.play.review": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.adjust": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.ads": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.buildtool": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.debug.console": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.facebook": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.i2": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.l10n": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.max": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.sdk": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": [
+        "guru-sdk",
+        "firebase",
+        "google",
+        "third-party"
+      ]
+    },
+    "com.guru.unity.sdk.core": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.utils": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.vibration": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.unitask": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    }
+  }
+}

@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: ff34f59ba3ad7489c8348838fce4b72c
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/Chartboost/Editor
+- al_max_export_path-MaxSdk/Mediation~HEAD/Chartboost/Editor
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

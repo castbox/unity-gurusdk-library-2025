@@ -1,0 +1,23 @@
+{
+    "name": "GuruSDK",
+    "rootNamespace": "Guru",
+    "references": [
+        "Guru.Ads",
+        "Guru.Runtime",
+        "Guru.DebugConsole.Runtime",
+        "Guru.Ads.Max",
+        "UnityEngine.Purchasing.Security",
+        "UnityEngine.Purchasing.SecurityStub",
+        "UnityEngine.Purchasing.SecurityCore",
+        "GuruDebugger"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

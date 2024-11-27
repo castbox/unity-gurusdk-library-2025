@@ -1,0 +1,460 @@
+{
+  "defaults": [
+    {
+      "id": 0,
+      "name": "English",
+      "code": "en",
+      "desc": "英语"
+    },
+    {
+      "id": 1,
+      "name": "Afrikaans",
+      "code": "af",
+      "desc": "南非语"
+    },
+    {
+      "id": 2,
+      "name": "Albanian",
+      "code": "sq",
+      "desc": "阿尔巴尼亚语"
+    },
+    {
+      "id": 3,
+      "name": "Amharic ",
+      "code": "am",
+      "desc": "阿姆哈拉语"
+    },
+    {
+      "id": 4,
+      "name": "Arabic",
+      "code": "ar",
+      "desc": "阿拉伯语"
+    },
+    {
+      "id": 5,
+      "name": "Armenian",
+      "code": "hy",
+      "desc": "亚美尼亚语"
+    },
+    {
+      "id": 6,
+      "name": "Azerbaijani",
+      "code": "az",
+      "desc": "阿塞拜疆语"
+    },
+    {
+      "id": 7,
+      "name": "Bangla",
+      "code": "bn",
+      "desc": "孟加拉语"
+    },
+    {
+      "id": 8,
+      "name": "Basque",
+      "code": "eu-ES",
+      "desc": "巴士克语"
+    },
+    {
+      "id": 9,
+      "name": "Belarusian",
+      "code": "be",
+      "desc": "白俄罗斯语"
+    },
+    {
+      "id": 10,
+      "name": "Bulgarian",
+      "code": "bg",
+      "desc": "保加利亚语"
+    },
+    {
+      "id": 11,
+      "name": "Burmese",
+      "code": "my",
+      "desc": "缅甸语"
+    },
+    {
+      "id": 12,
+      "name": "Catalan",
+      "code": "ca",
+      "desc": "加泰罗语"
+    },
+    {
+      "id": 13,
+      "name": "Chinese (Hong Kong)",
+      "code": "zh-HK",
+      "desc": "中文(香港)"
+    },
+    {
+      "id": 14,
+      "name": "Chinese (Simplified)",
+      "code": "zh-CN",
+      "desc": "中文(简体)"
+    },
+    {
+      "id": 15,
+      "name": "Chinese (Traditional)",
+      "code": "zh-TW",
+      "desc": "中文(繁体)"
+    },
+    {
+      "id": 16,
+      "name": "Croatian",
+      "code": "hr",
+      "desc": "克罗地亚语"
+    },
+    {
+      "id": 17,
+      "name": "Czech",
+      "code": "cs",
+      "desc": "捷克语"
+    },
+    {
+      "id": 18,
+      "name": "Danish",
+      "code": "da",
+      "desc": "丹麦语"
+    },
+    {
+      "id": 19,
+      "name": "Dutch",
+      "code": "nl-NL",
+      "desc": "荷兰语"
+    },
+    {
+      "id": 20,
+      "name": "Estonian",
+      "code": "et",
+      "desc": "爱沙尼亚语"
+    },
+    {
+      "id": 22,
+      "name": "Finnish",
+      "code": "fi",
+      "desc": "芬兰语"
+    },
+    {
+      "id": 23,
+      "name": "French (Canada)",
+      "code": "fr-CA",
+      "desc": "法语(加拿大)"
+    },
+    {
+      "id": 24,
+      "name": "French (France)",
+      "code": "fr-FR",
+      "desc": "法语(法国)"
+    },
+    {
+      "id": 25,
+      "name": "Galician",
+      "code": "gl-ES",
+      "desc": "加里西亚语"
+    },
+    {
+      "id": 26,
+      "name": "Georgian",
+      "code": "ka",
+      "desc": "格鲁吉亚语"
+    },
+    {
+      "id": 27,
+      "name": "German",
+      "code": "de-DE",
+      "desc": "德语"
+    },
+    {
+      "id": 28,
+      "name": "Greek",
+      "code": "el",
+      "desc": "希腊语"
+    },
+    {
+      "id": 29,
+      "name": "Gujarati",
+      "code": "gu",
+      "desc": "古吉拉特语"
+    },
+    {
+      "id": 30,
+      "name": "Hebrew",
+      "code": "he",
+      "desc": "希伯来语"
+    },
+    {
+      "id": 31,
+      "name": "Hindi",
+      "code": "hi",
+      "desc": "印地语"
+    },
+    {
+      "id": 32,
+      "name": "Hungarian",
+      "code": "hu",
+      "desc": "匈牙利语"
+    },
+    {
+      "id": 33,
+      "name": "Icelandic",
+      "code": "is",
+      "desc": "冰岛语"
+    },
+    {
+      "id": 34,
+      "name": "Indonesian",
+      "code": "id",
+      "desc": "印度尼西亚语"
+    },
+    {
+      "id": 35,
+      "name": "Italian",
+      "code": "it-IT",
+      "desc": "意大利语"
+    },
+    {
+      "id": 36,
+      "name": "Japanese",
+      "code": "ja",
+      "desc": "日语"
+    },
+    {
+      "id": 37,
+      "name": "Kannada",
+      "code": "kn",
+      "desc": "卡纳拉语"
+    },
+    {
+      "id": 38,
+      "name": "Kazakh",
+      "code": "kk",
+      "desc": "哈萨克语"
+    },
+    {
+      "id": 39,
+      "name": "Khmer",
+      "code": "km",
+      "desc": "高棉语"
+    },
+    {
+      "id": 40,
+      "name": "Korean",
+      "code": "ko",
+      "desc": "朝鲜语"
+    },
+    {
+      "id": 41,
+      "name": "Kyrgyz (Cyrillic)",
+      "code": "ky",
+      "desc": "吉尔吉斯语(西里尔文)"
+    },
+    {
+      "id": 42,
+      "name": "Lao",
+      "code": "lo",
+      "desc": "老挝语"
+    },
+    {
+      "id": 43,
+      "name": "Latvian",
+      "code": "lv",
+      "desc": "拉脱维亚语"
+    },
+    {
+      "id": 44,
+      "name": "Lithuanian",
+      "code": "lt",
+      "desc": "立陶宛语"
+    },
+    {
+      "id": 45,
+      "name": "Macedonian (FYROM)",
+      "code": "mk",
+      "desc": "马其顿语(FYROM)"
+    },
+    {
+      "id": 46,
+      "name": "Malay",
+      "code": "ms",
+      "desc": "马来语"
+    },
+    {
+      "id": 47,
+      "name": "Malay (Malaysia)",
+      "code": "ms-MY",
+      "desc": "马来语(马来西亚)"
+    },
+    {
+      "id": 48,
+      "name": "Malayalam",
+      "code": "ml",
+      "desc": "马拉雅拉姆语"
+    },
+    {
+      "id": 49,
+      "name": "Marathi",
+      "code": "mr",
+      "desc": "马拉地语"
+    },
+    {
+      "id": 50,
+      "name": "Mongolian",
+      "code": "mn",
+      "desc": "蒙古语"
+    },
+    {
+      "id": 51,
+      "name": "Nepali",
+      "code": "ne",
+      "desc": "尼泊尔语"
+    },
+    {
+      "id": 52,
+      "name": "Norwegian",
+      "code": "nb",
+      "desc": "挪威语"
+    },
+    {
+      "id": 53,
+      "name": "Persian",
+      "code": "fa",
+      "desc": "波斯语"
+    },
+    {
+      "id": 54,
+      "name": "Polish",
+      "code": "pl",
+      "desc": "波兰语"
+    },
+    {
+      "id": 55,
+      "name": "Portuguese (Brazil)",
+      "code": "pt-BR",
+      "desc": "葡萄牙语(巴西)"
+    },
+    {
+      "id": 56,
+      "name": "Portuguese (Portugal)",
+      "code": "pt-PT",
+      "desc": "葡萄牙语(葡萄牙)"
+    },
+    {
+      "id": 57,
+      "name": "Punjabi",
+      "code": "pa",
+      "desc": "旁遮普语"
+    },
+    {
+      "id": 58,
+      "name": "Romanian",
+      "code": "ro",
+      "desc": "罗马尼亚语"
+    },
+    {
+      "id": 59,
+      "name": "Russian",
+      "code": "ru",
+      "desc": "俄语"
+    },
+    {
+      "id": 60,
+      "name": "Serbian",
+      "code": "sr",
+      "desc": "塞尔维亚语"
+    },
+    {
+      "id": 61,
+      "name": "Sinhala",
+      "code": "si",
+      "desc": "僧伽罗语"
+    },
+    {
+      "id": 62,
+      "name": "Slovak",
+      "code": "sk",
+      "desc": "斯洛伐克语"
+    },
+    {
+      "id": 63,
+      "name": "Slovenian",
+      "code": "sl",
+      "desc": "斯洛文尼亚语"
+    },
+    {
+      "id": 65,
+      "name": "Spanish (Spain)",
+      "code": "es-ES",
+      "desc": "西班牙语(西班牙)"
+    },
+    {
+      "id": 66,
+      "name": "Spanish (United States)",
+      "code": "es-US",
+      "desc": "西班牙语(美国)"
+    },
+    {
+      "id": 67,
+      "name": "Swahili",
+      "code": "sw",
+      "desc": "斯瓦希里语"
+    },
+    {
+      "id": 68,
+      "name": "Swedish",
+      "code": "sv-SE",
+      "desc": "瑞典语"
+    },
+    {
+      "id": 69,
+      "name": "Tagalog",
+      "code": "tl",
+      "desc": "塔加路语"
+    },
+    {
+      "id": 70,
+      "name": "Tamil",
+      "code": "ta",
+      "desc": "泰米尔语"
+    },
+    {
+      "id": 71,
+      "name": "Telugu",
+      "code": "te",
+      "desc": "泰卢固语"
+    },
+    {
+      "id": 72,
+      "name": "Thai",
+      "code": "th",
+      "desc": "泰语"
+    },
+    {
+      "id": 73,
+      "name": "Turkish",
+      "code": "tr",
+      "desc": "土耳其语"
+    },
+    {
+      "id": 74,
+      "name": "Ukrainian",
+      "code": "uk",
+      "desc": "乌克兰语"
+    },
+    {
+      "id": 75,
+      "name": "Urdu",
+      "code": "ur",
+      "desc": "乌尔都语"
+    },
+    {
+      "id": 76,
+      "name": "Vietnamese",
+      "code": "vi",
+      "desc": "越南语"
+    },
+    {
+      "id": 77,
+      "name": "Zulu",
+      "code": "zu",
+      "desc": "祖鲁语"
+    }
+  ]
+}

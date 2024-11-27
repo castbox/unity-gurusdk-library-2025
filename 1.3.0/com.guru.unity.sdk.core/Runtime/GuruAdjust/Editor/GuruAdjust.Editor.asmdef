@@ -1,0 +1,6 @@
+{
+  "name": "GuruAdjust.Editor",
+  "includePlatforms": [
+    "Editor"
+  ]
+}
