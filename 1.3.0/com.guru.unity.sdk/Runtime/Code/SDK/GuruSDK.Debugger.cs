@@ -1,4 +1,6 @@
 
+using System.Collections.Generic;
+
 namespace Guru
 {
     using UnityEngine;
@@ -10,7 +12,7 @@ namespace Guru
 
         private static GuruDebugger _debugger;
 
-        public static GuruDebugger Debugger
+        private static GuruDebugger Debugger
         {
             get
             {
@@ -19,7 +21,7 @@ namespace Guru
                     _debugger = GuruDebugger.Instance;
                     if (_useBaseOptions)
                     {
-                        InitDebuggerLayout();
+                        InitBaseOptionLayout();
                     }
                 }
                 return _debugger;
@@ -31,7 +33,7 @@ namespace Guru
         /// </summary>
         public static bool ShowAdStatus()
         {
-            if (!IsServiceReady) return false;
+            if (!IsServiceReady) {return false;}
             
             Debugger.ShowAdStatus();
             return true;
@@ -48,8 +50,12 @@ namespace Guru
             Debugger.ShowPage(); // 显示 Debugger 界面
             return true;
         }
+        
+        
+        
+        
 
-        private static void InitDebuggerLayout()
+        private static void InitBaseOptionLayout()
         {
             // ------------ Info Page --------------------
             Debugger.AddOption("Info/Guru SDK", ()=>GuruSDK.Version);
@@ -80,7 +86,7 @@ namespace Guru
             Debugger.AddOption("Ads/Interstitial Id", ()=> GuruSettings.Instance.ADSetting.GetInterstitialID());
             Debugger.AddOption("Ads/Rewarded Id", ()=> GuruSettings.Instance.ADSetting.GetRewardedVideoID());
 
-            // ------------ Console Page -------------------
+            // ------------ Log Enabled -------------------
             if (!UnityEngine.Debug.unityLogger.logEnabled)
             {
                 Debugger.AddOption("Console/Log").AddButton("显示日志", () =>
@@ -88,8 +94,9 @@ namespace Guru
                     UnityEngine.Debug.unityLogger.logEnabled = true;
                 });
             }
+            
 #if GURU_DEBUG_CONSOLE
-        
+            // ------------ Console Page -------------------
             Debugger.AddOption("Console/Console").AddButton("显示控制台", () =>
             {
                 ShowDebugConsole();
@@ -107,6 +114,14 @@ namespace Guru
             AddGuruCommand();
 #endif
             
+            // ------------ Remote Page -------------------
+            // 显示 Debug 内的信息：
+            DebuggerSetRemoteConfigValues(GetAllConfigValues());
+            
+            // ------------ Vibration Page -------------------
+            DebugVibrationSection();
+            
+            // ------------ RemoteConfig ------------------
             GuruDebugger.OnClosed -= OnDebuggerClosed;
             GuruDebugger.OnClosed += OnDebuggerClosed;
             Callbacks.SDK.InvokeOnDebuggerDisplayed(true);
@@ -133,6 +148,92 @@ namespace Guru
             return Debugger.AddOption(uri, contentDel, clickHandler);
         }
 
+
+        #region Remote Configs
+
+        
+        /// <summary>
+        /// 显示所有的配置页面
+        /// </summary>
+        /// <param name="configValues"></param>
+        private static void DebuggerSetRemoteConfigValues(Dictionary<string, GuruConfigValue> configValues)
+        {
+            Debugger.DeleteTable("Remote");
+            
+            Debugger.AddOption("Remote/Fetch").AddButton("Fetch All", () => { FetchAllRemote();});
+            foreach (var (key, value)  in configValues)
+            {
+                
+                var source = value.Source.ToString();
+                var color = value.Source switch
+                {
+                    ValueSource.Default =>  "white",
+                    ValueSource.Local =>  "yellow",
+                    ValueSource.Remote =>  "#88FF00",
+                    _ => "gray"
+                };
+                var uri = $"Remote/{key}\n<color={color}>{source}</color>";
+                Debugger.AddOption(uri, () => $"{value.Value}");
+            }
+            
+            
+        }
+
+        #endregion
+
+
+        #region Vibration
+
+        /// <summary>
+        /// 显示震动调试界面
+        /// </summary>
+        private static void DebugVibrationSection()
+        {
+            // --- 震动能力显示 ---
+            var txt_yes = "<color=88ff00>是</color>";
+            var txt_no = "<color=red>否</color>";
+            var supportVibrate = HasVibrationCapability();
+            var supportCustom = SupportsCustomVibration();
+            var label = $"Vibration/支持 [震动]";
+            Debugger.AddOption(label, () => HasVibrationCapability() ? txt_yes : txt_no);
+            label = $"Vibration/支持 [振幅调整]";
+            Debugger.AddOption(label, () => SupportsAmplitudeControl() ? txt_yes : txt_no);
+            label = $"Vibration/支持 [震动特效]";
+            Debugger.AddOption(label, () => SupportsVibrationEffect() ? txt_yes : txt_no);
+            label = $"Vibration/支持 [自定义震动]";
+            Debugger.AddOption(label, () => supportCustom ? txt_yes : txt_no);
+            
+            if (supportVibrate)
+            {
+                // --- 震动测试按钮 ---
+                Debugger.AddOption("Vibration/Light").AddButton("Light", () => Vibrate(VibrateType.Light));
+                Debugger.AddOption("Vibration/Medium").AddButton("Medium", () => Vibrate(VibrateType.Medium));
+                Debugger.AddOption("Vibration/Heavy").AddButton("Heavy", () => Vibrate(VibrateType.Heavy));
+                Debugger.AddOption("Vibration/Double").AddButton("Double", () => Vibrate(VibrateType.Double));
+                Debugger.AddOption("Vibration/Selection").AddButton("Selection", () => Vibrate(VibrateType.Selection));
+            }
+            else
+            {
+                Debugger.AddOption("Vibration/无 [震动能力]", () => "<color=yellow>设备不支持震动，无测试项目</color>");
+            }
+
+            if (supportCustom)
+            {
+                
+            }
+            else
+            {
+                Debugger.AddOption("Vibration/无 [自定义能力]", () => "<color=yellow>设备不支持自定义参数，无测试项目</color>");
+            }
+        }
+
+        
+        
+        
+        
+        #endregion
+        
+        
 
     }
 }

@@ -43,25 +43,24 @@ namespace Guru.Vibration
         Custom
     }
 
-    /// Vibrate with [duration] at [amplitude] or [pattern] at [intensities].
-    ///
-    /// The default vibration duration is 500ms.
-    /// Amplitude is a range from 1 to 255, if supported.
+    /// Vibrate with [pattern] at [intensities].
+    /// The pattern is a list of vibration durations in milliseconds.
+    /// The intensities is a list of amplitudes from 1 to 255.
     [System.Serializable]
     public struct VibrateData
     {
         public string style;
         public List<int> pattern;
-        public List<float> intensities;
+        public List<int> intensities;
 
         public VibrateData(
             List<int> pattern = default,
-            List<float> intensities = default,
+            List<int> intensities = default,
             VibrationStyle style = VibrationStyle.Custom)
         {
             this.style = style.ToString();
             this.pattern = pattern ?? new List<int>();
-            this.intensities = intensities ?? new List<float>();
+            this.intensities = intensities ?? new List<int>();
         }
     }
 }

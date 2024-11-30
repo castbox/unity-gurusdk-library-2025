@@ -95,20 +95,37 @@ namespace Guru
         #endregion
         
         #region UI Layout
+        
+        /// <summary>
+        /// 将传入的 uri 按照找到的第一个 '/' 字符，分割为 tabName 和 optName
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="tabName"></param>
+        /// <param name="optName"></param>
+        private void SplitOptionUri(string uri, out string tabName, out string optName)
+        {
+            tabName = G.Consts.DefaultTabName;
+            optName = G.Consts.DefaultOptionName;
+            var index = uri.IndexOf('/');
+            if (index > -1)
+            {
+                tabName = uri.Substring(0, index);
+                optName = (index + 1 < uri.Length) ? uri.Substring(index + 1): G.Consts.DefaultOptionName;
+            }
+            
+            // if (uri.Contains("/"))
+            // {
+            //     var names = uri.Split('/');
+            //     if (names.Length > 0) tabName = names[0];
+            //     if (names.Length > 1) optName = names[1];
+            // }
+        }
+
+
 
         public OptionLayout AddOption(string uri, GetOptionContentDelegate contentDelegate, Action clickHandler = null)
         {
-            string tabName = G.Consts.DefaultTabName;
-            string optName = G.Consts.DefaultOptionName;
-            if (uri.Contains("/"))
-            {
-                var names = uri.Split('/');
-                if (names.Length > 0)
-                {
-                    tabName = names[0];
-                }
-                if(names.Length > 1) optName = names[1];
-            }
+            SplitOptionUri(uri, out var tabName, out var optName);
 
             if (!optionDicts.ContainsKey(tabName))
             {
@@ -154,6 +171,46 @@ namespace Guru
             }
 
             return false;
+        }
+        
+        /// <summary>
+        /// 删除 URI
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public bool DeleteOption(string uri)
+        {
+            SplitOptionUri(uri, out var tabName, out var optName);
+            return TryDeleteOption(tabName, optName);
+        }
+
+        private bool TryDeleteOption(string tabName, string optName)
+        {
+            if (optionDicts.TryGetValue(tabName, out var opts))
+            {
+                var o = opts.FirstOrDefault(c => c.optName == optName);
+                if (o != null)
+                {
+                    opts.Remove(o);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// 删除分页
+        /// </summary>
+        /// <param name="tabName"></param>
+        /// <returns></returns>
+        public bool DeleteTable(string tabName)
+        {
+            if (!optionDicts.ContainsKey(tabName)) return false;
+            
+            optionDicts.Remove(tabName);
+            return true;
         }
 
 

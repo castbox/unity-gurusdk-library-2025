@@ -27,8 +27,7 @@ namespace Guru
         private readonly FirebaseRemoteService _remoteService;  // 远程服务管理器
         private readonly bool _isDebugMode;                     // 是否为调试模式
 
-        private bool _isInitialized;                            // 是否已初始化
-        private DateTime _lastFetchTime;                        // 最后一次拉取时间
+        private readonly bool _isInitialized;                            // 是否已初始化
 
         /// <summary>
         /// 初始化远程配置管理器
@@ -92,7 +91,6 @@ namespace Guru
                 if (success)
                 {
                     _configModel.UpdateConfigValues(configValues);
-                    _lastFetchTime = DateTime.UtcNow;
                     LogI($"{TAG} FetchAllAsync success");
                 }
                 else

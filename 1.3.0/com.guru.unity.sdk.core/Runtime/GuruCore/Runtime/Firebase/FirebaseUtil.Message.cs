@@ -35,11 +35,12 @@ namespace Guru
 			IPMConfig.FIREBASE_PUSH_TOKEN = $"editor-pushtoken-{new Guid().ToString()}";
 #endif
 			
+			// UID 为空则不上报
+			if (string.IsNullOrEmpty(IPMConfig.IPM_UID)) 
+				return;
+			
 			// Token 不为空则立即上报
-			GuruDeviceInfoUploader.Instance.Upload(() =>
-			{
-				Log.I(LOG_TAG, "--- FCMToken Upload Success!");
-			});
+			GuruDeviceInfoUploader.Instance.Upload();
 		}
 		
 		public static void StartFetchFcmToken()
@@ -102,10 +103,7 @@ namespace Guru
 				// 缓存值不为空
 				if (!string.IsNullOrEmpty(IPMConfig.FIREBASE_PUSH_TOKEN))
 				{
-					GuruDeviceInfoUploader.Instance.Upload(() =>
-					{
-						Log.I(LOG_TAG, "--- FCMToken Upload Success!");
-					});
+					GuruDeviceInfoUploader.Instance.Upload();
 				}
 			}
 			

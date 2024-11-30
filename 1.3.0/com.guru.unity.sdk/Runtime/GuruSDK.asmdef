@@ -6,6 +6,7 @@
         "Guru.Runtime",
         "Guru.DebugConsole.Runtime",
         "Guru.Ads.Max",
+        "Guru.Vibration.Runtime",
         "UnityEngine.Purchasing.Security",
         "UnityEngine.Purchasing.SecurityStub",
         "UnityEngine.Purchasing.SecurityCore",

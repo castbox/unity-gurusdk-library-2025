@@ -108,6 +108,8 @@ namespace Guru
 				// 没有存储UID时，从中台获取匿名认证授权
 				StartGuruLoginWithDeviceId(success =>
 				{
+					GuruDeviceInfoUploader.Instance.Upload(); //获取 UID 后，需在此上报设备信息
+					
 					_onGetGuruUIDHandler?.Invoke(success);
 				
 					if (success) {

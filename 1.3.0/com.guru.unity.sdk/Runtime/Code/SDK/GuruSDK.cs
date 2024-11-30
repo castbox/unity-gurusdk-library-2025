@@ -124,7 +124,7 @@ namespace Guru
                 AnalyticRecordManager.Instance.InitRecorder(); // Debug 模式下初始化记录器
             }
             
-            InitUpdaters(); // Updaters
+            InitUpdaters(); // 初始化 Updaters
             InitThreadHandler(); // 初始化线程处理器
             InitNetworkMonitor(); // 网络状态
             InitServices(); // 初始化所有的服务

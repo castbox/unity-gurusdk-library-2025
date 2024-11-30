@@ -16,7 +16,7 @@ public class VibrationTests
     [Test, Description("test 是否支持震动功能")]
     public void Test_HasVibrator()
     {
-        bool hasVibration = VibrationService.HasHasVibrator();
+        bool hasVibration = VibrationService.HasVibrator();
         Assert.IsTrue(hasVibration);
     }
 

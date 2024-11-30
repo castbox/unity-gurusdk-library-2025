@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace Guru
 {
     using System;
@@ -30,10 +32,36 @@ namespace Guru
 
         
         /// <summary>
-        /// 获取所有云控配置
+        /// 获取已更新的云控配置
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<string, GuruConfigValue> GetConfigValues() => Instance._remoteConfigManager.GetAllValues();
-        
+        public static Dictionary<string, GuruConfigValue> GetUpdatedConfigValues() => Instance._remoteConfigManager.GetAllValues();
+
+        /// <summary>
+        /// 获取所有的云控配置
+        /// 包括已更新的和预设值
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<string, GuruConfigValue> GetAllConfigValues()
+        {
+            string[] defaultKeys = Instance._initConfig.DefaultRemoteData.Keys.ToArray();
+            Dictionary<string, GuruConfigValue> configValues = new Dictionary<string, GuruConfigValue>(defaultKeys.Length);
+            
+            // #1 先填充预设值
+            foreach (var k in defaultKeys)
+            {
+                configValues[k] = GetConfigValue(k);
+            }
+
+            // #2 再填充所有更新值
+            foreach (var (key, value) in GetUpdatedConfigValues())
+            {
+                configValues[key] = value;
+            }
+            
+            return configValues;
+        }
+
+
     }
 }

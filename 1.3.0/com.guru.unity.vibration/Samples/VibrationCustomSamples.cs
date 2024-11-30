@@ -22,7 +22,7 @@ namespace Samples
         public void Start()
         {
             this._pi_vibrateData = new VibrateData(pattern: this._patternsInputField.text.Split(',').Select(int.Parse).ToList(), intensities: this._intensitiesInputField.text.Split(',').Select
-                (float.Parse).ToList());
+                (int.Parse).ToList());
         }
 
 
@@ -42,7 +42,7 @@ namespace Samples
         {
             try
             {
-                this._pi_vibrateData.intensities = this._intensitiesInputField.text.Split(',').Select(float.Parse).ToList();
+                this._pi_vibrateData.intensities = this._intensitiesInputField.text.Split(',').Select(int.Parse).ToList();
             }
             catch (Exception e)
             {

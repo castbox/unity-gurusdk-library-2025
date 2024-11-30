@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 namespace Guru
 {
     using System;
@@ -9,6 +11,7 @@ namespace Guru
     /// </summary>
     internal class RemoteConfigModel
     {
+        private const string TAG = "[RCModel]";
         // 布尔值的字符串匹配模式
         internal static readonly string[] BOOL_TRUE_PATTERNS = new string[] { "1", "true", "on", "yes" };
         internal static readonly string[] BOOL_FALSE_PATTERNS = new string[] { "0", "false", "off", "no" };
@@ -16,7 +19,7 @@ namespace Guru
         // 存储默认配置值
         private readonly Dictionary<string, object> _defaultValues;
         // 存储缓存的配置值
-        private readonly Dictionary<string, GuruConfigValue> _cachedValues;
+        private Dictionary<string, GuruConfigValue> _cachedValues;
         // 最后一次成功更新的时间
         private DateTime _lastUpdateSuccessTime;
         
@@ -27,9 +30,23 @@ namespace Guru
         {
             _lastUpdateSuccessTime = EPOCH;
             _defaultValues = new Dictionary<string, object>(defaults);
-            _cachedValues = RemoteCacheDoc.LoadFromCache();
+            LoadLocalCache();
         }
-        
+
+        private async void LoadLocalCache()
+        {
+            try
+            {
+                _cachedValues = await RemoteConfigLocalCacheIO.LoadFromDisk();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"{TAG} 加载缓存失败: {ex.Message}");
+                _cachedValues = new Dictionary<string, GuruConfigValue>();
+            }
+        }
+
+
         /// <summary>
         /// 添加新的默认配置值
         /// </summary>
@@ -43,7 +60,7 @@ namespace Guru
         }
         
         /// <summary>
-        /// 更新所有远程配置数据
+        /// 更新给定的远程配置数据
         /// </summary>
         /// <param name="configValues"></param>
         public void UpdateConfigValues(Dictionary<string, string> configValues)
@@ -54,7 +71,7 @@ namespace Guru
             {
                 UpdateConfigValue(kvp.Key, kvp.Value, _lastUpdateSuccessTime, false);
             }
-            SaveToCache();
+            SaveToDisk(_cachedValues);
         }
 
         /// <summary>
@@ -64,7 +81,7 @@ namespace Guru
         /// <param name="value">配置值</param>
         /// <param name="updateTime">更新时间</param>
         /// <param name="saveImmediately">是否立即保存到缓存</param>
-        public void UpdateConfigValue(string key, string value, DateTime updateTime = default, bool saveImmediately = true)
+        private void UpdateConfigValue(string key, string value, DateTime updateTime = default, bool saveImmediately = true)
         {
             if(updateTime == default) updateTime = DateTime.UtcNow;
             
@@ -77,16 +94,23 @@ namespace Guru
 
             if (saveImmediately)
             {
-                SaveToCache();
+                SaveToDisk(_cachedValues);
             }
         }
         
         /// <summary>
         /// 保存当前配置到本地缓存
         /// </summary>
-        private void SaveToCache()
+        private static async void SaveToDisk(Dictionary<string, GuruConfigValue> configValues)
         {
-            RemoteCacheDoc.SaveToCache(_cachedValues);
+            try
+            {
+                await RemoteConfigLocalCacheIO.SaveToDisk(configValues);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"{TAG} 保存缓存失败: {ex.Message}");
+            }
         }
         
         /// <summary>
