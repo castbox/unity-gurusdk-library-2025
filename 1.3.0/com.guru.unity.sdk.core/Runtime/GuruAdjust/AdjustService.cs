@@ -511,18 +511,24 @@ namespace Guru
 		/// <param name="impressionEvent"></param>
 		public void TrackAdEvent(AdjustAdImpressionEvent impressionEvent)
 		{
-			TrackAdEvent(impressionEvent.value, impressionEvent.adSource, impressionEvent.adUnitId, impressionEvent.adPlacement, impressionEvent.adPlatform);
+			TrackAdEvent(impressionEvent.value, 
+				impressionEvent.adSource, 
+				impressionEvent.adUnitId, 
+				impressionEvent.adPlacement, 
+				impressionEvent.adFormat,
+				impressionEvent.adPlatform);
 		}
 
 		/// <summary>
 		/// 广告收入上报 (Adjust 特有的接口)
 		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="adSource"></param>
-		/// <param name="adUnitId"></param>
-		/// <param name="adPlacement"></param>
-		/// <param name="adPlatform"></param>
-		public void TrackAdEvent(double value, string adSource, string adUnitId, string adPlacement, string adPlatform = "MAX")
+		/// <param name="value">收入价值（USD）</param>
+		/// <param name="adSource">广告源</param>
+		/// <param name="adUnitId">广告单位 ID</param>
+		/// <param name="adPlacement">广告播放场景：main_page</param>
+		/// <param name="adFormat">广告类型： BANNER， INTERSTIAL， REWARDED</param>
+		/// <param name="adPlatform">广告平台：MAX</param>
+		public void TrackAdEvent(double value, string adSource, string adUnitId, string adPlacement, string adFormat, string adPlatform = "MAX")
 		{
 			// 使用
 			_adSourceName = AD_REVENUE_SOURCE_APPLOVIN_MAX;
@@ -554,6 +560,10 @@ namespace Guru
 			adEvent.AddCallbackParameter("delay_minutes", $"{_delayMinutes}");
 			adEvent.AddCallbackParameter("delay_minutes_source", GetDelayMinutesSourceString(_delayMinutesSource));
 			adEvent.AddCallbackParameter("app_age_millis", appAge);
+			// 添加合作伙伴参数上报（TikTok）
+			adEvent.AddPartnerParameter("ad_unit_id", adUnitId);
+			adEvent.AddPartnerParameter("ad_format", adFormat);
+			
 			// 上报广告收益
 			LogI(LOG_TAG,$"<color=#88ff00>--- Report AdRevenue event -> value:{value}\n adSource:{adSource}\n adUnitId:{adUnitId}\n adPlacement:{adPlacement}\n delay_minutes:{_delayMinutes}\n delay_minutes_source:{_delayMinutesSource}\n app_age_millis:{appAge}\n</color>");
 			Adjust.TrackAdRevenue(adEvent);
