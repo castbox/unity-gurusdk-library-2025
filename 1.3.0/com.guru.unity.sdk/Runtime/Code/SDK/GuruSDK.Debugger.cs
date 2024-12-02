@@ -10,8 +10,9 @@ namespace Guru
     {
         private static readonly bool _useBaseOptions = true;
 
+        private const string TAB_NAME_REMOTE = "Remote";
+        
         private static GuruDebugger _debugger;
-
         private static GuruDebugger Debugger
         {
             get
@@ -114,19 +115,27 @@ namespace Guru
             AddGuruCommand();
 #endif
             
-            // ------------ Remote Page -------------------
+            // ------------ RemoteConfig Page -------------------
             // 显示 Debug 内的信息：
             DebuggerSetRemoteConfigValues(GetAllConfigValues());
             
             // ------------ Vibration Page -------------------
             DebugVibrationSection();
             
-            // ------------ RemoteConfig ------------------
+            // ------------ Callbacks ------------------
+            GuruDebugger.BeforeTabPageRender -= BeforeTabPageRender;
+            GuruDebugger.BeforeTabPageRender += BeforeTabPageRender;
+            
             GuruDebugger.OnClosed -= OnDebuggerClosed;
             GuruDebugger.OnClosed += OnDebuggerClosed;
             Callbacks.SDK.InvokeOnDebuggerDisplayed(true);
+
+
         }
         
+        /// <summary>
+        /// Debugger 关闭回调逻辑 
+        /// </summary>
         private static void OnDebuggerClosed()
         {
             GuruDebugger.OnClosed -= OnDebuggerClosed;
@@ -134,7 +143,18 @@ namespace Guru
         }
         
         public static GuruDebugger GetGuruDebugger() => GuruDebugger.Instance;
-        
+
+        /// <summary>
+        /// Tab 页面渲染前插入操作逻辑
+        /// </summary>
+        /// <param name="tabName"></param>
+        private static void BeforeTabPageRender(string tabName)
+        {
+            if (tabName == TAB_NAME_REMOTE)
+            {
+                DebuggerSetRemoteConfigValues(GetAllConfigValues());
+            }
+        }
         
         /// <summary>
         /// 添加显示
@@ -147,10 +167,8 @@ namespace Guru
         {
             return Debugger.AddOption(uri, contentDel, clickHandler);
         }
-
-
+        
         #region Remote Configs
-
         
         /// <summary>
         /// 显示所有的配置页面
@@ -158,30 +176,27 @@ namespace Guru
         /// <param name="configValues"></param>
         private static void DebuggerSetRemoteConfigValues(Dictionary<string, GuruConfigValue> configValues)
         {
-            Debugger.DeleteTable("Remote");
+            Debugger.DeleteTable(TAB_NAME_REMOTE);
             
-            Debugger.AddOption("Remote/Fetch").AddButton("Fetch All", () => { FetchAllRemote();});
+            Debugger.AddOption($"{TAB_NAME_REMOTE}/Fetch").AddButton("Fetch All", () => { FetchAllRemote();});
             foreach (var (key, value)  in configValues)
             {
                 
                 var source = value.Source.ToString();
                 var color = value.Source switch
                 {
-                    ValueSource.Default =>  "white",
+                    ValueSource.Default =>  "#666666",
                     ValueSource.Local =>  "yellow",
                     ValueSource.Remote =>  "#88FF00",
-                    _ => "gray"
+                    _ => "white"
                 };
-                var uri = $"Remote/{key}\n<color={color}>{source}</color>";
+                var uri = $"{TAB_NAME_REMOTE}/{key}\n<size=10><color={color}>{source}</color></size>";
                 Debugger.AddOption(uri, () => $"{value.Value}");
             }
-            
-            
         }
 
         #endregion
-
-
+        
         #region Vibration
 
         /// <summary>
@@ -214,16 +229,16 @@ namespace Guru
             }
             else
             {
-                Debugger.AddOption("Vibration/无 [震动能力]", () => "<color=yellow>设备不支持震动，无测试项目</color>");
+                Debugger.AddOption("Vibration/测试 [震动能力]", () => "<color=yellow>设备不支持震动，无测试项目</color>");
             }
 
             if (supportCustom)
             {
-                
+                // Debugger.AddOption("Vibration/测试[自定义参数]", () => "<color=#666666>暂无测试项目</color>"); 
             }
             else
             {
-                Debugger.AddOption("Vibration/无 [自定义能力]", () => "<color=yellow>设备不支持自定义参数，无测试项目</color>");
+                Debugger.AddOption("Vibration/测试 [自定义参数]", () => "<color=yellow>设备不支持自定义参数，无测试项目</color>");
             }
         }
 
@@ -233,7 +248,5 @@ namespace Guru
         
         #endregion
         
-        
-
     }
 }

@@ -170,9 +170,10 @@ namespace Guru
                     Debug.LogError($"{TAG} fetch failed");
                     return;
                 }
-
-                var activeSuccess = await _remoteConfig.ActivateAsync();
-                if (activeSuccess)
+                
+                var activeTask = _remoteConfig.ActivateAsync();
+                await activeTask;
+                if (activeTask.Status == TaskStatus.RanToCompletion)
                 {
                     updateCallback?.Invoke(true, GetAllConfigValues());
                     Debug.Log($"{TAG} active success");
@@ -180,7 +181,7 @@ namespace Guru
                 else
                 {
                     updateCallback?.Invoke(false, null);
-                    Debug.LogError($"{TAG} active failed");
+                    Debug.LogError($"{TAG} active failed: {activeTask.Status}");
                 }
                 
                 // await _remoteConfig.ActivateAsync().ContinueWithOnMainThread(activeTask =>

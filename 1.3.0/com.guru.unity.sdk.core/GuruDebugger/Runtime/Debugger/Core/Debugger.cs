@@ -12,7 +12,7 @@ namespace Guru
     
     public class GuruDebugger
     {
-        public const string VERSION = "1.0.0";    
+        public const string VERSION = "1.1.0";    
         private static bool _initOnce = false;
         private static GuruDebugger _instance;
         public static GuruDebugger Instance
@@ -24,13 +24,20 @@ namespace Guru
             }
         }
 
+        private static Action _onViewClosed;
         public static event Action OnClosed
         {
             add => _onViewClosed += value;
             remove => _onViewClosed -= value;
         }
 
-        private static Action _onViewClosed;
+
+        private static Action<string> _beforeTabPageRender;
+        public static event Action<string> BeforeTabPageRender
+        {
+            add => _beforeTabPageRender += value;
+            remove => _beforeTabPageRender -= value;
+        }
 
         private DebuggerViewRoot _viewRoot;
         private Dictionary<string, List<OptionLayout>> optionDicts;
@@ -236,9 +243,9 @@ namespace Guru
 
             if (!string.IsNullOrEmpty(tabName))
             {
+                _beforeTabPageRender?.Invoke(tabName);
                 RenderPage(tabName);
             }
-            
             
         }
 
@@ -420,7 +427,20 @@ namespace Guru
         }
 
         #endregion
+
+        #region Utils
         
+        /// <summary>
+        /// 设置系统剪贴板接口
+        /// </summary>
+        /// <param name="content"></param>
+        public void SetSystemCopyBuffer(string content)
+        {
+            GUIUtility.systemCopyBuffer = content;
+        }
+        
+
+        #endregion
     }
 
 
@@ -437,7 +457,6 @@ namespace Guru
             return layout;
         }
     }
-
 
 
 }
