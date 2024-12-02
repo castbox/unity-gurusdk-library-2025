@@ -1,5 +1,6 @@
 
 
+
 namespace Guru
 {
     using System;
@@ -18,7 +19,7 @@ namespace Guru
         /// <summary>
         /// 缓存的配置条目
         /// </summary>
-        private readonly Dictionary<string, CacheEntry> _entries;
+        public Dictionary<string, CacheEntry> entries;
         
         /// <summary>
         /// 初始化缓存文档
@@ -26,13 +27,13 @@ namespace Guru
         /// <param name="configValues">初始配置值</param>
         public RemoteConfigLocalCache(Dictionary<string, GuruConfigValue> configValues = null)
         {
-            _entries = new Dictionary<string, CacheEntry>(configValues?.Count ?? DEFAULT_CAPACITY);
+            entries = new Dictionary<string, CacheEntry>(configValues?.Count ?? DEFAULT_CAPACITY);
 
             if (configValues == null) return;
             
-            foreach (var kvp in configValues)
+            foreach (var (key, value) in configValues)
             {
-                _entries[kvp.Key] = new CacheEntry(kvp.Value);
+                entries[key] = new CacheEntry(value);
             }
         }
         
@@ -44,9 +45,9 @@ namespace Guru
         /// </summary>
         public Dictionary<string, GuruConfigValue> ToConfigValues()
         {
-            var configValues = new Dictionary<string, GuruConfigValue>(_entries.Count);
+            var configValues = new Dictionary<string, GuruConfigValue>(entries.Count);
             
-            foreach (var (key, entry) in _entries)
+            foreach (var (key, entry) in entries)
             {
                 configValues[key] = entry.ToConfigValue();
             }
