@@ -317,17 +317,13 @@ namespace Guru
                     {
                         LogEx("[IAP] GoogleKeys is null when using IAPService! Integration failed. App will Exit");
                     }
-
-                    var idfv = "";
-#if UNITY_IOS
-                    idfv = AdjustService.Instance.IDFV;
-#endif
+                    
                     // 初始化支付服务
                     InitIAP(UID, 
                         _initConfig.GoogleKeys, 
                         _initConfig.AppleRootCerts,
                         _appServicesConfig.AppBundleId(),
-                        idfv); // 初始化IAP
+                        IDFV); // 初始化IAP
                 }, ex =>
                 {
                     LogE($"--- ERROR on useIAP: {ex.Message}");

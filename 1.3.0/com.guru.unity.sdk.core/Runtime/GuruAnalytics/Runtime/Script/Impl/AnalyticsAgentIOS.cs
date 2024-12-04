@@ -14,7 +14,7 @@ namespace Guru
 #if UNITY_IOS
         // ------------- U3DAnalytics.mm Interface -----------------
         // object-c: void unityInitAnalytics(const char *appId, const char *deviceInfo, bool isDebug, const char *baseUrl, const char *uploadIpAddressStr)
-        [DllImport(K_INTERNAL)] private static extern void unityInitAnalytics(string appId, string deviceInfo, bool isDebug, string baseUrl, string uploadIpAddressStr);
+        [DllImport(K_INTERNAL)] private static extern void unityInitAnalytics(string appId, string deviceInfo, bool isDebug, string baseUrl, string uploadIpAddressStr, string guruSDKVersion);
         [DllImport(K_INTERNAL)] private static extern void unitySetUserID(string uid);
         [DllImport(K_INTERNAL)] private static extern void unitySetScreen(string screenName);
         [DllImport(K_INTERNAL)] private static extern void unitySetAdId(string adId);

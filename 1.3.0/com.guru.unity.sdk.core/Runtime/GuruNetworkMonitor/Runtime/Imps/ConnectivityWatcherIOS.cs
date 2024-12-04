@@ -40,7 +40,7 @@ namespace Guru.Network
         {
             var result = initialize();
             if (!result)
-            f
+            {
                 Debug.LogWarning($"{LOG_TAG} --- Failed to initialize ConnectivityWatcherIOS");
                 initCallback?.Invoke(false);
                 return; 

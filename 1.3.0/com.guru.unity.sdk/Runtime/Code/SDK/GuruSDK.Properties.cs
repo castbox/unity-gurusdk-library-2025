@@ -49,6 +49,7 @@ namespace Guru
         
         public static string FirebaseId => IPMConfig.FIREBASE_ID;
         public static string IDFA => IPMConfig.IDFA;
+        public static string IDFV => IPMConfig.IDFV;
         public static string AdjustId => IPMConfig.ADJUST_DEVICE_ID;
         public static string GSADID => IPMConfig.GOOGLE_ADID;
         public static string CdnHost => _appServicesConfig?.GetCdnHost() ?? "";
