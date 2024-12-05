@@ -302,7 +302,7 @@ extern "C" {
                                                   saasXAPPID:[U3DAnalytics charToString:appId]
                                              saasXDEVICEINFO:[U3DAnalytics charToString:deviceInfo]
                                                  loggerDebug:isDebug
-                                              guruSDKVersion:[U3DAnalytics charToString:sdkVersion];
+                                              guruSDKVersion:[U3DAnalytics charToString:sdkVersion]];
                                                  
         
         // 设置 baseUrl
