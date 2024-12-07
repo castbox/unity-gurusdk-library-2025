@@ -149,7 +149,7 @@ namespace Guru
 	        IPMConfig.IPM_BRAND = "PC";
 	        IPMConfig.IPM_LANGUAGE = cultureInfo.ThreeLetterISOLanguageName;
 	        IPMConfig.IPM_MODEL = SystemInfo.deviceModel;
-	        IPMConfig.IPM_TIMEZONE = TimeZone.CurrentTimeZone.ToString();
+	        IPMConfig.IPM_TIMEZONE = $"{TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow)}";
 	        IPMConfig.IPM_LOCALE = cultureInfo.ThreeLetterWindowsLanguageName;
 	        IPMConfig.IPM_COUNTRY_CODE = cultureInfo.TwoLetterISOLanguageName;
 	        IsGetDeviceInfoSuccess = true;
