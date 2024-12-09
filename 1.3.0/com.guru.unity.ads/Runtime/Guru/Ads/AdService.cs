@@ -156,8 +156,23 @@ namespace Guru.Ads
             var revenue = paidEvent.value;
             AddAdsTch001Revenue(revenue);
             AddAdsTch02Revenue(revenue);
+            
+            // 筛选 FB Network
+            TrySaveFBAdRevenueDate(paidEvent.adSource);
         }
-        
+
+        /// <summary>
+        /// 尝试保存 FB 收益日期
+        /// </summary>
+        /// <param name="adSource"></param>
+        private void TrySaveFBAdRevenueDate(string adSource)
+        {
+            if (adSource.ToLower().Contains("facebook"))
+            {
+                Model.PreviousFBAdRevenueDate = DateTime.UtcNow; // 记录当前 FB 的收益日期
+            }
+        }
+
         /// <summary>
         /// 累积计算太极001收益
         /// </summary>

@@ -370,51 +370,53 @@ namespace Guru
         // 创建初始化配置
         private static AdMediationProfile GetAdsMediationProfile()
         {
-            UnityEngine.Debug.Log($"--- GetAdsMediationProfile ---");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"--- GetAdsMediationProfile ---");
             
             // 获取广告 ID   
             _appServicesConfig.ad_settings.TryGetMaxUnitIds(
                 out var bannerId,
                 out var interstitialId, 
                 out var rewardedId);
-            UnityEngine.Debug.Log($"\t Ads Unit IDs: \nbads:{bannerId}\niads:{interstitialId}\nrads:{rewardedId}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t Ads Unit IDs: \nbads:{bannerId}\niads:{interstitialId}\nrads:{rewardedId}");
             
             _appServicesConfig.ad_settings.TryGetAmazonUnitIds(
                 out var amazonAppId, 
                 out var amazonBannerId, 
                 out var amazonInterstitialId, 
                 out var amazonRewardedId);
-            UnityEngine.Debug.Log($"\t Amazon Unit IDs: \n amazonAppId:{amazonAppId}\n amazonBannerId:{amazonBannerId}\n amazonInterstitialId:{amazonInterstitialId}\n amazonRewardedId:{amazonRewardedId}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t Amazon Unit IDs: \n amazonAppId:{amazonAppId}\n amazonBannerId:{amazonBannerId}\n amazonInterstitialId:{amazonInterstitialId}\n amazonRewardedId:{amazonRewardedId}");
             
             // 商店链接
-            UnityEngine.Debug.Log($"\t Model: {Model}");
-            UnityEngine.Debug.Log($"\t InitConfig: {InitConfig}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t Model: {Model}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t InitConfig: {InitConfig}");
             
             // Mediator 类型
             var mediatorType = AdMediationType.Max; // TODO：改为用云控获取创建广告聚合的类型
-            UnityEngine.Debug.Log($"\t Mediator Type: {mediatorType}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t Mediator Type: {mediatorType}");
             var storeUrl = _appServicesConfig.GetStoreUrl();
-            UnityEngine.Debug.Log($"\t storeUrl: {storeUrl}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t storeUrl: {storeUrl}");
             bool isNoAds = Model.IsNoAds;
-            UnityEngine.Debug.Log($"\t isNoAds: {isNoAds}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t isNoAds: {isNoAds}");
             var uid = UID;
-            UnityEngine.Debug.Log($"\t UID: {uid}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t UID: {uid}");
             var bannerColor = InitConfig.BannerBgColor;
-            UnityEngine.Debug.Log($"\t bannerColor: {bannerColor}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t bannerColor: {bannerColor}");
             var bannerWidth = InitConfig.BannerWidth;
-            UnityEngine.Debug.Log($"\t bannerWidth: {bannerWidth}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t bannerWidth: {bannerWidth}");
             var debugModel = DebugModeEnabled;
-            UnityEngine.Debug.Log($"\t debugModel: {debugModel}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t debugModel: {debugModel}");
             var osVersion = Instance.GetOSVersionStr();
-            UnityEngine.Debug.Log($"\t osVersion: {osVersion}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t osVersion: {osVersion}");
             var isIapUser = Model.IsIapUser;
-            UnityEngine.Debug.Log($"\t isIapUser: {isIapUser}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t isIapUser: {isIapUser}");
             var firstOpenTime = IPMConfig.GetFirstOpenDate();
-            UnityEngine.Debug.Log($"\t firstOpenTime: {firstOpenTime}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t firstOpenTime: {firstOpenTime}");
             var appVersionCode = Instance.GetVersionCodeStr();
-            UnityEngine.Debug.Log($"\t appVersionCode: {appVersionCode}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t appVersionCode: {appVersionCode}");
             var networkStatus = Instance.GetNetworkStatus();
-            UnityEngine.Debug.Log($"\t networkStatus: {networkStatus}");
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t networkStatus: {networkStatus}");
+            var previousDate = AdService.Instance.Model.PreviousFBAdRevenueDate;
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t previousDate: {previousDate}");
             
             // 构建初始化配置
             var config = new AdInitConfigBuilder()
@@ -435,6 +437,7 @@ namespace Guru
                 .SetOSVersionStr(osVersion)
                 .SetIsIapUser(isIapUser)
                 .SetFirstInstallDate(firstOpenTime)
+                .SetPreviousFBAdRevenueDate(previousDate)
                 .SetVersionCodeStr(appVersionCode)
                 .SetNetworkStatus(networkStatus)
                 .Build();
@@ -465,7 +468,6 @@ namespace Guru
             return GuruAppVersion.Load()?.code ?? "1";
         }
         
-
         #endregion
 
         #region 对外暴露的广告行为回调

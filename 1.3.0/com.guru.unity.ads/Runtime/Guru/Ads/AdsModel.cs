@@ -1,5 +1,3 @@
-
-
 namespace Guru
 {
     using UnityEngine;
@@ -14,7 +12,7 @@ namespace Guru
         public double tchAd001Value = 0;
         public double tchAd02Value = 0;
         public bool buyNoAds = false;
-        
+        public string prevFbAdDate;
         
         public bool HasFirstRadsReward
         {
@@ -55,8 +53,28 @@ namespace Guru
                 Save();
             }
         }
-        
-        
+
+        public DateTime PreviousFBAdRevenueDate
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(prevFbAdDate) 
+                    && DateTime.TryParse(prevFbAdDate, out DateTime date))
+                {
+                    return date;
+                }
+                return new DateTime(1970, 1, 1);
+            }
+            
+            set
+            {
+                prevFbAdDate = value.ToString("g");
+                Save();
+            }
+        }
+
+
+
         private void Save() => _storage.Save();
 
         public string ToJson()
@@ -79,7 +97,7 @@ namespace Guru
         private bool _needToSave = false;
         private bool _forceSave = false;
         private DateTime _lastSavedTime = new DateTime(1970,1,1);
-        private float _saveInterval = 2;
+        private readonly float _saveInterval = 2;
         private AdsModel _model;
 
         public static void Create(out AdsModel model, out AdsModelStorage storage)
@@ -90,8 +108,7 @@ namespace Guru
             var go = GameObject.Find(INSTANCE_NAME);
             if (go == null) go = new GameObject(INSTANCE_NAME);
             
-            AdsModelStorage _ins = null;
-            if (!go.TryGetComponent<AdsModelStorage>(out storage))
+            if (!go.TryGetComponent(out storage))
             {
                 storage = go.AddComponent<AdsModelStorage>();
             }
@@ -117,13 +134,11 @@ namespace Guru
             _forceSave = forceSave;
             _needToSave = (DateTime.UtcNow - _lastSavedTime).TotalSeconds > _saveInterval;
         }
-
-
-        private async void AsyncSaveData()
-        {
-            
-        }
-
+        
+        // private async void AsyncSaveData()
+        // {
+        //     
+        // }
 
         #region 生命周期
 

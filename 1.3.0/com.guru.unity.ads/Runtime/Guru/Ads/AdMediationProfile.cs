@@ -27,6 +27,7 @@ namespace Guru.Ads
         public bool isIapUser = false;
         public string osVersionStr;
         public DateTime firstInstallDate;
+        public DateTime previousFBAdRevenueDate;
         public string networkStatus = "none";
 
         public AdMediationProfile()
@@ -180,8 +181,13 @@ namespace Guru.Ads
             _config.firstInstallDate = firstInstallDate;
             return this;
         }
-
-
+        public AdInitConfigBuilder SetPreviousFBAdRevenueDate(DateTime previousDate)
+        {
+            _config.previousFBAdRevenueDate = previousDate;
+            return this;
+        }
+        
+    
 
         public AdMediationProfile Build()
         {
