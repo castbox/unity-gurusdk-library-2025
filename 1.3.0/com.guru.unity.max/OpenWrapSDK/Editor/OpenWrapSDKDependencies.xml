@@ -2,7 +2,7 @@
 <dependencies>
 	<iosPods>
     <!-- Supports iOS OpenWrap SDK version 3.9.* -->
-     <iosPod name="OpenWrapSDK" version="~>3.9.0">
+     <iosPod name="OpenWrapSDK" version="3.9.0">
       <sources>
         <source>https://github.com/CocoaPods/Specs</source>
       </sources>
@@ -11,7 +11,7 @@
 
     <androidPackages>
         <!-- Supports Android OpenWrap SDK version 3.9.* -->
-        <androidPackage spec="com.pubmatic.sdk:openwrap:3.9.+">
+        <androidPackage spec="com.pubmatic.sdk:openwrap:3.9.0">
             <repositories>
                 <repository>https://repo.pubmatic.com/artifactory/public-repos</repository>
             </repositories>

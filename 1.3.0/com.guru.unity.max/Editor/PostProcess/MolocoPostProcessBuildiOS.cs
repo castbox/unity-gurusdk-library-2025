@@ -67,7 +67,7 @@ namespace Guru.Editor
 #endif
         }
 
-        // [PostProcessBuild(int.MaxValue)]
+        [PostProcessBuild(int.MaxValue)]
         public static void MolocoPostProcessPbxProject(BuildTarget buildTarget, string buildPath)
         {
             var projectPath = PBXProject.GetPBXProjectPath(buildPath);
