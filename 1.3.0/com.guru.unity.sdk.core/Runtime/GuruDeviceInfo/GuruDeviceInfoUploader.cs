@@ -21,14 +21,12 @@ namespace Guru
         private int _retryTimes;
         private bool _pushServiceEnabled;
         private bool _isOnRequesting;
-        private bool _hasUploadSuccessfully;
         
         
         // 回调事件
         private event Action OnUploadSuccessEvent;
 
         // 只读属性
-        public bool HasUploadSuccessfully => _hasUploadSuccessfully;
         public bool IsOnRequesting => _isOnRequesting;
         
         private GuruDeviceInfoUploader()
@@ -43,7 +41,6 @@ namespace Guru
         {
             _pushServiceEnabled = true; // 推送服务默认开启
             _isOnRequesting = false;
-            _hasUploadSuccessfully = false;
             _retryTimes = 0;
         }
 
@@ -69,7 +66,7 @@ namespace Guru
                 OnUploadSuccessEvent += onUploadSuccess;
             }
             
-            if (_isOnRequesting || _hasUploadSuccessfully) 
+            if (_isOnRequesting) 
             {
                 return;
             }
@@ -119,7 +116,6 @@ namespace Guru
         /// </summary>
         private void HandleUploadSuccess()
         {
-            _hasUploadSuccessfully = true;
             _isOnRequesting = false;
             _retryTimes = 0;
             
