@@ -7,7 +7,7 @@ namespace Guru
     
     public partial class AdStatusPresenter
     {
-        const string K_DEBUGGER_ROOT = "ui/debugger_adstatus";
+        const string K_ADS_STATUS_NODE = "ads_status";
         
         private AdStatusMonitorView _monitor;
         private AdStatusModel _model;
@@ -40,19 +40,12 @@ namespace Guru
         /// </summary>
         private AdStatusMonitorView LoadDebuggerRoot()
         {
-            var prefab = Resources.Load<GameObject>(K_DEBUGGER_ROOT);
-
-            if (prefab != null)
+            var viewRoot = DebuggerViewRoot.Instance;
+            var t = viewRoot.transform.Find(K_ADS_STATUS_NODE);
+            if (t != null)
             {
-                var go = GameObject.Instantiate(prefab);
-                go.name = "__debugger__";
-                
-                var t = go.transform.Find("root/ads_status_monitor");
-                if (t != null)
-                {
-                    _monitor = t.GetComponent<AdStatusMonitorView>();
-                    return _monitor;
-                }
+                _monitor = t.GetComponent<AdStatusMonitorView>();
+                return _monitor;
             }
             return null;
         }
