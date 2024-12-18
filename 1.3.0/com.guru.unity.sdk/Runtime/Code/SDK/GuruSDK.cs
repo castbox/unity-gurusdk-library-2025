@@ -150,10 +150,6 @@ namespace Guru
             LogI($"#1.3 --- InitFacebook ---");
             FBService.Instance.StartService(Analytics.OnFBInitComplete);
             
-            //--- Start RemoteConfig ---
-            LogI($"#1.4 --- InitRemoteConfig ---");
-            InitRemoteConfig(); 
-            
             IsInitialSuccess = true;
         }
 
@@ -202,36 +198,7 @@ namespace Guru
 
         #endregion
 
-        #region Remote Config
-
-        private void InitRemoteConfig()
-        {
-            // 开始Remote Manager初始化 
-            
-            var defaultGuruServiceJson = LoadDefaultGuruServiceJson();
-
-            var _defaults = _initConfig.DefaultRemoteData.ToDictionary(
-                entry => entry.Key,
-                entry => entry.Value);
-            
-            if (!string.IsNullOrEmpty(defaultGuruServiceJson))
-            {
-                _defaults[ServicesConfigKey] = defaultGuruServiceJson;
-            }
-            
-            // RemoteConfigManager.Init(_defaults);
-            // RemoteConfigManager.OnFetchCompleted += OnFetchRemoteCallback;
-            
-            InitRemoteConfigManager(_defaults, DebugModeEnabled);
-            Callbacks.SDK.OnFirebaseReady += InternalFetchAllConfigs;
-        }
-
-        private void InternalFetchAllConfigs(bool result)
-        {
-            Callbacks.SDK.OnFirebaseReady -= InternalFetchAllConfigs;
-            _remoteConfigManager.OnFirebaseReady();
-        }
-
+        #region 内置 Remote Config 更新
 
         /// <summary>
         /// 开始解析内置的云控参数
@@ -850,6 +817,25 @@ namespace Guru
             Callbacks.SDK.InvokeOnFirebaseReady(success);
 
             Analytics.OnFirebaseInitCompleted();
+
+            LogI($"#3.5 --- Call InitRemoteConfig ---");
+            // 开始Remote Manager初始化 
+            
+            var defaultGuruServiceJson = LoadDefaultGuruServiceJson();
+
+            var _defaults = _initConfig.DefaultRemoteData.ToDictionary(
+                entry => entry.Key,
+                entry => entry.Value);
+            
+            if (!string.IsNullOrEmpty(defaultGuruServiceJson))
+            {
+                _defaults[ServicesConfigKey] = defaultGuruServiceJson;
+            }
+            
+            // RemoteConfigManager.Init(_defaults);
+            // RemoteConfigManager.OnFetchCompleted += OnFetchRemoteCallback;
+            
+            InitRemoteConfigManager(_defaults, DebugModeEnabled);
             
             LogI($"#4 --- Apply remote services config ---");
             // 根据缓存的云控配置来初始化参数
