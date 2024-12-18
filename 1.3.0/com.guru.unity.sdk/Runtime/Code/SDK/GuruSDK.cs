@@ -847,6 +847,8 @@ namespace Guru
         {
             LogI($"#3 --- On FirebaseDeps: {success} ---");
             IsFirebaseReady = success;
+            _remoteConfigManager.OnFirebaseReady(); // 云控初始化完成
+            
             Callbacks.SDK.InvokeOnFirebaseReady(success);
 
             Analytics.OnFirebaseInitCompleted();

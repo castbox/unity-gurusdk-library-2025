@@ -23,10 +23,12 @@ namespace Guru
         private const float DEFAULT_FETCH_TIMEOUT = 15f;
         private const string TAG = "[Remote]";
 
+        public bool IsReady => _isReady; // 云控管理器是否可用
+
         private readonly RemoteConfigModel _configModel;        // 配置数据模型
         private FirebaseRemoteService _remoteService;  // 远程服务管理器
         private readonly bool _isDebugMode;                     // 是否为调试模式
-        private bool _isInitialized;                   // 是否已初始化
+        private bool _isReady;                   // 是否已初始化
         private Action<bool> _onFetchResultHandler;             // 拉取配置结果回调
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace Guru
                 DEFAULT_FETCH_TIMEOUT, 
                 OnRemoteKeysChanged);
                    
-            _isInitialized = true;
+            _isReady = true;
             
             // 启动时立即拉取所有配置
             FetchAllAsync(_onFetchResultHandler);
@@ -86,7 +88,7 @@ namespace Guru
         /// <param name="callback">拉取完成回调(true:成功 false:失败)</param>
         public void FetchAllAsync(Action<bool> callback = null)
         {
-            if (!_isInitialized)
+            if (!_isReady)
             {
                 LogW($"{TAG} RemoteConfig Not init");
                 callback?.Invoke(false);
@@ -200,7 +202,7 @@ namespace Guru
         public Dictionary<string, GuruConfigValue> GetAllValues()
         {
             var defaultValue = new Dictionary<string, GuruConfigValue>();
-            if (!_isInitialized)
+            if (!_isReady)
             {
                 LogW("RemoteConfigManager not initialized");
                 return defaultValue;

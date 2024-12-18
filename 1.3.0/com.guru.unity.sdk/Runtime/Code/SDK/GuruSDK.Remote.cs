@@ -1,4 +1,5 @@
 using System.Linq;
+using Unity.Plastic.Newtonsoft.Json.Serialization;
 
 namespace Guru
 {
@@ -9,6 +10,8 @@ namespace Guru
     public partial class GuruSDK
     {
         private RemoteConfigManager _remoteConfigManager;
+        
+        public static bool IsRemoteReady => Instance._remoteConfigManager?.IsReady ?? false;
         
         private void InitRemoteConfigManager(Dictionary<string, object> defaults = null, bool isDebug = false)
         {
