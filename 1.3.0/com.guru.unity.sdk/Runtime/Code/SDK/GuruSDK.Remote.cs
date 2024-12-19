@@ -1,12 +1,10 @@
-using System.Linq;
-using Unity.Plastic.Newtonsoft.Json.Serialization;
 
 namespace Guru
 {
     using System;
     using System.Collections.Generic;
-    using Firebase.RemoteConfig;
-
+    using System.Linq;
+    
     public partial class GuruSDK
     {
         private RemoteConfigManager _remoteConfigManager;
