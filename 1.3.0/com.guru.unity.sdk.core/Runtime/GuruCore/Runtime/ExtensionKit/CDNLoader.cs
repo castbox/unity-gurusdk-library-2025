@@ -1,9 +1,7 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Firebase.Crashlytics;
 using Guru;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -11,7 +9,6 @@ using UnityEngine.Networking;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
 
 public enum LoadType
 {
@@ -26,7 +23,7 @@ public enum LoadType
 [Serializable]
 public class CDNConfig
 {
-    internal static string CdnConfigRemoteKey = "cdn_config";
+    public const string CDN_CONFIG_REMOTE_KEY = "cdn_config";
 
     public bool enable = true;
     public string[] replace;
@@ -49,12 +46,12 @@ public class CDNConfig
         
         try
         {
-            _config = FirebaseUtil.GetRemoteConfig<CDNConfig>(CdnConfigRemoteKey);
+            _config = FirebaseUtil.GetRemoteConfig<CDNConfig>(CDN_CONFIG_REMOTE_KEY);
         }
         catch (Exception e)
         {
             Log.E(e);
-            Crashlytics.LogException(e);
+            FirebaseUtil.LogException(e);
         }
         return _config;
     }
@@ -64,9 +61,19 @@ public class CDNLoader : MonoBehaviour
 {
     
     /// <summary>
+    /// 默认超时时间(秒)
+    /// </summary>
+    private const int DEFAULT_TIMEOUT = 30;
+    
+    /// <summary>
+    /// 默认最大重试次数
+    /// </summary>
+    private const int DEFAULT_MAX_RETRY = 2;
+    
+    /// <summary>
     /// 受保护的URL参数列表
     /// </summary>
-    private static string[] protectedParamKeys = new string[]
+    private static readonly string[] protectedParamKeys = new string[]
     {
         "generation"
     };
@@ -78,6 +85,21 @@ public class CDNLoader : MonoBehaviour
     public CDNConfig Config => _config;
     
     /// <summary>
+    /// 当前是否正在加载
+    /// </summary>
+    private volatile bool _isOnLoading;
+    
+    /// <summary>
+    /// 是否已销毁
+    /// </summary>
+    private bool _isDestroyed;
+    
+    /// <summary>
+    /// 加载任务队列
+    /// </summary>
+    private LinkedList<LoadTask> _loadList;
+    
+    /// <summary>
     /// 使用备用地址
     /// </summary>
     private bool _useFallback;
@@ -86,8 +108,6 @@ public class CDNLoader : MonoBehaviour
     
     private Action<int, string> onError;
     private Action<DownloadHandler> onComplete;
-    private LinkedList<LoadTask> _loadList;   // 加载列表
-    private bool _isOnLoading;
     
     #region 初始化
 
@@ -97,18 +117,64 @@ public class CDNLoader : MonoBehaviour
     /// <returns></returns>
     public static CDNLoader Create(string defaultValue = "", string remoteKey = "")
     {
-        // 注入自定义的 CDNConfigKey, 可读取自定义的Default配置
-        if(string.IsNullOrEmpty(remoteKey)) remoteKey = CDNConfig.CdnConfigRemoteKey;
+        var go = new GameObject(nameof(CDNLoader));
+        DontDestroyOnLoad(go);
+        var loader = go.AddComponent<CDNLoader>();
+
+        if (string.IsNullOrEmpty(remoteKey)) 
+            remoteKey = CDNConfig.CDN_CONFIG_REMOTE_KEY;
 
         if (!string.IsNullOrEmpty(defaultValue))
         {
-            FirebaseUtil.AppendDefaultValue(remoteKey, defaultValue);
+            if (FirebaseUtil.IsReady)
+            {
+                FirebaseUtil.AppendDefaultValue(remoteKey, defaultValue);
+            }
+            else
+            {
+                loader.StartCoroutine(loader.WaitingForFirebaseReady(() =>
+                {
+                    if (!loader._isDestroyed)
+                    {
+                        FirebaseUtil.AppendDefaultValue(remoteKey, defaultValue);
+                    }
+                }));
+            }
         }
-        var go = new GameObject(nameof(CDNLoader));
-        var loader = go.AddComponent<CDNLoader>();
+        
         return loader;
     }
 
+    
+    private IEnumerator WaitingForFirebaseReady(Action delayAction)
+    {
+        while (!FirebaseUtil.IsReady)
+        {
+            yield return new WaitForSeconds(.5f);
+        }
+        delayAction?.Invoke();
+    }
+
+    
+    
+    private void OnDestroy()
+    {
+        _isDestroyed = true;
+        StopAllCoroutines();
+        
+        // 清理队列
+        if (_loadList != null)
+        {
+            foreach (var task in _loadList)
+            {
+                task.Dispose();
+            }
+            _loadList.Clear();
+        }
+        
+        Destroy(gameObject);
+    }
+    
     private void Awake()
     {
         Init();
@@ -161,7 +227,6 @@ public class CDNLoader : MonoBehaviour
         // 带有参数的URL地址过滤和拼接
         if (originUrl.Contains("?"))
         {
-            
             var raw = originUrl.Split('?');
             if (raw.Length > 1)
             {
@@ -186,7 +251,6 @@ public class CDNLoader : MonoBehaviour
                 originUrl = raw[0];
                 if (args.Length > 0) originUrl += $"?{args}";
             }
-            
         }
 
         return originUrl;
@@ -291,11 +355,18 @@ public class CDNLoader : MonoBehaviour
         var task = GetTask();
         if (task != null)
         {
+            // 检查配置有效性
+            if (_config == null)
+            {
+                var result = LoadResult.Create(task, false, "CDN configuration is missing");
+                task.onComplete?.Invoke(result);
+                _isOnLoading = false;
+                yield break;
+            }
+            
             task.fixedUrl = GetUrl(task.url, task.useFallback);
-            Debug.Log($"<color=#88ff00>--- 下载地址: { task.fixedUrl }</color>");
-            // Debug.Log($"--- _useFallback: {_useFallback}");
-            // Debug.Log($"--- _retryNum: {_retryNum}");
-            // 使用Using初始化加载器
+            Debug.Log($"<color=#88ff00>--- start download: {task.fixedUrl}</color>");
+
             using (UnityWebRequest www = UnityWebRequest.Get(task.fixedUrl))
             {
                 if (task.type == LoadType.Texture2D)
@@ -303,65 +374,79 @@ public class CDNLoader : MonoBehaviour
                 else
                     www.downloadHandler = new DownloadHandlerBuffer();
 
-                www.timeout = _config.timeout;
+                www.timeout = _config.timeout > 0 ? _config.timeout : DEFAULT_TIMEOUT;
                 yield return www.SendWebRequest();
                 
                 var result = LoadResult.Create(task);
                 if (www.result == UnityWebRequest.Result.Success)
                 {
-                    bool success = www.downloadHandler != null;
-                    result.success = success;
-                    if (success)
-                    {
-                        switch (task.type)
-                        {
-                        
-                            case LoadType.Bytes:
-                                result.data = www.downloadHandler.data;
-                                break;
-                            case LoadType.Texture2D:
-                                var handler2D = www.downloadHandler as DownloadHandlerTexture;
-                                result.texture = (handler2D?.texture ? handler2D?.texture : null);
-                                break;
-                            default:
-                                result.text = www.downloadHandler.text;
-                                break;
-                        }
-                    }
-                    task.onComplete?.Invoke(result);
+                    ProcessSuccessResponse(www, task, result);
                 }
                 else
                 {
-                    // 打印(上报) 错误信息
-                    Debug.LogError(
-                        $"Load asset fail, code:{www.responseCode}  error:{www.error}  url:{task.fixedUrl}   type:{task.type.ToString()}");
-                    // 下载错误
-                    task.retryNum++;
-                    if (task.retryNum > 2)
-                    {
-                        if (task.useFallback)
-                        {
-                            result.success = false;
-                            result.error = www.error;
-                            task.onComplete?.Invoke(result);
-                            task.Dispose();
-                        }
-                        else
-                        {
-                            task.retryNum = 0;
-                            task.useFallback = true;
-                            AddTask(task);
-                        }
-                    }
-                    else
-                    {
-                        // 增加次数后加到队尾重新下载
-                        AddTask(task);
-                    }
+                    ProcessFailedResponse(www, task, result);
                 }
 
                 _isOnLoading = false;
             }
+        }
+    }
+    
+    /// <summary>
+    /// 处理成功的响应
+    /// </summary>
+    private void ProcessSuccessResponse(UnityWebRequest www, LoadTask task, LoadResult result)
+    {
+        bool success = www.downloadHandler != null;
+        result.success = success;
+        if (success)
+        {
+            switch (task.type)
+            {
+                case LoadType.Bytes:
+                    result.data = www.downloadHandler.data;
+                    break;
+                case LoadType.Texture2D:
+                    var handler2D = www.downloadHandler as DownloadHandlerTexture;
+                    result.texture = handler2D?.texture;
+                    break;
+                default:
+                    result.text = www.downloadHandler.text;
+                    break;
+            }
+        }
+        task.onComplete?.Invoke(result);
+    }
+
+    /// <summary>
+    /// 处理失败的响应
+    /// </summary>
+    private void ProcessFailedResponse(UnityWebRequest www, LoadTask task, LoadResult result)
+    {
+        Debug.LogError($"CDNLoader load failed -> code:{www.responseCode} error:{www.error} URL:{task.fixedUrl} type:{task.type}");
+        
+        task.retryNum++;
+        int maxRetry = _config.retry > 0 ? _config.retry : DEFAULT_MAX_RETRY;
+        
+        if (task.retryNum > maxRetry)
+        {
+            if (task.useFallback)
+            {
+                result.success = false;
+                result.error = www.error;
+                task.onComplete?.Invoke(result);
+                task.Dispose();
+            }
+            else
+            {
+                task.retryNum = 0;
+                task.useFallback = true;
+                AddTask(task);
+            }
+        }
+        else
+        {
+            AddTask(task);
         }
     }
     
