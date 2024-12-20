@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 5888a2e2b112d4600b62ba1f71a00cb9
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/Mintegral/Editor/Dependencies.xml
+- al_max_export_path-MaxSdk/Mediation~HEAD/Mintegral/Editor/Dependencies.xml
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

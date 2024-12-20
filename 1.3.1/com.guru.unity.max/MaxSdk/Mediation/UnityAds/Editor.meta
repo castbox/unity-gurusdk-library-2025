@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: e8a23345e7d0a427eaa4c885b79c6083
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/UnityAds/Editor
+- al_max_export_path-MaxSdk/Mediation~HEAD/UnityAds/Editor
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

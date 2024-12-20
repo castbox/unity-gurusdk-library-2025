@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: bb18a376af3c64a3eaaf1114bc874312
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/BidMachine/Editor
+- al_max_export_path-MaxSdk/Mediation~HEAD/BidMachine/Editor
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

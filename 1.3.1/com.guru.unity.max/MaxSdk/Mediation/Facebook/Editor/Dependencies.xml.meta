@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 8227a11d194d14e52bae86cb81dc6b85
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/Facebook/Editor/Dependencies.xml
+- al_max_export_path-MaxSdk/Mediation~HEAD/Facebook/Editor/Dependencies.xml
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

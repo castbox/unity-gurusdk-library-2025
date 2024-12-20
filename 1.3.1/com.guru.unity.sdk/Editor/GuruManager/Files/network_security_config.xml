@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- For Facebook(Meta) -->
+        <!-- In the Audience Network Android SDK,
+            we use 127.0.0.1 (localhost) as a caching
+            proxy to cache media files in the SDK.
+            Since Android P, cleartext traffic (unencrypted HTTP)
+            will be blocked by default, which will affect the
+            functionality of media caching of the SDK and could
+            affect user experience and ads revenue. -->
+        <domain includeSubdomains="true">127.0.0.1</domain>
+
+        <!-- For Amazon -->
+        <domain includeSubdomains="true">amazon-adsystem.com</domain>
+
+        <!-- For Unity -->
+        <domain includeSubdomains="true">cdn-creatives-akamai-prd.unityads.unity3d.com</domain>
+        <domain includeSubdomains="true">cdn-creatives-akamaistls-prd.unityads.unity3d.com</domain>
+        <domain includeSubdomains="true">cdn-creatives-akamaistls-re-prd.unityads.unity3d.com</domain>
+        <domain includeSubdomains="true">cdn-creatives-geocdn-prd.unityads.unity3d.com</domain>
+        <domain includeSubdomains="true">cdn-creatives-prd.unityads.unity3d.com</domain>
+        <domain includeSubdomains="true">cdn-creatives-highwinds-prd.unityads.unity3d.com</domain>
+        <domain includeSubdomains="true">cdn-creatives-tencent-prd.unityads.unitychina.cn</domain>
+        <domain includeSubdomains="true">cdn-store-icons-akamai-prd.unityads.unity3d.com</domain>
+        <domain includeSubdomains="true">cdn-store-icons-highwinds-prd.unityads.unity3d.com</domain>
+        <domain includeSubdomains="true">cdn-store-icons-tencent-prd.unityads.unitychina.cn</domain>
+        <domain includeSubdomains="true">cdn-creatives-akamaistls-prd.acquire.unity3dusercontent.com</domain>
+        <domain includeSubdomains="true">unityads.unity3d.com</domain>
+        <domain includeSubdomains="true">unityads.unitychina.cn</domain>
+    </domain-config>
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Trust user added CAs while debuggable only -->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
