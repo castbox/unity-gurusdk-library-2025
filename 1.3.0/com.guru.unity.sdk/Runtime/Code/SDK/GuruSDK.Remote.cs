@@ -1,15 +1,14 @@
+using System.Linq;
 
 namespace Guru
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    
+    using Firebase.RemoteConfig;
+
     public partial class GuruSDK
     {
         private RemoteConfigManager _remoteConfigManager;
-        
-        public static bool IsRemoteReady => Instance._remoteConfigManager?.IsReady ?? false;
         
         private void InitRemoteConfigManager(Dictionary<string, object> defaults = null, bool isDebug = false)
         {
