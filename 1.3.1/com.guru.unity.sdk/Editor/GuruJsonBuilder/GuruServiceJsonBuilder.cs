@@ -491,26 +491,62 @@ namespace Guru.Editor
             string line = "";
             List<string> iaps = new List<string>(30);
             
+            string errorMsg = string.Empty;
             string[] arr;
             while (index < lines.Length)
             {
                 line = lines[index];
-                if(IsInvalidLine(line)) continue;
+                index++;
+                if(IsInvalidLine(line))
+                {
+                    errorMsg += line;
+                    errorMsg += "\n";
+                    Debug.LogError($"IAP配置有错误,请检查下配置: {line} !!!");
+                    continue;
+                }
                 arr = GetStringArray(line, 0, 7);
+                arr[3] = ExtractPrice(arr[3]).ToString();
                 if(string.IsNullOrEmpty(arr[5])) arr[5] = "Store";
                 if(string.IsNullOrEmpty(arr[6])) arr[6] = "0";
                 iaps.Add(string.Join(",", arr).Replace("\r", ""));
-                index++;
             }
             settings.products = iaps.ToArray();
             index--;
+
+            if (string.IsNullOrEmpty(errorMsg) == false)
+            {
+                EditorUtility.DisplayDialog("Iap 配置错误!",
+                    errorMsg,
+                    "知道了");
+            }
         }
         
 
         #endregion
 
         #region Utils
-        
+        // 匹配格式：$1,234.56 或 1,234.56
+        public const string STANDARD = @"[\$\¥\€]?(\d{1,3}(,\d{3})*(\.\d{2})?)";
+        /// <summary>
+        /// 提取价格
+        /// </summary>
+        public static decimal ExtractPrice(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return 0;
+
+            var regex = new System.Text.RegularExpressions.Regex(STANDARD);
+            var match = regex.Match(text);
+
+            if (!match.Success) return 0;
+
+            string priceStr = match.Groups[1].Value.Replace(",", "");
+            if (decimal.TryParse(priceStr, out decimal price))
+            {
+                return price;
+            }
+
+            return 0;
+        }
         private static bool GetBool(string value)
         {
             return value.ToLower() == "true" || value == "1";

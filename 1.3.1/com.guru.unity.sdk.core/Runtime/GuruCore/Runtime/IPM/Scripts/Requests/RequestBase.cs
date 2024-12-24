@@ -75,10 +75,12 @@ namespace Guru
 					this.LogError( $"{TAG} {request.url} 请求超出重试次数限制，请求失败");
 					_onFailCallBack?.Invoke();
 					ClearRetry();
+					Release(request);
 				}
 				else
 				{
 					yield return _waitTime;
+					Release(request);
 					Send();
 				}
 			}
@@ -89,7 +91,21 @@ namespace Guru
 				RequestSuccessCallBack(response);
 				_onSuccessCallBack?.Invoke();
 				ClearRetry();
+				Release(request);
 			}
+		}
+		
+		/// <summary>
+		/// 2024-12-16 修复编辑器WebRequest连接失败 重试几次后报“A Native Collection has not been disposed, resulting in a memory leak”问题
+		/// 释放UnityWebRequest对象内存 
+		/// </summary>
+		/// <param name="request"></param>
+		private void Release(UnityWebRequest request)
+		{
+#if UNITY_EDITOR
+			if (request != null)
+				request.Dispose();
+#endif
 		}
 
 		private void ClearRetry()

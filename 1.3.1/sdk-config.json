@@ -1,6 +1,6 @@
 {
   "version": "1.3.1",
-  "ts": "1734708468",
+  "ts": "1735022659",
   "desc": "更新了 CDNLoader 的对应逻辑，兼容老接口的调用",
   "packages": {
     "com.coffee.git-dependency-resolver": {
