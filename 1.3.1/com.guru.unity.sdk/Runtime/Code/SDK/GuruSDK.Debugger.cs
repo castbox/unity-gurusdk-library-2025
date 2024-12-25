@@ -1,10 +1,8 @@
-
-using System.Collections.Generic;
-
 namespace Guru
 {
     using UnityEngine;
     using System;
+    using System.Collections.Generic;
     
     public partial class GuruSDK
     {
@@ -76,6 +74,8 @@ namespace Guru
             Debugger.AddOption("Info/Adjust Id", ()=>(string.IsNullOrEmpty(AdjustId) ? "NULL" : AdjustId)).AddCopyButton();
             Debugger.AddOption("Info/IDFA", ()=>(string.IsNullOrEmpty(IDFA) ? "NULL" : IDFA)).AddCopyButton();
             Debugger.AddOption("Info/GSADID", ()=>(string.IsNullOrEmpty(GSADID) ? "NULL" : GSADID)).AddCopyButton();
+            Debugger.AddOption("Info/Tch 001 Value", ()=>$"{TchADRev001Value:F2}");
+            Debugger.AddOption("Info/Tch 02 Value", ()=>$"{TchADRev02Value:F2}");
             Debugger.AddOption("Info/Debug Mode", ()=>GuruSDK.DebugModeEnabled? "true" : "false");
             Debugger.AddOption("Info/Screen size", ()=>$"{Screen.width} x {Screen.height}");
             Debugger.AddOption("Info/Boost Duration", ()=>$"{BoostDuration:F2}(s)");
