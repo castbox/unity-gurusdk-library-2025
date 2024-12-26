@@ -483,12 +483,12 @@ namespace Guru.Ads
         /// <param name="isPaused"></param>
         public void SetAppPause(bool isPaused)
         {
-            _adManager.SetAppPause(isPaused);
+            _adManager?.SetAppPause(isPaused);
         }
 
         public bool IsReady()
         {
-            return _adManager.IsReady();
+            return _adManager?.IsReady() ?? false;
         }
 
 
