@@ -363,8 +363,8 @@ namespace Guru
         }
 
 
-        internal static double TchADRev001Value => AdService.Instance.Model?.TchAD001RevValue ?? 0;
-        internal static double TchADRev02Value => AdService.Instance.Model?.TchAD02RevValue ?? 0; 
+        public static double TchADRev001Value => AdService.Instance.Model?.TchAD001RevValue ?? 0;
+        public static double TchADRev02Value => AdService.Instance.Model?.TchAD02RevValue ?? 0; 
         
         
         #endregion

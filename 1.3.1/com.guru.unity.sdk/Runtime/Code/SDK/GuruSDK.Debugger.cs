@@ -26,6 +26,8 @@ namespace Guru
                 return _debugger;
             }
         }
+
+
         
         /// <summary>
         /// 显示广告状态
@@ -50,10 +52,6 @@ namespace Guru
             return true;
         }
         
-        
-        
-        
-
         private static void InitBaseOptionLayout()
         {
             // ------------ Info Page --------------------
@@ -74,8 +72,6 @@ namespace Guru
             Debugger.AddOption("Info/Adjust Id", ()=>(string.IsNullOrEmpty(AdjustId) ? "NULL" : AdjustId)).AddCopyButton();
             Debugger.AddOption("Info/IDFA", ()=>(string.IsNullOrEmpty(IDFA) ? "NULL" : IDFA)).AddCopyButton();
             Debugger.AddOption("Info/GSADID", ()=>(string.IsNullOrEmpty(GSADID) ? "NULL" : GSADID)).AddCopyButton();
-            Debugger.AddOption("Info/Tch 001 Value", ()=>$"{TchADRev001Value:F2}");
-            Debugger.AddOption("Info/Tch 02 Value", ()=>$"{TchADRev02Value:F2}");
             Debugger.AddOption("Info/Debug Mode", ()=>GuruSDK.DebugModeEnabled? "true" : "false");
             Debugger.AddOption("Info/Screen size", ()=>$"{Screen.width} x {Screen.height}");
             Debugger.AddOption("Info/Boost Duration", ()=>$"{BoostDuration:F2}(s)");
@@ -86,7 +82,6 @@ namespace Guru
             Debugger.AddOption("Ads/Banner Id", ()=> GuruSettings.Instance.ADSetting.GetBannerID());
             Debugger.AddOption("Ads/Interstitial Id", ()=> GuruSettings.Instance.ADSetting.GetInterstitialID());
             Debugger.AddOption("Ads/Rewarded Id", ()=> GuruSettings.Instance.ADSetting.GetRewardedVideoID());
-
             // ------------ Log Enabled -------------------
             if (!UnityEngine.Debug.unityLogger.logEnabled)
             {
@@ -110,6 +105,7 @@ namespace Guru
             Debugger.AddOption("Console/Event: Firebase").AddButton("只显示 [Firebase] 事件", ()=> Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword("[Firebase]"));
             Debugger.AddOption("Console/Event: Facebook").AddButton("只显示 [Facebook] 事件", ()=> Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword("[FB]"));
             Debugger.AddOption("Console/Event: Guru").AddButton("只显示 [自打点] 事件", ()=> Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword("[Guru]"));
+            Debugger.AddOption("Console/Event: Test Tch001").AddButton("测试 [Tch001] 打点", DebugSendTch001Event);
             Debugger.AddOption("Console/Event: Test Tch02").AddButton("测试 [Tch02] 打点", DebugSendTch02Event);
             
             AddGuruCommand();

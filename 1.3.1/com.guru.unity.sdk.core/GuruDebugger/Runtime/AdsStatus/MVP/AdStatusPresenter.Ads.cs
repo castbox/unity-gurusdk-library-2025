@@ -222,7 +222,9 @@ namespace Guru
                 }
             }
             _infoBuff.Append(msg);
-            
+
+            _infoBuff.Append($"\n Tch-001: {AdService.Instance.Model.TchAD001RevValue:F4}");
+            _infoBuff.Append($"\n Tch-020: {AdService.Instance.Model.TchAD02RevValue:F4}");
             
             return _infoBuff.ToString();
 

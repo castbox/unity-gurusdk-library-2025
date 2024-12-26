@@ -1,7 +1,4 @@
 
-
-
-
 namespace Guru
 {
     using UnityEngine.EventSystems;
@@ -57,9 +54,6 @@ namespace Guru
             }
             return null;
         }
-
-
-
 
         #endregion
 
