@@ -48,22 +48,24 @@ namespace Guru
         protected static GuruAppVersion Parse(string raw)
         {
             var a = new GuruAppVersion();
-            if (!string.IsNullOrEmpty(raw))
+            if (string.IsNullOrEmpty(raw))
             {
-                a.raw = raw;
-                var arr = raw.Split('-');
-                if (arr.Length > 0) a.version = arr[0];
-                if (arr.Length > 1) a.code = arr[1];
+                return a;
+            }
+            
+            a.raw = raw;
+            var arr = raw.Split('-');
+            if (arr.Length > 0) a.version = arr[0];
+            if (arr.Length > 1) a.code = arr[1];
 
-                if (string.IsNullOrEmpty(a.version))
-                {
-                    a.version = Application.version;
-                }
+            if (string.IsNullOrEmpty(a.version))
+            {
+                a.version = Application.version;
+            }
 
-                if (string.IsNullOrEmpty(a.code))
-                {
-                    a.code = "0";
-                }
+            if (string.IsNullOrEmpty(a.code))
+            {
+                a.code = "0";
             }
             return a;
         }
