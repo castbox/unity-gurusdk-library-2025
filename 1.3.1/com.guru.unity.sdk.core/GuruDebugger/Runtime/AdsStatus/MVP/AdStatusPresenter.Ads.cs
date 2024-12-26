@@ -223,8 +223,8 @@ namespace Guru
             }
             _infoBuff.Append(msg);
 
-            _infoBuff.Append($"\n Tch-001: {AdService.Instance.Model.TchAD001RevValue:F4}");
-            _infoBuff.Append($"\n Tch-020: {AdService.Instance.Model.TchAD02RevValue:F4}");
+            _infoBuff.Append($"\n Tch-001: <color=cyan>{AdService.Instance.Model.TchAD001RevValue:G8}</color>");
+            _infoBuff.Append($"\n Tch-020: <color=cyan>{AdService.Instance.Model.TchAD02RevValue:G8}</color>");
             
             return _infoBuff.ToString();
 
