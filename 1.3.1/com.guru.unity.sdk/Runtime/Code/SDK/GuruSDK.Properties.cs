@@ -39,9 +39,9 @@ namespace Guru
         
         public static string TermsUrl => GuruSettings.TermsUrl ?? "";
 
-        public static string AppVersion => GuruAppVersion.version;
+        public static string AppBuildVersion => GuruAppVersion.buildVersion;
 
-        public static string AppVersionCode => GuruAppVersion.code;
+        public static string AppVersionBuildNumber => GuruAppVersion.buildNumber;
         
         public static string AppVersionString => GuruAppVersion.ToString();
 

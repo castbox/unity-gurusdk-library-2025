@@ -469,7 +469,7 @@ namespace Guru
         /// <returns></returns>
         private string GetVersionCodeStr()
         {
-            return GuruAppVersion.Load()?.code ?? "1";
+            return GuruAppVersion.Load()?.buildNumber ?? "1";
         }
         
         #endregion

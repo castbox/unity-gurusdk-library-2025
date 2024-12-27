@@ -62,7 +62,7 @@ namespace Guru
             Debugger.AddOption("Info/Version", () =>
             {
                 var v = GuruAppVersion.Load();
-                return (v == null ? $"{Application.version} (unknown)" : $"{v.version} ({v.code})");
+                return (v == null ? $"{Application.version} (unknown)" : $"{v.buildVersion} ({v.buildNumber})");
             });
             Debugger.AddOption("Info/Uid", ()=>(string.IsNullOrEmpty(UID) ? "NULL" : UID)).AddCopyButton();
             Debugger.AddOption("Info/Device ID", ()=>(string.IsNullOrEmpty(DeviceId) ? "NULL" : DeviceId)).AddCopyButton();
