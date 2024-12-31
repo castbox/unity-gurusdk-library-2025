@@ -1,0 +1,178 @@
+using System.Collections;
+using Unity.EditorCoroutines.Editor;
+
+namespace Guru.Editor
+{
+    using NUnit.Framework;
+    using UnityEditor;
+    using UnityEngine;
+    using System;
+    using System.IO;
+    using System.Xml;
+    
+    public static class AndroidManifestMod
+    {
+        private const string TargetPath = "Plugins/Android/AndroidManifest.xml";
+        private const string ValOptimizeInitialization = "com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION";
+        private const string ValOptimizeAdLoading = "com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING";
+        private const string NamespaceAndroid = "http://schemas.android.com/apk/res/android";
+        private const string NamespaceTools = "http://schemas.android.com/tools";
+
+        private const string PermissionReadPhoneState = "android.permission.READ_PHONE_STATE";
+
+        private static string TargetFullPath = Path.Combine(Application.dataPath, TargetPath);
+        
+        public static bool IsManifestExist() => File.Exists(TargetFullPath);
+
+        public static void Apply()
+        {
+            if (!IsManifestExist())
+            {
+                CopyManifest();
+            }
+            
+            var doc = new XmlDocument();
+            doc.Load(TargetFullPath);
+
+            SetApplicationMod(doc);
+            SetPermissionMod(doc);
+            
+            doc.Save(TargetFullPath);
+        }
+
+        /// <summary>
+        /// Fix all Elements in <Applicaiton>
+        /// </summary>
+        /// <param name="doc"></param>
+        private static void SetApplicationMod(XmlDocument doc)
+        {
+            string rootName = "manifest/application";
+            var rootNode = doc.SelectSingleNode(rootName);
+            int item1 = 0;
+            int item2 = 0;
+            
+            if (rootNode == null)
+            {
+                Debug.LogError($"Can't find root with name {rootName} ...");
+                return;
+            }
+            
+            
+            XmlNodeList metadatas = rootNode.SelectNodes("meta-data");
+            if (metadatas != null && metadatas.Count > 0)
+            {
+                bool isDirty = false;
+      
+                foreach (XmlElement e in metadatas)
+                {
+                    if (e != null)
+                    {
+                        if (e.HasAttribute("name", NamespaceAndroid))
+                        {
+                            if (e.Attributes["android:name"].Value == ValOptimizeInitialization) item1 = 1;
+                            if (e.Attributes["android:name"].Value == ValOptimizeAdLoading) item2 = 1;
+                        }
+                    }
+                }
+            }
+            
+            if (item1 == 0)
+            {
+                var e =  doc.CreateElement("meta-data");
+                e.SetAttribute("name",NamespaceAndroid, ValOptimizeInitialization);
+                e.SetAttribute("value",NamespaceAndroid, "true");
+                rootNode.AppendChild(e);
+            }
+            
+            if (item2 == 0)
+            {
+                var e =  doc.CreateElement("meta-data");
+                e.SetAttribute("name",NamespaceAndroid,ValOptimizeAdLoading);
+                e.SetAttribute("value",NamespaceAndroid, "true");
+                rootNode.AppendChild(e);
+            }
+
+            var rootE = doc.SelectSingleNode("manifest") as XmlElement;
+            if (rootE != null)
+            {
+                rootE.Attributes["package"].Value = PlayerSettings.applicationIdentifier; // 写入包名
+            }
+        }
+
+        /// <summary>
+        /// Fix all permissions 
+        /// </summary>
+        /// <param name="doc"></param>
+        private static void SetPermissionMod(XmlDocument doc)
+        {
+            string attName = "uses-permission";
+            string rootName = "manifest";
+            bool isBuild = false;
+            var rootNode = doc.SelectSingleNode(rootName);
+            
+            XmlElement item1 = null;
+            if (rootNode == null)
+            {
+                Debug.LogError($"Can't find root with name {rootName} ...");
+                return;
+            }
+            
+            XmlNodeList permissions = rootNode.SelectNodes(attName);
+            if (permissions != null && permissions.Count > 0)
+            {
+                foreach (XmlElement e in permissions)
+                {
+                    if (e != null)
+                    {
+                        if (e.HasAttribute("android:name"))
+                        {
+                            if (e.Attributes["android:name"].Value == PermissionReadPhoneState) item1 = e;
+                        }
+                    }
+                }
+            }
+
+            isBuild = false;
+            if (item1 == null)
+            {
+                isBuild = true;
+                item1 =  doc.CreateElement(attName);
+            }
+            item1.SetAttribute("name",NamespaceAndroid, PermissionReadPhoneState);
+            item1.SetAttribute("node",NamespaceTools, "remove");
+            if (isBuild) rootNode.AppendChild(item1);
+
+        }
+
+
+
+        private static void CopyManifest()
+        {
+            if (File.Exists(TargetFullPath)) return;
+            
+            var path = GuruEditorHelper.GetFilePath($"{nameof(AndroidManifestMod)} t:Script");
+            if (!string.IsNullOrEmpty(path))
+            {
+                var from = Path.GetFullPath($"{path}/../../Files/AndroidManifest.txt");
+                if (File.Exists(from))
+                {
+                    File.Copy(from, TargetFullPath);
+                }
+            }
+        }
+
+
+
+
+        #region Testing
+
+        [Test]
+        public static void Test_Injection()
+        {
+            Apply();
+        }
+
+        #endregion
+        
+    }
+}

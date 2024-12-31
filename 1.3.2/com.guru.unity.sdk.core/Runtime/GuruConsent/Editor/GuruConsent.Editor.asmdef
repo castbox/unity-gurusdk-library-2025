@@ -1,0 +1,16 @@
+{
+    "name": "GuruConsent.Editor",
+    "rootNamespace": "Guru.Editor",
+    "references": ["GUID:e241d247f550f427da05939864204192"],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

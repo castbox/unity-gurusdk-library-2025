@@ -1,0 +1,5 @@
+<linker>
+    <assembly fullname="GuruSDK">
+        <namespace fullname="Guru" preserve="all"/>
+    </assembly>
+</linker>

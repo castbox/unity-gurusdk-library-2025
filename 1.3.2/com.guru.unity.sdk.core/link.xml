@@ -1,0 +1,5 @@
+<linker>
+    <assembly fullname="Guru.Runtime">
+        <namespace fullname="Guru" preserve="all"/>
+    </assembly>
+</linker>

@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 547050cb6caa94a278cff170d341a822
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/Yandex
+- al_max_export_path-MaxSdk/Mediation~HEAD/Yandex
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
