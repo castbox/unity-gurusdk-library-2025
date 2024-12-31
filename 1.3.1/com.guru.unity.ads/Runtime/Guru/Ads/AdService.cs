@@ -181,8 +181,9 @@ namespace Guru.Ads
         {
             Tch001Value += revenue;
             double revenueValue = Tch001Value;
-            Debug.Log($"{LOG_TAG} --- [Tch] <tch_ad_rev_roas_001> with value: {revenueValue}");
             if (revenueValue < Analytics.TCH_001_VALUE) return;
+            
+            Debug.Log($"{LOG_TAG} --- [Tch] call <tch_ad_rev_roas_001> with value: {revenueValue}");
             Analytics.Tch001ADRev(revenueValue, _adManager.GetMediationName());
             Tch001Value = 0.0;
         }
@@ -195,8 +196,9 @@ namespace Guru.Ads
         {
             Tch02Value += revenue;
             double revenueValue = Tch02Value;
-            Debug.Log($"{LOG_TAG} --- [Tch] <tch_ad_rev_roas_02> with value: {revenueValue}");
             if (revenueValue < Analytics.TCH_02_VALUE) return;
+            
+            Debug.Log($"{LOG_TAG} --- [Tch] call <tch_ad_rev_roas_02> with value: {revenueValue}");
             Analytics.Tch02ADRev(revenueValue, _adManager.GetMediationName());
             Tch02Value = 0.0;
         }
@@ -483,12 +485,12 @@ namespace Guru.Ads
         /// <param name="isPaused"></param>
         public void SetAppPause(bool isPaused)
         {
-            _adManager?.SetAppPause(isPaused);
+            _adManager.SetAppPause(isPaused);
         }
 
         public bool IsReady()
         {
-            return _adManager?.IsReady() ?? false;
+            return _adManager.IsReady();
         }
 
 
@@ -663,20 +665,10 @@ namespace Guru.Ads
         /// Debug 设置 tch02 的收入参数
         /// 可立即触发 tch_02 事件
         /// </summary>
-        /// <param name="value"></param>
-        public void SetTch001Revenue(double value = 0.01)
+        /// <param name="revenue"></param>
+        public void SetTch02Revenue(double revenue = 0.2)
         {
-            AddAdsTch001Revenue(value);
-        }
-        
-        /// <summary>
-        /// Debug 设置 tch02 的收入参数
-        /// 可立即触发 tch_02 事件
-        /// </summary>
-        /// <param name="value"></param>
-        public void SetTch02Revenue(double value = 0.2)
-        {
-            AddAdsTch02Revenue(value);
+            AddAdsTch02Revenue(revenue);
         }
         
         #endregion

@@ -1048,10 +1048,6 @@ namespace Guru
         /// <summary>
         /// 测试发送 tch02 事件
         /// </summary>
-        private static void DebugSendTch001Event()
-        {
-            AdService.Instance.SetTch001Revenue(0.01);
-        }
         private static void DebugSendTch02Event()
         {
             AdService.Instance.SetTch02Revenue(0.2);

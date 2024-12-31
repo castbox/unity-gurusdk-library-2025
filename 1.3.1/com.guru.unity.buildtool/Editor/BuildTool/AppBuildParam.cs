@@ -22,8 +22,6 @@ namespace Guru.Editor
         public bool AutoSetBuildNumber = true; // 自动设置构建号, 可参考 Guru的SDK 接入说明文档
         public bool UseGuruCerts = true; // 是否使用 Guru 的证书打包
         public string TargetName = "";
-        public string AssetBundleManifestPath = ""; // 构建 Bundle 包传入 Manifest 地址
-        public string[] ExtraScriptingDefines = null; // 扩展的编译参数
         //------------ Android ----------------
         public bool IsBuildAAB; // 是否构建 AAB 包体 ( GooglePlay 发布专用 )
         public bool IsBuildSymbols = false; // 是否需要构建 Symbols.zip 文件 ( GooglePlay 发布专用 )

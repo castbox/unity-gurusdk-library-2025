@@ -9,7 +9,7 @@ namespace Guru
     {
         const string K_ADS_STATUS_NODE = "ads_status";
         
-        private AdStatusMonitorView _monitorView;
+        private AdStatusMonitorView _monitor;
         private AdStatusModel _model;
         private Action _onMonitorClickedHandler;
         /// <summary>
@@ -21,16 +21,16 @@ namespace Guru
             _onMonitorClickedHandler = onClicked;
             
             _model = new AdStatusModel();
-            _monitorView = monitorView;
-            if (_monitorView == null) _monitorView = LoadDebuggerRoot();
-            if (_monitorView != null)
+            _monitor = monitorView;
+            if (_monitor == null) _monitor = LoadDebuggerRoot();
+            if (_monitor != null)
             {
-                _monitorView.OnUpdateInfo("ads is on loading...");
-                _monitorView.Active = false;
+                _monitor.OnUpdateInfo("ads is on loading...");
+                _monitor.Active = false;
             }
             
-            _monitorView.OnEnableHandler = OnMonitorEnableEvent;
-            _monitorView.OnClickHandler = OnMonitorClickEvent;
+            _monitor.OnEnableHandler = OnMonitorEnableEvent;
+            _monitor.OnClickHandler = OnMonitorClickEvent;
             
             InitAdsAssets();
         }
@@ -44,8 +44,8 @@ namespace Guru
             var t = viewRoot.transform.Find(K_ADS_STATUS_NODE);
             if (t != null)
             {
-                _monitorView = t.GetComponent<AdStatusMonitorView>();
-                return _monitorView;
+                _monitor = t.GetComponent<AdStatusMonitorView>();
+                return _monitor;
             }
             return null;
         }
@@ -55,19 +55,19 @@ namespace Guru
         private void UpdateView()
         {
             if (_model == null) return;
-            _monitorView.OnUpdateInfo(_model.monitorInfo);
+            _monitor.OnUpdateInfo(_model.monitorInfo);
         }
 
 
         internal void ShowMonitor()
         {
-            if (_monitorView == null) return;
-            _monitorView.Active = true;
+            if (_monitor == null) return;
+            _monitor.Active = true;
         }
         internal void HideMonitor()
         {
-            if (_monitorView == null) return;
-            _monitorView.Active = false;
+            if (_monitor == null) return;
+            _monitor.Active = false;
         }
         
         

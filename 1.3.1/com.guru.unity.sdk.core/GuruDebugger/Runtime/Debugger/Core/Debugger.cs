@@ -219,17 +219,20 @@ namespace Guru
             optionDicts.Remove(tabName);
             return true;
         }
-        
+
+
         public void ShowAdStatus()
         {
             _viewRoot.ShowAdStatusMonitor();
         }
         
+        
         public void HideAdStatus()
         {
             _viewRoot.HideAdStatusMonitor();
         }
-        
+
+
         public void ShowPage(string tabName = "")
         {
             if (string.IsNullOrEmpty(tabName) 

@@ -103,6 +103,8 @@ namespace Guru
         {
             _txtInfo.text = info;
         }
+
+
         
         private void OnPanelActivated()
         {

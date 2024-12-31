@@ -143,32 +143,8 @@ namespace Guru.Editor
 	        var apkPath = $"{outputDir}/{Application.productName.Replace(" ","_")}_{symbolDefine}_{version}_{buildNumber}{extension}";
 	        if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
 
-	        // BuildOptions opts = isDebug ? BuildOptions.Development : BuildOptions.None;
-	        // if (string.IsNullOrEmpty(buildParam.AssetBundleManifestPath))
-	        // {
-		       //  BuildPipeline.BuildPlayer(
-			      //   GetBuildScenes(), 
-			      //   apkPath, 
-			      //   BuildTarget.Android, 
-			      //   opts);
-	        // }
-	        // else
-	        // {
-	        
-	        var buildPlayerOptions = new BuildPlayerOptions()
-	        {
-		        scenes = GetBuildScenes(),
-		        locationPathName = apkPath,
-		        assetBundleManifestPath = buildParam.AssetBundleManifestPath,
-		        target = BuildTarget.Android,
-		        targetGroup = BuildTargetGroup.Android,
-		        extraScriptingDefines =  buildParam.ExtraScriptingDefines,
-		        options = isDebug ? BuildOptions.Development : BuildOptions.None,
-	        };
-	        BuildPipeline.BuildPlayer(buildPlayerOptions);
-
-	        // }
-
+	        BuildOptions opts = isDebug ? BuildOptions.Development : BuildOptions.None;
+	        BuildPipeline.BuildPlayer(GetBuildScenes(), apkPath, BuildTarget.Android, opts);
 	        if (buildParam.BuilderType == AppBuilderType.Editor)
 	        {
 		        Open(outputDir);
@@ -369,21 +345,8 @@ namespace Guru.Editor
 	        // 构建后打开路径
 	        try
 	        {
-		        // BuildOptions opts = isDebug ? BuildOptions.Development : BuildOptions.None;
-		        // BuildPipeline.BuildPlayer(GetBuildScenes(), outputDir, BuildTarget.iOS, opts);
-		        
-		        var buildPlayerOptions = new BuildPlayerOptions()
-		        {
-			        scenes = GetBuildScenes(),
-			        locationPathName = outputDir,
-			        assetBundleManifestPath = buildParam.AssetBundleManifestPath,
-			        target = BuildTarget.iOS,
-			        targetGroup = BuildTargetGroup.iOS,
-			        extraScriptingDefines =  buildParam.ExtraScriptingDefines,
-			        options = isDebug ? BuildOptions.Development : BuildOptions.None,
-		        };
-		        BuildPipeline.BuildPlayer(buildPlayerOptions);
-		        
+		        BuildOptions opts = isDebug ? BuildOptions.Development : BuildOptions.None;
+		        BuildPipeline.BuildPlayer(GetBuildScenes(), outputDir, BuildTarget.iOS, opts);
 		        if (buildParam.BuilderType == AppBuilderType.Editor)
 		        {
 			        Open(outputDir);

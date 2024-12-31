@@ -361,10 +361,6 @@ namespace Guru
             // ---------- Life Cycle ----------
             Callbacks.App.OnAppPaused += OnAppPaused;
         }
-
-
-        public static double TchADRev001Value => AdService.Instance.Model?.TchAD001RevValue ?? 0;
-        public static double TchADRev02Value => AdService.Instance.Model?.TchAD02RevValue ?? 0; 
         
         
         #endregion
@@ -469,7 +465,7 @@ namespace Guru
         /// <returns></returns>
         private string GetVersionCodeStr()
         {
-            return GuruAppVersion.Load()?.buildNumber ?? "1";
+            return GuruAppVersion.Load()?.code ?? "1";
         }
         
         #endregion

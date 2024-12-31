@@ -112,12 +112,6 @@ namespace Guru.Ads.Max
         /// </summary>
         private int GetBuildNumber(string buildNumberStr)
         {
-            // 不足 5 位返回为 0
-            if (string.IsNullOrEmpty(buildNumberStr) || buildNumberStr.Length < 8)
-            {
-                return 0;
-            }
-            
             // 从第三位开始取 5 个数字， 例如 24080917 -> 08091
             var s = buildNumberStr.Substring(2, 5);
             int.TryParse(s, out var value);
