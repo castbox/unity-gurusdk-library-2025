@@ -46,6 +46,12 @@ namespace Guru
         void Awake()
         {
             Alpha = Consts.MonitorStartAlpha;
+
+            if (_canvasGroup == null)
+                _canvasGroup = gameObject.GetComponent<CanvasGroup>();
+
+            if (_txtInfo == null)
+                _txtInfo = gameObject.GetComponentInChildren<Text>();
         }
 
         private void OnDestroy()
