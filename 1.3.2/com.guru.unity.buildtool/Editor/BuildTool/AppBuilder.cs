@@ -480,6 +480,10 @@ namespace Guru.Editor
 		    // defines.Add("mopub_manager");
 		    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, defines.ToArray());
 		    PlayerSettings.stripEngineCode = true;
+		    // Hide Unity Logo
+		    PlayerSettings.SplashScreen.show = false;
+		    PlayerSettings.SplashScreen.showUnityLogo = false;
+		    // Strip Engine Code
 		    PlayerSettings.SetManagedStrippingLevel(buildTargetGroup, ManagedStrippingLevel.Low);
 		    PlayerSettings.SetApiCompatibilityLevel(buildTargetGroup, ApiCompatibilityLevel.NET_4_6);
 	    }
