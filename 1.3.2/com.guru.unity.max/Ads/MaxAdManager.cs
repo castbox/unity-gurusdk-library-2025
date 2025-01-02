@@ -252,14 +252,14 @@ namespace Guru.Ads.Max
             {
                 if (_bannerLoader.IsBannerVisible)
                 {
-                    _bannerLoader.IsBannerVisible = false;
+                    _bannerLoader.SetAutoRefresh(false);
                 }
             }
             else
             {
-                if (!_bannerLoader.IsBannerVisible)
+                if (_bannerLoader.IsBannerVisible)
                 {
-                    _bannerLoader.IsBannerVisible = true;
+                    _bannerLoader.SetAutoRefresh(true);
                 }
             }            
         }
