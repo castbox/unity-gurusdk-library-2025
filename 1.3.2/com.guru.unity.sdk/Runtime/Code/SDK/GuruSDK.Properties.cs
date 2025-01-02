@@ -41,7 +41,7 @@ namespace Guru
 
         public static string AppBuildVersion => GuruAppVersion.buildVersion;
 
-        public static string AppVersionBuildNumber => GuruAppVersion.buildNumber;
+        public static string AppBuildNumber => GuruAppVersion.buildNumber;
         
         public static string AppVersionString => GuruAppVersion.ToString();
 
