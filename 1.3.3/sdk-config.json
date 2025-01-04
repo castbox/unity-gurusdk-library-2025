@@ -1,7 +1,7 @@
 {
   "version": "1.3.3",
   "ts": "1735978388",
-  "desc": "Firebase 升级到 12.2.0, 打包管线添加 AssetBundleManifestPath 设置接口，广告面板添加太极累计值显示",
+  "desc": "修复广告自加载问题，Banner 添加超时加载逻辑， 修复 IR 和 RV 失败后无法自加载的 BUG",
   "packages": {
     "com.coffee.git-dependency-resolver": {
       "group": "third-party",
