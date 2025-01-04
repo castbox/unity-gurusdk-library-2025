@@ -205,7 +205,7 @@ namespace Guru
                         msg = $"RADS: {ColoredText("loaded", Const.ColorGreen)}\n\tnetwork: {_curRadsInfo.network}\n\twaterfall: {_curRadsInfo.waterfall}\n";
                         break;
                     case AdStatusType.Failed:
-                        msg = $"RADS: {ColoredText("loading failed", Const.ColorRed)}\n\terrorCode: {_curRadsInfo.errorCode}\n";
+                        msg = $"RADS: {ColoredText("failed", Const.ColorRed)}\n\terrorCode: {_curRadsInfo.errorCode}\n";
                         break;
                     case AdStatusType.Loading:
                         msg = $"RADS: {ColoredText("loading...", Const.ColorYellow)}\n\tadId: {_curRadsInfo.adUnitId}\n";
