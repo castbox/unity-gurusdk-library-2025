@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 8c74454c17b634c1c858d7f4f495d746
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/GoogleAdManager/Editor/Dependencies.xml
+- al_max_export_path-MaxSdk/Mediation~HEAD/GoogleAdManager/Editor/Dependencies.xml
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

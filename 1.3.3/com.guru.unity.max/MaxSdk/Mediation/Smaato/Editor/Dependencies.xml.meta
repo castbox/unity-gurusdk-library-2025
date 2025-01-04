@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 265e363a42b3a4412bd48753ee58d792
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/Smaato/Editor/Dependencies.xml
+- al_max_export_path-MaxSdk/Mediation~HEAD/Smaato/Editor/Dependencies.xml
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

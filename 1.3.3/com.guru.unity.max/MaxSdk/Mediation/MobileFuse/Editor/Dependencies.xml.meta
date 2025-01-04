@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: e6c10386be9fe4c67852508ef1b39c4d
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/MobileFuse/Editor/Dependencies.xml
+- al_max_export_path-MaxSdk/Mediation~HEAD/MobileFuse/Editor/Dependencies.xml
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

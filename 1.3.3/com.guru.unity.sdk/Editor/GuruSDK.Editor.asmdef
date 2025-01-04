@@ -1,0 +1,25 @@
+{
+    "name": "GuruSDK.Editor",
+    "rootNamespace": "Guru.Editor",
+    "references": [
+        "Unity.EditorCoroutines.Editor",
+        "GuruSDK",
+        "Guru.LitJson",
+        "Guru.Runtime",
+        "MaxSdk.Scripts.IntegrationManager.Editor",
+        "Guru.Editor",
+        "GuruAdjust.Editor",
+        "AdjustSdk.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+Sample Dependencies.xml:
+    https://github.com/googlesamples/unity-jar-resolver/blob/master/sample/Assets/ExternalDependencyManager/Editor/SampleDependencies.xml
+-->
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="androidx.appcompat:appcompat:1.5.0" />
+        <androidPackage spec="com.google.android.ump:user-messaging-platform:2.1.0" />
+        <androidPackage spec="com.mapzen:on-the-road:0.8.1" />
+    </androidPackages>
+    <iosPods>
+        <iosPod name="GuruConsent" bitcodeEnabled="false" path="Packages/com.guru.unity.sdk.core/Runtime/GuruConsent/Plugins/iOS" />
+    </iosPods>
+</dependencies>
