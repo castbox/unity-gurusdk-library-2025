@@ -221,29 +221,25 @@ namespace Guru
         /// </summary>
         private void CheckNotiPermission()
         {
-            var status = NotificationService.GetStatus();
-            
-            // 如果未启用自动 Noti 授权，则直接上报状态
-            if (!_initConfig.AutoNotificationPermission)
-            {
-                LogW($"[SDK] ---- AutoNotificationPermission is OFF, Project should request permission own.");
-                return;
-            }
-
             bool isGranted = NotificationService.IsPermissionGranted();
             LogI($"[SDK] ---- Check Noti Permission: {isGranted}");
             if (isGranted)
             {
+                var status = NotificationService.GetStatus();
                 LogI($"[SDK] ---- Set Notification Permission: {status}");
                 Analytics.SetNotiPerm(status);
                 NotificationService.CreatePushChannels();
             }
             else
             {
+                // 如果未启用自动 Noti 授权，则直接上报状态
+                if (!_initConfig.AutoNotificationPermission)
+                {
+                    LogW($"[SDK] ---- AutoNotificationPermission is OFF, Project should request permission own.");
+                    return;
+                }
                 RequestNotificationPermission(); // 请求授权
             }
-
-            
         }
         
         /// <summary>
@@ -259,7 +255,11 @@ namespace Guru
             {
                 LogI($"[SDK] ---- Set Notification Permission: {status}");
                 if(!string.IsNullOrEmpty(status)) Analytics.SetNotiPerm(status);
-                
+                // 创建 Push 渠道
+                if (NotificationService.IsPermissionGranted())
+                {
+                    NotificationService.CreatePushChannels();
+                }
                 callback?.Invoke(status);
             });
         }
