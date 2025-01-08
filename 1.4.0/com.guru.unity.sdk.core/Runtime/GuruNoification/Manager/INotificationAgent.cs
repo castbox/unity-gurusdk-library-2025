@@ -11,5 +11,6 @@ namespace Guru.Notification
 
         void RequestPermission(Action<string> callback = null);
         
+        void CreatePushChannels();
     }
 }

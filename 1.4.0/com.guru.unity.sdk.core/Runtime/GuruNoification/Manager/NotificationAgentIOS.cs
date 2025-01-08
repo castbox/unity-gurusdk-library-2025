@@ -71,6 +71,11 @@ namespace Guru.Notification
             RequestIOSPermission(callback);
 #endif
         }
+        
+        public void CreatePushChannels()
+        {
+            Debug.Log($"[SDK][Noti][iOS] --- iOS Don't need to Create Push Channels.");
+        }
 
 
 #if UNITY_IOS

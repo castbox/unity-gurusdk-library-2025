@@ -54,5 +54,10 @@ namespace Guru.Notification
             _onPermissionCallback?.Invoke(EditorGrantedStatus);
         }
 
+        public void CreatePushChannels()
+        {
+            Debug.Log($"[SDK][Noti][EDT] --- CreatePushChannels ---");
+        }
+
     }
 }

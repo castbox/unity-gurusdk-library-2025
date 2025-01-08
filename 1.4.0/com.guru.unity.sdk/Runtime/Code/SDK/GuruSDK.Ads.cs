@@ -236,10 +236,14 @@ namespace Guru
             {
                 LogI($"[SDK] ---- Set Notification Permission: {status}");
                 Analytics.SetNotiPerm(status);
-                return;
+                NotificationService.CreatePushChannels();
+            }
+            else
+            {
+                RequestNotificationPermission(); // 请求授权
             }
 
-            RequestNotificationPermission(); // 请求授权
+            
         }
         
         /// <summary>

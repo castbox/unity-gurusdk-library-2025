@@ -85,6 +85,14 @@ namespace Guru.Notification
             callback?.Invoke(DefaultPermissionStatus);
         }
         
+        /// <summary>
+        /// 创建推送渠道
+        /// </summary>
+        public static void CreatePushChannels()
+        {
+            Agent?.CreatePushChannels();
+        }
+
         public static bool IsPermissionGranted()
         {
             return Agent?.IsAllowed() ?? false;
