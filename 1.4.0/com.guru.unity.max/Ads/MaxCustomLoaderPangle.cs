@@ -1,8 +1,7 @@
-using System;
-using UnityEngine;
-
 namespace Guru.Ads.Max
 {
+    using System;
+    using UnityEngine;
     /// <summary>
     /// Pangle 启动器
     /// </summary>

@@ -1,9 +1,6 @@
-
-using System.Net;
-using UnityEditor;
-
 namespace Guru.Editor
 {
+    using UnityEditor;
     using UnityEngine;
     using System.IO;
 
