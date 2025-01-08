@@ -103,6 +103,30 @@ namespace Guru.Notification
             RequestNotificationPermission(callback);
 #endif
         }
+        
+        /// <summary>
+        /// 创建 Push 渠道
+        /// </summary>
+        public void CreatePushChannels()
+        {
+#if UNITY_ANDROID
+            TryExecute(() =>
+            {
+                var sdkInt = GetAndroidSDKVersion();
+                Debug.Log($"[SDK][Noti][EDT] --- CreatePushChannels ---");
+                // Android 8 (API 26) 以后才有 Channel 概念， 需要分开判断
+                // 通知相关的文档：https://developer.android.com/develop/ui/views/notifications?hl=zh-cn#:~:text=The%20notification%20channel%20has%20high,API%20level%2026)%20and%20higher.
+                if (sdkInt < REQUEST_CHANNEL_SDK_VERSION) return; // 低系统版本无需创建 Channel
+                
+                // 授权后直接注册 4 个优先级渠道
+                // 中台需求链接：https://docs.google.com/document/d/1aBKqXKi88tu4xhQWd46yhqWU3Pu_U5Gkiow_JdLhpLk
+                RegisterNotificationChannel(GuruPushPriority.Critical);
+                RegisterNotificationChannel(GuruPushPriority.Urgent);
+                RegisterNotificationChannel(GuruPushPriority.High);
+                RegisterNotificationChannel(GuruPushPriority.Medium);
+            });
+#endif
+        }
 
         // -------------------- Android 获取状态逻辑 --------------------
         
@@ -207,28 +231,6 @@ namespace Guru.Notification
                         Permission.RequestUserPermission(PERMISSION_POST_NOTIFICATION, SetupPermissionCallbacks());
                     }
                 }
-            });
-        }
-        
-        /// <summary>
-        /// 创建 Push 渠道
-        /// </summary>
-        public void CreatePushChannels()
-        {
-            TryExecute(() =>
-            {
-                var sdkInt = GetAndroidSDKVersion();
-                Debug.Log($"[SDK][Noti][EDT] --- CreatePushChannels ---");
-                // Android 8 (API 26) 以后才有 Channel 概念， 需要分开判断
-                // 通知相关的文档：https://developer.android.com/develop/ui/views/notifications?hl=zh-cn#:~:text=The%20notification%20channel%20has%20high,API%20level%2026)%20and%20higher.
-                if (sdkInt < REQUEST_CHANNEL_SDK_VERSION) return; // 低系统版本无需创建 Channel
-                
-                // 授权后直接注册 4 个优先级渠道
-                // 中台需求链接：https://docs.google.com/document/d/1aBKqXKi88tu4xhQWd46yhqWU3Pu_U5Gkiow_JdLhpLk
-                RegisterNotificationChannel(GuruPushPriority.Critical);
-                RegisterNotificationChannel(GuruPushPriority.Urgent);
-                RegisterNotificationChannel(GuruPushPriority.High);
-                RegisterNotificationChannel(GuruPushPriority.Medium);
             });
         }
         
