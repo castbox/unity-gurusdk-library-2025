@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dependencies>
+    <androidPackages>
+        <!-- AppLovin Bytedance adapter -->
+        <androidPackage spec="com.applovin.mediation:bytedance-adapter:6.4.0.5.0">
+            <repositories>
+                <repository>https://artifact.bytedance.com/repository/pangle</repository>
+            </repositories>
+        </androidPackage>
+        
+        <!-- Pangle SDK -->
+        <androidPackage spec="com.pangle.global:pag-sdk-beta:7.0.0.0">
+            <repositories>
+                <repository>https://artifact.bytedance.com/repository/pangle</repository>
+            </repositories>
+        </androidPackage>
+    </androidPackages>
+</dependencies>
