@@ -9,7 +9,7 @@
         </androidPackage>
         
         <!-- Pangle SDK -->
-        <androidPackage spec="com.pangle.global:pag-sdk-beta:7.0.0.0">
+        <androidPackage spec="com.pangle.global:pag-sdk-beta:7.0.0.2">
             <repositories>
                 <repository>https://artifact.bytedance.com/repository/pangle</repository>
             </repositories>

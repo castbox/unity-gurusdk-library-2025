@@ -29,7 +29,10 @@ namespace Guru.Editor
         {
             EditorApplication.delayCall += ModifyGradleTemplate;
         }
-    
+        
+        /// <summary>
+        /// 向 mainTemplate.gradle  注入需要的更新语句
+        /// </summary>
         private static void ModifyGradleTemplate()
         {
             if (!File.Exists(GRADLE_TEMPLATE_PATH)) return;
