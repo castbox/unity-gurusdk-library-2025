@@ -20,7 +20,7 @@ namespace Guru.Ads.Max
         
         private readonly Color _backColor;
         private readonly float _width;
-        private readonly MaxAmazonPreLoader _amazonPreLoader;
+        private readonly MaxCustomLoaderAmazon _customLoaderAmazon;
         private readonly IAdEventObserver _eventObserver; // 广告事件监听器
 
         private string _maxAdUnitId;
@@ -40,16 +40,16 @@ namespace Guru.Ads.Max
         /// </summary>
         /// <param name="width"></param>
         /// <param name="colorHexStr"></param>
-        /// <param name="amazonPreLoader"></param>
+        /// <param name="customLoaderAmazon"></param>
         /// <param name="observer"></param>
         /// <param name="adUnitId"></param>
-        public MaxBannerLoader(string adUnitId, float width, string colorHexStr, MaxAmazonPreLoader amazonPreLoader, IAdEventObserver observer)
+        public MaxBannerLoader(string adUnitId, float width, string colorHexStr, MaxCustomLoaderAmazon customLoaderAmazon, IAdEventObserver observer)
         {
             _hasBannerCreated = false;
             _maxAdUnitId = adUnitId;
             _backColor = MaxAdHelper.HexToColor(colorHexStr);
             _width = width;
-            _amazonPreLoader = amazonPreLoader;
+            _customLoaderAmazon = customLoaderAmazon;
             _eventObserver = observer;
             _tag = AdConst.LOG_TAG_MAX;
             
@@ -125,9 +125,11 @@ namespace Guru.Ads.Max
         private void CreateBannerIfNotExists()
         {
             if(_hasBannerCreated) return;
-            
-            _amazonPreLoader.PreLoadBanner();
-            
+            _customLoaderAmazon.RequestAPSBanner(CreateMaxBanner);
+        }
+
+        private void CreateMaxBanner()
+        {
             MaxSdk.CreateBanner(_maxAdUnitId, MaxSdkBase.BannerPosition.BottomCenter);
             MaxSdk.SetBannerExtraParameter(_maxAdUnitId, "adaptive_banner", "false");
             // Set background or background color for banners to be fully functional
@@ -141,6 +143,7 @@ namespace Guru.Ads.Max
             _hasBannerCreated = true;
             Debug.Log($"{_tag} --- BADS created: {_maxAdUnitId}");
         }
+
 
         /// <summary>
         /// 加载 Banner
@@ -280,9 +283,10 @@ namespace Guru.Ads.Max
                     
                     // 等待自动重试加载
                     await UniTask.Delay(TimeSpan.FromSeconds(BANNER_RELOAD_SECONDS), cancellationToken: _retryLoadCts.Token);
-                    
-                    Load();
-                    Debug.Log($"{_tag} --- BADS LoadFailHandler immediate with id: {_maxAdUnitId}");
+                    Debug.Log($"{_tag} --- BADS LoadFailHandler Reload Banner with id: {_maxAdUnitId}");
+
+                    Hide(); // 先隐藏
+                    Show(); // 再加载
                     break;
                 }
                 // Debug.Log($"{_tag} --- BADS ReloadBannerAsync over");
@@ -311,6 +315,7 @@ namespace Guru.Ads.Max
         private void CancelRetryLoadCts()
         {
             if (_retryLoadCts == null || _retryLoadCts.IsCancellationRequested) return;
+            Debug.Log($"{_tag} --- BADS CancelRetryLoadCts");
             _retryLoadCts.Cancel();
             _retryLoadCts.Dispose();
             _retryLoadCts = null;
