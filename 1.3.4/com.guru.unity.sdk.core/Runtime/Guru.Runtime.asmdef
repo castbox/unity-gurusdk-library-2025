@@ -1,0 +1,31 @@
+{
+    "name": "Guru.Runtime",
+    "rootNamespace": "Guru",
+    "references": [
+        "AdjustSdk.Scripts",
+        "Guru.LitJson",
+        "UniTask",
+        "UniWebView-CSharp",
+        "UnityEngine.Purchasing",
+        "UnityEngine.Purchasing.Apple",
+        "UnityEngine.Purchasing.Stores",
+        "UnityEngine.Purchasing.Security",
+        "UnityEngine.Purchasing.SecurityCore",
+        "UnityEngine.Purchasing.SecurityStub",
+        "Google.Play.Review",
+        "Google.Play.Common",
+        "Unity.Advertisement.IosSupport",
+        "Unity.Notifications.Android",
+        "Unity.Notifications.iOS",
+        "GuruUtils.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

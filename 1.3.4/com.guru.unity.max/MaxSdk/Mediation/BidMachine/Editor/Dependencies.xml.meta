@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: c3f5ea866149d4dbaad26d0e12c339e1
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/BidMachine/Editor/Dependencies.xml
+- al_max_export_path-MaxSdk/Mediation~HEAD/BidMachine/Editor/Dependencies.xml
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

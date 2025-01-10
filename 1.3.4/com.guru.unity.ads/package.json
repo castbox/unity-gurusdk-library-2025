@@ -1,0 +1,12 @@
+{
+  "name": "com.guru.unity.ads",
+  "displayName": "Guru Ads Service",
+  "version": "1.0.1",
+  "description": "Guru 广告接口标准插件",
+  "unity": "2021.3",
+  "author": {
+    "name": "Guru Game"
+  },
+  "dependencies": {
+  }
+}

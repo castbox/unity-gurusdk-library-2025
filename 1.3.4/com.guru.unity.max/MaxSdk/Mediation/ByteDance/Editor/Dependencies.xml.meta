@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: ee4de566e5d694899b7f41c460776625
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/ByteDance/Editor/Dependencies.xml
+- al_max_export_path-MaxSdk/Mediation~HEAD/ByteDance/Editor/Dependencies.xml
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

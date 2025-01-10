@@ -1,0 +1,17 @@
+{
+  "name": "com.guru.unity.debug.console",
+  "displayName": "Guru Debug Console",
+  "version": "0.1.0",
+  "description": "Guru 整合 Ingame Debug Console 插件",
+  "unity": "2020.3",
+  "author": {
+    "name": "Guru Game"
+  },
+  "license": "MIT",
+  "dependencies": {
+  },
+  "scriptDefines":[
+    "GURU_DEBUG",
+    "GURU_DEBUG_CONSOLE"
+  ]
+}
