@@ -395,8 +395,6 @@ namespace Guru
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t InitConfig: {InitConfig}");
             
             // Mediator 类型
-            var debugModel = DebugModeEnabled;
-            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t debugModel: {debugModel}");
             var mediatorType = AdMediationType.Max; // TODO：改为用云控获取创建广告聚合的类型
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t Mediator Type: {mediatorType}");
             var storeUrl = _appServicesConfig.GetStoreUrl();
@@ -409,6 +407,8 @@ namespace Guru
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t bannerColor: {bannerColor}");
             var bannerWidth = InitConfig.BannerWidth;
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t bannerWidth: {bannerWidth}");
+            var debugModel = DebugModeEnabled;
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t debugModel: {debugModel}");
             var osVersion = Instance.GetOSVersionStr();
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t osVersion: {osVersion}");
             var isIapUser = Model.IsIapUser;

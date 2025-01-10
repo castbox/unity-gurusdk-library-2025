@@ -6,7 +6,7 @@ namespace Guru.Ads.Max
     
     public class MaxRewardedLoader
     {
-        private readonly MaxCustomLoaderAmazon _amazonAdLoader;
+        private readonly MaxAmazonPreLoader _amazonPreLoader;
         private readonly IAdEventObserver _eventObserver; // 广告事件监听器
         private readonly string _tag;
         
@@ -17,10 +17,10 @@ namespace Guru.Ads.Max
         private int _retryCount;
         private bool _isAdLoading;
         
-        public MaxRewardedLoader(string adUnitId, MaxCustomLoaderAmazon amazonAdLoader, IAdEventObserver observer)
+        public MaxRewardedLoader(string adUnitId, MaxAmazonPreLoader amazonPreLoader, IAdEventObserver observer)
         {
             _maxAdUnitId = adUnitId;
-            _amazonAdLoader = amazonAdLoader;
+            _amazonPreLoader = amazonPreLoader;
             _eventObserver = observer;
             _retryCount = 0;
             _isAdLoading = false;
@@ -59,14 +59,10 @@ namespace Guru.Ads.Max
                 Debug.Log($"{_tag} --- RADS Load skipped: isAdLoading...");
                 return;
             }
-            _amazonAdLoader.RequestRewarded(RequestMaxRewarded);
-        }
-
-        private void RequestMaxRewarded()
-        {
             _isAdLoading = true;
             _adStartLoadTime = DateTime.UtcNow;
             // Amazon 预加载
+            _amazonPreLoader.PreLoadRewarded();
             // MAX 加载广告
             MaxSdk.LoadRewardedAd(_maxAdUnitId);
             // 事件上报
@@ -137,8 +133,7 @@ namespace Guru.Ads.Max
         private void OnAdLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
             // 广告加载失败
-            var reason = "load";
-            var evt = MaxAdEventBundleFactory.BuildRadsFailed(adUnitId, reason, errorInfo, _adStartLoadTime);
+            var evt = MaxAdEventBundleFactory.BuildRadsFailed(adUnitId, _adPlacement, errorInfo, _adStartLoadTime);
             _eventObserver.OnEventRadsFailed(evt);
 
             _isAdLoading = false;
@@ -154,8 +149,7 @@ namespace Guru.Ads.Max
         private void OnAdDisplayFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
         {
             // 广告显示失败
-            var reason = "imp";
-            var evt = MaxAdEventBundleFactory.BuildRadsFailed(adUnitId, reason, errorInfo, _adStartDisplayTime);
+            var evt = MaxAdEventBundleFactory.BuildRadsFailed(adUnitId, _adPlacement, errorInfo, _adStartDisplayTime);
             _eventObserver.OnEventRadsFailed(evt);
             _ = MaxAdHelper.ReloadByRetryCount(_retryCount, ReloadAd);
             Debug.Log($"{_tag} --- RADS display failed:: ErrorCode:{ errorInfo?.Code }  Info:{ errorInfo?.AdLoadFailureInfo ?? "Null" }");

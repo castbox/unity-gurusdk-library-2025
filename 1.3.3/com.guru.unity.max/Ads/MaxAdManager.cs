@@ -29,13 +29,13 @@ namespace Guru.Ads.Max
             _isDebug = mediationProfile.debugModeEnabled;
             
             // --- preloader ---
-            var amazonPreLoader = new MaxCustomLoaderAmazon(
+            var amazonPreLoader = new MaxAmazonPreLoader(
                 mediationProfile.amazonAppId, 
-                mediationProfile.amazonBannerId, mediationProfile.amazonInterstitialId, mediationProfile.amazonRewardedId, 
-                mediationProfile.bannerUnitId, mediationProfile.interstitialUnitId, mediationProfile.rewardedUnitId,
-                true);
+                mediationProfile.amazonBannerId, 
+                mediationProfile.amazonInterstitialId, 
+                mediationProfile.amazonRewardedId);
             
-            var pubmaticPreLoader = new MaxCustomLoaderPubmatic(mediationProfile.storeUrl); // Pubmatic 初始化即可
+            var pubmaticPreLoader = new MaxPubmaticPreLoader(mediationProfile.storeUrl); // Pubmatic 初始化即可
             
             // --- proxies ----
             _bannerLoader = new MaxBannerLoader(mediationProfile.bannerUnitId,mediationProfile.bannerWidth, mediationProfile.bannerBgColorHex, amazonPreLoader, eventObserver);

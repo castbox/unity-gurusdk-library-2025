@@ -6,7 +6,8 @@ namespace Guru.Ads.Max
     
     public class MaxInterstitialLoader
     {
-        private readonly MaxCustomLoaderAmazon _customLoaderAmazon;
+        
+        private readonly MaxAmazonPreLoader _amazonPreLoader;
         private readonly IAdEventObserver _eventObserver; // 广告事件监听器
         private readonly string _tag;
         
@@ -18,10 +19,10 @@ namespace Guru.Ads.Max
         private int _retryCount;
         
 
-        public MaxInterstitialLoader(string adUnitId, MaxCustomLoaderAmazon customLoaderAmazon, IAdEventObserver observer)
+        public MaxInterstitialLoader(string adUnitId, MaxAmazonPreLoader amazonPreLoader, IAdEventObserver observer)
         {
             _maxAdUnitId = adUnitId;
-            _customLoaderAmazon = customLoaderAmazon;
+            _amazonPreLoader = amazonPreLoader;
             _eventObserver = observer;
             _retryCount = 0;
             _isAdLoading = false;
@@ -48,14 +49,12 @@ namespace Guru.Ads.Max
         {
             if (_isAdLoading) return;
             _isAdLoading = true;
-            Debug.Log($"{_tag} --- INTER Load: { _maxAdUnitId}");
-            _customLoaderAmazon.RequestInterstitial(CreateMaxInterstitial);
-        }
 
-        private void CreateMaxInterstitial()
-        {
+            Debug.Log($"{_tag} --- INTER Load: { _maxAdUnitId}");
+            
             _adStartLoadTime = DateTime.UtcNow;
             // Amazon 预加载
+            _amazonPreLoader.PreLoadInterstitial();
             // Max 加载广告
             MaxSdk.LoadInterstitial(_maxAdUnitId);
             // 广告加载
@@ -124,9 +123,8 @@ namespace Guru.Ads.Max
         /// <param name="errorInfo"></param>
         private void OnAdLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
-            // 广告加载失败
-            var reason = "load";
-            var e = MaxAdEventBundleFactory.BuildIadsFailed(adUnitId, reason, errorInfo, _adStartLoadTime);
+            // 广告显示
+            var e = MaxAdEventBundleFactory.BuildIadsFailed(adUnitId, _adPlacement, errorInfo, _adStartLoadTime);
             _eventObserver?.OnEventIadsFailed(e);
 
             _isAdLoading = false;
@@ -136,9 +134,8 @@ namespace Guru.Ads.Max
         
         private void OnAdDisplayFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
         {
-            // 广告显示失败
-            var reason = "imp";
-            var e = MaxAdEventBundleFactory.BuildIadsFailed(adUnitId, reason, errorInfo, _adStartDisplayTime);
+            // 广告显示
+            var e = MaxAdEventBundleFactory.BuildIadsFailed(adUnitId, _adPlacement, errorInfo, _adStartDisplayTime);
             _eventObserver?.OnEventIadsFailed(e);
             _ = MaxAdHelper.ReloadByRetryCount(_retryCount, ReloadAd);
             Debug.Log($"{_tag} --- INTER display Failed: { _maxAdUnitId } Info:{ errorInfo?.AdLoadFailureInfo ?? "Null" }");

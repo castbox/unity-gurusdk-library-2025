@@ -5,7 +5,7 @@ namespace Guru.Ads.Max
     using UnityEngine;
     using Guru.Ads;
     
-    public class MaxCustomLoaderPubmatic
+    public class MaxPubmaticPreLoader
     {
 
         /// <summary>
@@ -13,7 +13,7 @@ namespace Guru.Ads.Max
         /// 需要在启动前设置商店链接
         /// </summary>
         /// <param name="storeUrl"></param>
-        public MaxCustomLoaderPubmatic(string storeUrl)
+        public MaxPubmaticPreLoader(string storeUrl)
         {
             if (string.IsNullOrEmpty(storeUrl))
             {
