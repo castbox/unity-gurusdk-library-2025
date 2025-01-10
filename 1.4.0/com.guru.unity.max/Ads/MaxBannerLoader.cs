@@ -283,9 +283,10 @@ namespace Guru.Ads.Max
                     
                     // 等待自动重试加载
                     await UniTask.Delay(TimeSpan.FromSeconds(BANNER_RELOAD_SECONDS), cancellationToken: _retryLoadCts.Token);
-                    
-                    Load();
-                    Debug.Log($"{_tag} --- BADS LoadFailHandler immediate with id: {_maxAdUnitId}");
+                    Debug.Log($"{_tag} --- BADS LoadFailHandler Reload Banner with id: {_maxAdUnitId}");
+
+                    Hide(); // 先隐藏
+                    Show(); // 再加载
                     break;
                 }
                 // Debug.Log($"{_tag} --- BADS ReloadBannerAsync over");
@@ -314,6 +315,7 @@ namespace Guru.Ads.Max
         private void CancelRetryLoadCts()
         {
             if (_retryLoadCts == null || _retryLoadCts.IsCancellationRequested) return;
+            Debug.Log($"{_tag} --- BADS CancelRetryLoadCts");
             _retryLoadCts.Cancel();
             _retryLoadCts.Dispose();
             _retryLoadCts = null;
