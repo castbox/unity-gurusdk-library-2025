@@ -6,7 +6,7 @@ namespace Guru.Ads.Max
     
     public class MaxRewardedLoader
     {
-        private readonly MaxCustomLoaderAmazon _amazonAdLoader;
+        private readonly ICustomAmazonLoader _adAmazonLoader;
         private readonly IAdEventObserver _eventObserver; // 广告事件监听器
         private readonly string _tag;
         
@@ -17,10 +17,10 @@ namespace Guru.Ads.Max
         private int _retryCount;
         private bool _isAdLoading;
         
-        public MaxRewardedLoader(string adUnitId, MaxCustomLoaderAmazon amazonAdLoader, IAdEventObserver observer)
+        public MaxRewardedLoader(string adUnitId, ICustomAmazonLoader adAmazonLoader, IAdEventObserver observer)
         {
             _maxAdUnitId = adUnitId;
-            _amazonAdLoader = amazonAdLoader;
+            _adAmazonLoader = adAmazonLoader;
             _eventObserver = observer;
             _retryCount = 0;
             _isAdLoading = false;
@@ -59,7 +59,7 @@ namespace Guru.Ads.Max
                 Debug.Log($"{_tag} --- RADS Load skipped: isAdLoading...");
                 return;
             }
-            _amazonAdLoader.RequestRewarded(RequestMaxRewarded);
+            _adAmazonLoader.RequestRewarded(RequestMaxRewarded);
         }
 
         private void RequestMaxRewarded()

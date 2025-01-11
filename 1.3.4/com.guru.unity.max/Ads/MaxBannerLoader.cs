@@ -20,7 +20,7 @@ namespace Guru.Ads.Max
         
         private readonly Color _backColor;
         private readonly float _width;
-        private readonly MaxCustomLoaderAmazon _customLoaderAmazon;
+        private readonly ICustomAmazonLoader _customAmazonLoader;
         private readonly IAdEventObserver _eventObserver; // 广告事件监听器
 
         private string _maxAdUnitId;
@@ -35,21 +35,23 @@ namespace Guru.Ads.Max
         private bool _shouldReportImpEvent;
         private CancellationTokenSource _retryLoadCts;
 
+        private bool _isLoading = false;
+
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="width"></param>
         /// <param name="colorHexStr"></param>
-        /// <param name="customLoaderAmazon"></param>
+        /// <param name="customAmazonLoader"></param>
         /// <param name="observer"></param>
         /// <param name="adUnitId"></param>
-        public MaxBannerLoader(string adUnitId, float width, string colorHexStr, MaxCustomLoaderAmazon customLoaderAmazon, IAdEventObserver observer)
+        public MaxBannerLoader(string adUnitId, float width, string colorHexStr, ICustomAmazonLoader customAmazonLoader, IAdEventObserver observer)
         {
             _hasBannerCreated = false;
             _maxAdUnitId = adUnitId;
             _backColor = MaxAdHelper.HexToColor(colorHexStr);
             _width = width;
-            _customLoaderAmazon = customLoaderAmazon;
+            _customAmazonLoader = customAmazonLoader;
             _eventObserver = observer;
             _tag = AdConst.LOG_TAG_MAX;
             
@@ -125,7 +127,7 @@ namespace Guru.Ads.Max
         private void CreateBannerIfNotExists()
         {
             if(_hasBannerCreated) return;
-            _customLoaderAmazon.RequestAPSBanner(CreateMaxBanner);
+            _customAmazonLoader.RequestBanner(CreateMaxBanner);
         }
 
         private void CreateMaxBanner()
@@ -152,6 +154,7 @@ namespace Guru.Ads.Max
         {
             CreateBannerIfNotExists();
             _adStartLoadTime = DateTime.UtcNow;
+            _isLoading = true;
 
             // 加载广告
             MaxSdk.LoadBanner(_maxAdUnitId);
@@ -166,16 +169,11 @@ namespace Guru.Ads.Max
         /// 显示 Banner
         /// </summary>
         /// <param name="placement"></param>
-        public void Show(string placement = "")
+        public async UniTask Show(string placement = "")
         {
             _adPlacement = placement;
 
             if (IsBannerVisible) return;
-            
-            // 显示广告
-            MaxSdk.ShowBanner(_maxAdUnitId);
-            MaxSdk.SetBannerPlacement(_maxAdUnitId, _adPlacement);
-            SetAutoRefresh(true); // 开启 Banner 的自动刷新
             
             // 数据清零
             _loadedTimes = 0;
@@ -183,8 +181,18 @@ namespace Guru.Ads.Max
             _shouldReportImpEvent = true;
             IsBannerVisible = true;
             
-            Load();
+            // Load();
             Debug.Log($"{_tag} --- BADS Show: {_maxAdUnitId}");
+
+            await UniTask.DelayFrame(1); // 延迟展示广告
+#if UNITY_EDITOR
+            await UniTask.Delay(1000); // Editor延迟展示广告
+#endif
+            
+            // 显示广告
+            MaxSdk.ShowBanner(_maxAdUnitId);
+            MaxSdk.SetBannerPlacement(_maxAdUnitId, _adPlacement);
+            SetAutoRefresh(true); // 开启 Banner 的自动刷新
         }
         
         private void ReportBadsImpEvent()
@@ -221,6 +229,8 @@ namespace Guru.Ads.Max
         /// <param name="adInfo"></param>
         private void OnAdsLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
+            _isLoading = false;
+            
             // 加载成功
             var e = MaxAdEventBundleFactory.BuildBadsLoaded(adUnitId, _adPlacement, _adStartLoadTime, adInfo);
             _eventObserver.OnEventBadsLoaded(e);
@@ -248,6 +258,8 @@ namespace Guru.Ads.Max
         /// <param name="errorInfo"></param>
         private void OnAdLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
+            _isLoading = false;
+            
             _failedTimes++;
             // 加载失败
             var e= MaxAdEventBundleFactory.BuildBadsFailed(adUnitId, _adPlacement, errorInfo, _adStartLoadTime);
@@ -286,6 +298,7 @@ namespace Guru.Ads.Max
                     Debug.Log($"{_tag} --- BADS LoadFailHandler Reload Banner with id: {_maxAdUnitId}");
 
                     Hide(); // 先隐藏
+                    await UniTask.DelayFrame(1); // 延迟展示广告
                     Show(); // 再加载
                     break;
                 }

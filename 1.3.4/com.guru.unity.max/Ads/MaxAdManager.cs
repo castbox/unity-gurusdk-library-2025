@@ -29,18 +29,18 @@ namespace Guru.Ads.Max
             _isDebug = mediationProfile.debugModeEnabled;
             
             // --- preloader ---
-            var amazonPreLoader = new MaxCustomLoaderAmazon(
+            var amazonLoader = MaxCustomAmazonLoader.GetLoader(
                 mediationProfile.amazonAppId, 
                 mediationProfile.amazonBannerId, mediationProfile.amazonInterstitialId, mediationProfile.amazonRewardedId, 
                 mediationProfile.bannerUnitId, mediationProfile.interstitialUnitId, mediationProfile.rewardedUnitId,
                 true);
             
-            var pubmaticPreLoader = new MaxCustomLoaderPubmatic(mediationProfile.storeUrl); // Pubmatic 初始化即可
+            var pubmaticLoader = new MaxCustomLoaderPubmatic(mediationProfile.storeUrl); // Pubmatic 初始化即可
             
             // --- proxies ----
-            _bannerLoader = new MaxBannerLoader(mediationProfile.bannerUnitId,mediationProfile.bannerWidth, mediationProfile.bannerBgColorHex, amazonPreLoader, eventObserver);
-            _interstitialLoader = new MaxInterstitialLoader(mediationProfile.interstitialUnitId, amazonPreLoader, eventObserver);
-            _rewardedLoader = new MaxRewardedLoader(mediationProfile.rewardedUnitId, amazonPreLoader, eventObserver);
+            _bannerLoader = new MaxBannerLoader(mediationProfile.bannerUnitId,mediationProfile.bannerWidth, mediationProfile.bannerBgColorHex, amazonLoader, eventObserver);
+            _interstitialLoader = new MaxInterstitialLoader(mediationProfile.interstitialUnitId, amazonLoader, eventObserver);
+            _rewardedLoader = new MaxRewardedLoader(mediationProfile.rewardedUnitId, amazonLoader, eventObserver);
 
             if (_isDebug)
             {
@@ -127,7 +127,7 @@ namespace Guru.Ads.Max
                 return;
             }
 
-            _bannerLoader.Show(placement);
+            _ = _bannerLoader.Show(placement);
         }
 
         public void HideBanner()
