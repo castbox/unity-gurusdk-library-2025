@@ -6,7 +6,6 @@ namespace Guru.Ads.Max
     using System;
     using UnityEngine;
     using Guru.Ads;
-    using System.Collections.Generic;
     using System.Threading;
     using Cysharp.Threading.Tasks;
     
@@ -54,6 +53,7 @@ namespace Guru.Ads.Max
             _customAmazonLoader = customAmazonLoader;
             _eventObserver = observer;
             _tag = AdConst.LOG_TAG_MAX;
+            _isLoading = false;
             
             // --- Add Callbacks ---
             MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnAdsLoadedEvent;
@@ -154,10 +154,10 @@ namespace Guru.Ads.Max
         {
             CreateBannerIfNotExists();
             _adStartLoadTime = DateTime.UtcNow;
-            _isLoading = true;
 
             // 加载广告
             MaxSdk.LoadBanner(_maxAdUnitId);
+            _isLoading = true;
             
             // 广告加载
             var e = MaxAdEventBundleFactory.BuildBadsLoad(_maxAdUnitId, _adPlacement);
@@ -179,20 +179,26 @@ namespace Guru.Ads.Max
             _loadedTimes = 0;
             _failedTimes = 0;
             _shouldReportImpEvent = true;
-            IsBannerVisible = true;
-            
-            // Load();
-            Debug.Log($"{_tag} --- BADS Show: {_maxAdUnitId}");
 
-            await UniTask.DelayFrame(1); // 延迟展示广告
-#if UNITY_EDITOR
-            await UniTask.Delay(1000); // Editor延迟展示广告
-#endif
+            if (!_isLoading)
+            {
+                Load(); // 如果没有开始加载， 则会调用加载
+            }
+            
+            // 由于在 Amazon 预加载的时候 Banner 可能还没有创建出来
+            while (!_hasBannerCreated)
+            {
+                // 若此时 Amazon 广告还在加载中， 则需要等待
+                await UniTask.Delay(TimeSpan.FromSeconds(1)); 
+            }
             
             // 显示广告
             MaxSdk.ShowBanner(_maxAdUnitId);
             MaxSdk.SetBannerPlacement(_maxAdUnitId, _adPlacement);
             SetAutoRefresh(true); // 开启 Banner 的自动刷新
+            IsBannerVisible = true;
+            
+            Debug.Log($"{_tag} --- BADS Show: {_maxAdUnitId}");
         }
         
         private void ReportBadsImpEvent()
@@ -229,13 +235,12 @@ namespace Guru.Ads.Max
         /// <param name="adInfo"></param>
         private void OnAdsLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            _isLoading = false;
-            
             // 加载成功
             var e = MaxAdEventBundleFactory.BuildBadsLoaded(adUnitId, _adPlacement, _adStartLoadTime, adInfo);
             _eventObserver.OnEventBadsLoaded(e);
             // 数据更新
             _loadedTimes++;
+            _isLoading = false;
             
             _adStartLoadTime = DateTime.UtcNow;
             Debug.Log($"{_tag} --- BADS loaded {adUnitId} -> WaterfallName: {(adInfo.WaterfallInfo?.Name ?? "NULL")}  TestName: {(adInfo.WaterfallInfo?.TestName ?? "NULL")}");
@@ -258,9 +263,8 @@ namespace Guru.Ads.Max
         /// <param name="errorInfo"></param>
         private void OnAdLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
-            _isLoading = false;
-            
             _failedTimes++;
+            _isLoading = false;
             // 加载失败
             var e= MaxAdEventBundleFactory.BuildBadsFailed(adUnitId, _adPlacement, errorInfo, _adStartLoadTime);
             _eventObserver.OnEventBadsFailed(e);
@@ -284,22 +288,27 @@ namespace Guru.Ads.Max
             try 
             {
                 _retryLoadCts = new CancellationTokenSource();
+                int delaySeconds = 0;
                 while (IsBannerVisible)
                 {
+                    
                     // 没有网络
                     while (Application.internetReachability == NetworkReachability.NotReachable)
                     {
+                        delaySeconds += AdConst.NO_NETWORK_WAITING_SECONDS;
                         // Debug.Log($"{_tag} --- Bads try Reload but no network: {Application.internetReachability}");
-                        await UniTask.Delay(TimeSpan.FromSeconds(AdConst.NO_NETWORK_WAITING_TIME));
+                        await UniTask.Delay(TimeSpan.FromSeconds(AdConst.NO_NETWORK_WAITING_SECONDS));
                     }
-                    
-                    // 等待自动重试加载
-                    await UniTask.Delay(TimeSpan.FromSeconds(BANNER_RELOAD_SECONDS), cancellationToken: _retryLoadCts.Token);
-                    Debug.Log($"{_tag} --- BADS LoadFailHandler Reload Banner with id: {_maxAdUnitId}");
 
-                    Hide(); // 先隐藏
-                    await UniTask.DelayFrame(1); // 延迟展示广告
-                    Show(); // 再加载
+                    var waitingSeconds = Mathf.Max(1, (BANNER_RELOAD_SECONDS - delaySeconds));
+                    // 等待自动重试加载
+                    await UniTask.Delay(TimeSpan.FromSeconds(waitingSeconds), cancellationToken: _retryLoadCts.Token);
+
+                    Disable();
+                    await UniTask.DelayFrame(1);
+                    _ = Show();
+                    
+                    Debug.Log($"{_tag} --- BADS LoadFailHandler immediate with id: {_maxAdUnitId}");
                     break;
                 }
                 // Debug.Log($"{_tag} --- BADS ReloadBannerAsync over");
@@ -328,7 +337,6 @@ namespace Guru.Ads.Max
         private void CancelRetryLoadCts()
         {
             if (_retryLoadCts == null || _retryLoadCts.IsCancellationRequested) return;
-            Debug.Log($"{_tag} --- BADS CancelRetryLoadCts");
             _retryLoadCts.Cancel();
             _retryLoadCts.Dispose();
             _retryLoadCts = null;
@@ -400,7 +408,11 @@ namespace Guru.Ads.Max
         private void Disable()
         {
             Hide();
-            _isBannerVisible = false;
+            DestroyMaxBanner();
+        }
+        
+        private void DestroyMaxBanner()
+        {
             MaxSdk.DestroyBanner(_maxAdUnitId);
             _hasBannerCreated = false;
         }
