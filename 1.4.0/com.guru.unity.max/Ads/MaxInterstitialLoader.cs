@@ -6,7 +6,7 @@ namespace Guru.Ads.Max
     
     public class MaxInterstitialLoader
     {
-        private readonly MaxCustomLoaderAmazon _customLoaderAmazon;
+        private readonly ICustomAmazonLoader _customAmazonLoader;
         private readonly IAdEventObserver _eventObserver; // 广告事件监听器
         private readonly string _tag;
         
@@ -18,10 +18,10 @@ namespace Guru.Ads.Max
         private int _retryCount;
         
 
-        public MaxInterstitialLoader(string adUnitId, MaxCustomLoaderAmazon customLoaderAmazon, IAdEventObserver observer)
+        public MaxInterstitialLoader(string adUnitId, ICustomAmazonLoader customAmazonLoader, IAdEventObserver observer)
         {
             _maxAdUnitId = adUnitId;
-            _customLoaderAmazon = customLoaderAmazon;
+            _customAmazonLoader = customAmazonLoader;
             _eventObserver = observer;
             _retryCount = 0;
             _isAdLoading = false;
@@ -49,7 +49,7 @@ namespace Guru.Ads.Max
             if (_isAdLoading) return;
             _isAdLoading = true;
             Debug.Log($"{_tag} --- INTER Load: { _maxAdUnitId}");
-            _customLoaderAmazon.RequestInterstitial(CreateMaxInterstitial);
+            _customAmazonLoader.RequestInterstitial(CreateMaxInterstitial);
         }
 
         private void CreateMaxInterstitial()

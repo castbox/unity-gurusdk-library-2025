@@ -318,7 +318,7 @@ namespace Guru
 
         private void OnBannerAdClickedEvent(BadsClickEvent evt)
         {
-            AddBannerInfo(CreateClosedInfo(evt.adUnitId, AdType.Banner));
+            AddBannerInfo(CreateClickedInfo(evt.adUnitId, AdType.Banner, evt.placement));
         }
 
         private void OnBannerAdRevenuePaidEvent(BadsPaidEvent evt)

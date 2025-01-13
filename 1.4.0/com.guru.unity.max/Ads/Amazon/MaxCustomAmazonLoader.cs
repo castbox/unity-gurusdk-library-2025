@@ -22,7 +22,7 @@ namespace Guru.Ads.Max
     /// Amazon 广告预加载器
     /// 代码示例：https://developers.applovin.com/en/max/unity/amazon-publisher-services-integration-instructions/
     /// </summary>
-    public class MaxCustomLoaderAmazon
+    public class MaxCustomAmazonLoader: ICustomAmazonLoader
     {
         private readonly string _maxBannerUnitId;
         private readonly string _maxInterUnitId;
@@ -40,6 +40,35 @@ namespace Guru.Ads.Max
         private bool _hasIadsFirstLoad = false;
         
         private bool _hasRewardedFirstLoad = false;
+
+
+        /// <summary>
+        /// 获取 Loader
+        /// </summary>
+        /// <param name="apsAppId"></param>
+        /// <param name="apsBannerSlotId"></param>
+        /// <param name="apsInterSlotId"></param>
+        /// <param name="apsRewardedSlotId"></param>
+        /// <param name="maxBannerUnitId"></param>
+        /// <param name="maxInterUnitId"></param>
+        /// <param name="maxRewardedUnitId"></param>
+        /// <param name="isDebug"></param>
+        /// <returns></returns>
+        public static ICustomAmazonLoader GetLoader(string apsAppId, 
+            string apsBannerSlotId, string apsInterSlotId, string apsRewardedSlotId, 
+            string maxBannerUnitId, string maxInterUnitId, string maxRewardedUnitId, 
+            bool isDebug = false)
+        {
+            
+#if UNITY_EDITOR
+            return new MaxCustomAmazonMockLoader();
+#endif
+            return new MaxCustomAmazonLoader(apsAppId,
+                apsBannerSlotId, apsInterSlotId, apsRewardedSlotId,
+                maxBannerUnitId, maxInterUnitId, maxRewardedUnitId,
+                isDebug);
+        }
+
 
         /// <summary>
         /// 是否可用
@@ -62,7 +91,7 @@ namespace Guru.Ads.Max
         // Video 尺寸参数
         private readonly AdSize _videoSize;
 
-        public MaxCustomLoaderAmazon(string apsAppId, 
+        public MaxCustomAmazonLoader(string apsAppId, 
             string apsBannerSlotId, string apsInterSlotId, string apsRewardedSlotId, 
             string maxBannerUnitId, string maxInterUnitId, string maxRewardedUnitId, 
             bool isDebug = false)
@@ -101,7 +130,7 @@ namespace Guru.Ads.Max
         /// 请求 Amazon 的 Banner 广告
         /// </summary>
         /// <param name="createMaxBanner"></param>
-        public void RequestAPSBanner(Action createMaxBanner)
+        public void RequestBanner(Action createMaxBanner)
         {
             // if (_hasBannerFistRequested)
             // {
@@ -141,7 +170,6 @@ namespace Guru.Ads.Max
             apsBanner.LoadAd();
             // _hasBannerFistRequested = true;
         }
-
 
         /// <summary>
         /// 请求 Amazon 的 Inter 广告

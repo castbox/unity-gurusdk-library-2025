@@ -14,7 +14,7 @@ namespace Guru.Ads
         public const string AD_PLATFORM_MAX = "MAX";
         public const string AD_PLATFORM_IRONSOURCE = "IRONSOURCE";
         public const int MAX_RELOAD_COUNT = 6;
-        public const float NO_NETWORK_WAITING_TIME = 10; // 网络加载尝试等待
+        public const int NO_NETWORK_WAITING_SECONDS = 10; // 网络加载尝试等待
         public const float LOAD_NEXT_TIME = 2; // 加载下条广告的时间
         public const string CURRENCY_USD = "USD";
         public const string LOG_TAG_MAX = "[Ads][Max]";

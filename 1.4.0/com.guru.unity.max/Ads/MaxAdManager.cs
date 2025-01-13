@@ -28,9 +28,8 @@ namespace Guru.Ads.Max
             _isNoAds = mediationProfile.isNoAds;
             _isDebug = mediationProfile.debugModeEnabled;
             
-            // Custom Loaders
-            // Amazon
-            var amazonLoader = new MaxCustomLoaderAmazon(
+            // --- preloader ---
+            var amazonLoader = MaxCustomAmazonLoader.GetLoader(
                 mediationProfile.amazonAppId, 
                 mediationProfile.amazonBannerId, mediationProfile.amazonInterstitialId, mediationProfile.amazonRewardedId, 
                 mediationProfile.bannerUnitId, mediationProfile.interstitialUnitId, mediationProfile.rewardedUnitId,
@@ -132,7 +131,7 @@ namespace Guru.Ads.Max
                 return;
             }
 
-            _bannerLoader.Show(placement);
+            _ = _bannerLoader.Show(placement);
         }
 
         public void HideBanner()

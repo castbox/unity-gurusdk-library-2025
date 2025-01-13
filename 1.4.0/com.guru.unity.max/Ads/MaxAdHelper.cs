@@ -55,7 +55,7 @@ namespace Guru.Ads.Max
             while (IsNetworkNotReachable())
             {
                 // Debug.Log($"[Ads] --- Network Not reachable: {Application.internetReachability}");
-                await UniTask.Delay(TimeSpan.FromSeconds(AdConst.NO_NETWORK_WAITING_TIME));
+                await UniTask.Delay(TimeSpan.FromSeconds(AdConst.NO_NETWORK_WAITING_SECONDS));
             }
             
             // await UniTask.Delay(TimeSpan.FromSeconds(GetRetryDelaySeconds(retryCount)));
