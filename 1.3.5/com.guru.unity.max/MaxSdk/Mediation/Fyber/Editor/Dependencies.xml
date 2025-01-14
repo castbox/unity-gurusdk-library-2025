@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dependencies>
+    
+<!--    Fixed in 2025-01-14, Fyber Adapter was warned by Google, should be removed. Deadline: Feb 11 -->
+<!--    <androidPackages>-->
+<!--        <androidPackage spec="com.applovin.mediation:fyber-adapter:8.2.7.1"/>-->
+<!--    </androidPackages>-->
+    <iosPods>
+        <iosPod name="AppLovinMediationFyberAdapter" version="8.3.1.0"/>
+    </iosPods>
+</dependencies>

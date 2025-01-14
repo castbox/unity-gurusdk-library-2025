@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: e61f0b761afc24e2581a6e3bcf7a2261
+labels:
+- al_max
+- al_max_export_path-MaxSdk/Mediation/Fyber/Editor/Dependencies.xml
+- al_max_export_path-MaxSdk/Mediation~HEAD/Fyber/Editor/Dependencies.xml
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
