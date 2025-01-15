@@ -476,7 +476,12 @@ namespace Guru.Editor
 		    {
 			    defines.Add(GameDefine.MACRO_LOG);
 		    }
-		    
+
+		    if (buildParam.BuilderType == AppBuilderType.Jenkins)
+		    {
+			    UnityEditor.Android.AndroidExternalToolsSettings.stopGradleDaemonsOnExit = false; // 防止打包机上其他 Android 打包任务被停止
+		    }
+
 		    // defines.Add("mopub_manager");
 		    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, defines.ToArray());
 		    PlayerSettings.stripEngineCode = true;
