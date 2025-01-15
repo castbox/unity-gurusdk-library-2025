@@ -3,7 +3,7 @@ namespace Guru
     public partial class GuruSDK
     {
 	    // GURU SDK MAIN VERSION 
-	    private const string MAIN_VERSION = "1.4.0"; // Gen by SDK Publisher. (1/8/2025 10:27 AM)
+	    private const string MAIN_VERSION = "1.4.0"; // Gen by SDK Publisher. (1/15/2025 8:23 PM)
 	    
         /// <summary>
         /// Consts values
