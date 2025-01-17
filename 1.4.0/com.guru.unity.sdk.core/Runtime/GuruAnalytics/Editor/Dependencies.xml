@@ -29,7 +29,7 @@ Sample Dependencies.xml:
 <!--        <androidPackage spec="com.squareup.retrofit2:retrofit:2.7.1" />-->
     </androidPackages>
     <iosPods>
-        <iosPod name="GuruAnalyticsLib" bitcodeEnabled="false" path="Packages/com.guru.unity.sdk.core/Runtime/GuruAnalytics/Plugins/iOS" />
+<!--        <iosPod name="GuruAnalyticsLib" bitcodeEnabled="false" path="Packages/com.guru.unity.sdk.core/Runtime/GuruAnalytics/Plugins/iOS" />-->
         <iosPod name="JJException" bitcodeEnabled="false" />
     </iosPods>
 </dependencies>
