@@ -12,7 +12,7 @@ namespace Guru
     public class GuruAnalytics
     {
         // Plugin Version
-        private const string Version = "1.13.0";
+        private const string Version = "1.13.1";
         
         public static readonly string LOG_TAG = "[GA]";
         private static readonly string ActionName = "logger_error";

@@ -2,27 +2,47 @@
 
 GuruAnalyticsLib 的 Unity 插件库
 
-## 研发注意:
+## 研发步骤:
 - **Android**
-  - 插件库内的 .aar 通过 [guru_analytics](https://github.com/castbox/guru_analytics) 项目直接构建 ( 命令 `gradle publishToMavenLocal` )
-  - 构建后请改名为 `guru-analytics-{version}.aar`
-  - 请将 .aar 文件放置于 `./Runtime/GuruAnalytics/Plugins/Android` 目录下 
-  - **iOS**
-    - 插件库内的文件 通过 [GuruAnalytics_iOS](https://github.com/castbox/GuruAnalytics_iOS) 项目
-    - (1) 请将 repo 内的两个文件夹 `Assets` 和 `Classses` 拷贝至 `./Runtime/GuruAnalytics/Plugins/iOS/GuruAnalytics` 目录下:
-    - (2) 请将部署到 Unity 内所有的 `.swift` 文件的 meta 属性内， 取消 iOS 文件属性. (因为打包时会按照 POD 导入)
-    - 注意及时更新 `GuruAnalyticsLib.podspec`文件内的更新内容
-        ```ruby
-        # 将 source 内的 git 属性删除， 只保留 tag 属性
-        # s.source    = { :git => 'git@github.com:castbox/GuruAnalytics_iOS.git', :tag => s.version.to_s }
-        s.source    = { :tag => s.version.to_s }
-        ```
+  - 插件库内的 .aar 通过 [guru_analytics](https://github.com/castbox/guru_analytics) 项目直接构建
+  - 打开 `guru_analytics` 工程，用 AndroidStudio 构建 aar 包体
+    ```shell
+    gradle publishToMavenLocal
+    ```
+  - 构建后请改名为 `guru-analytics-{version}.aar`， 其中 `version` 需要对齐引入库的版本
+  - 请删除旧版本的 aar, 将新版本的 aar 文件放置于 `./Runtime/GuruAnalytics/Plugins/Android` 目录下 
+
+
+- **iOS**
+  - 插件库内的文件 通过 [GuruAnalytics_iOS](https://github.com/castbox/GuruAnalytics_iOS) 项目
+  - (1) 请将 repo 内的两个文件夹 `Assets` 和 `Classses` 拷贝至 `./Runtime/GuruAnalytics/Plugins/iOS/GuruAnalytics` 目录下:
+  - (2) 请将部署到 Unity 内所有的 `.swift` 文件的 meta 属性内， 取消 iOS 文件属性. (因为打包时会按照 POD 导入)
+  - 注意及时更新 `GuruAnalyticsLib.podspec`文件内的更新内容
+      ```ruby
+      # 将 source 内的 git 属性内 git 源屏蔽， 只保留 tag 属性
+      # s.source    = { :git => 'git@github.com:castbox/GuruAnalytics_iOS.git', :tag => s.version.to_s }
+      s.source    = { :tag => s.version.to_s }
+      ```
+
+- 更新注意
+  - 升级任意平台的 Native 库版本后，请手动修改此文件内 ChangeLog 的内容
+  - 需要记录更新后 SDK 的提交 hash， 更新日志，以及 SDK 桥接文件对应的版本号
+
 ---
 
 ## Change Logs
 
 - [SDK Repo [ guru_analytics ] ](git@github.com:castbox/guru_analytics.git)
 - [SDK Repo [ GuruAnalytics_iOS ] ](git@github.com:castbox/GuruAnalytics_iOS.git)
+
+### 1.13.1
+- Android 端对齐 `1.1.2` （ 24 Spe 18 ）
+- Unity 中台更新日期：24/11/20
+  > Hash: 6457b242086ca34a5f5576ccfc71855babadaae1
+- iOS 端对齐 `0.4.1` （ 25 Jan 15 ）
+- Unity 中台更新日期：25/1/17
+  > Hash: dc095f10187605f3b8761c2f11e78e3a58ceaf0b
+- iOS 库更新，解决浮点数上报不精准的问题
 
 
 ### 1.13.0

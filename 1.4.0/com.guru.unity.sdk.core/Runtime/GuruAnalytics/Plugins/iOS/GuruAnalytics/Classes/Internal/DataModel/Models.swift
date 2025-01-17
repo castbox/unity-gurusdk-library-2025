@@ -157,14 +157,21 @@ extension Entity {
         }
         
         static func normalizeValue(_ value: Any) -> EventValue {
+            
+            var preprocessedValue = value
+            
+            if let val = preprocessedValue as? NSNumber {
+                preprocessedValue = val.numricValue
+            }
+            
             let eventValue: EventValue
-            if let value = value as? String {
+            if let value = preprocessedValue as? String {
                 eventValue = Entity.EventValue(stringValue: String(value.prefix(maxParameterStringValueLength)))
-            } else if let value = value as? Int {
+            } else if let value = preprocessedValue as? Int {
                 eventValue = Entity.EventValue(longValue: Int64(value))
-            } else if let value = value as? Int64 {
+            } else if let value = preprocessedValue as? Int64 {
                 eventValue = Entity.EventValue(longValue: value)
-            } else if let value = value as? Double {
+            } else if let value = preprocessedValue as? Double {
                 eventValue = Entity.EventValue(doubleValue: value)
             } else {
                 eventValue = Entity.EventValue(stringValue: String("\(value)".prefix(maxParameterStringValueLength)))
