@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'GuruAnalyticsLib'
-  s.version          = '0.3.9'
+  s.version          = '0.4.1'
   s.summary          = 'A short description of GuruAnalytics.'
 
 # This description is used to generate tags and improve search results.
@@ -35,7 +35,7 @@ TODO: Add long description of the pod here.
   # s.resource_bundles = {
   #   'GuruAnalytics' => ['GuruAnalytics/Assets/*.png']
   # }
-    
+
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
@@ -45,7 +45,7 @@ TODO: Add long description of the pod here.
   s.dependency 'GzipSwift', '~> 5.0'
   s.dependency 'CryptoSwift', '~> 1.0'
   s.dependency 'SwiftyBeaver', '~> 1.0'
-    
+  
   s.subspec 'Privacy' do |ss|
       ss.resource_bundles = {
             s.name => 'GuruAnalytics/Assets/PrivacyInfo.xcprivacy'

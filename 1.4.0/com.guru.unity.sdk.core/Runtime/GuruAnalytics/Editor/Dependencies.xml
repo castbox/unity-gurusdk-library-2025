@@ -29,14 +29,7 @@ Sample Dependencies.xml:
 <!--        <androidPackage spec="com.squareup.retrofit2:retrofit:2.7.1" />-->
     </androidPackages>
     <iosPods>
-<!--        <iosPod name="GuruAnalyticsLib" bitcodeEnabled="false" path="Packages/com.guru.unity.sdk.core/Runtime/GuruAnalytics/Plugins/iOS" />-->
+        <iosPod name="GuruAnalyticsLib" bitcodeEnabled="false" path="Packages/com.guru.unity.sdk.core/Runtime/GuruAnalytics/Plugins/iOS" />
         <iosPod name="JJException" bitcodeEnabled="false" />
-<!--        <iosPod name="RxCocoa" version="~> 6.7.0" />-->
-<!--        <iosPod name="Alamofire" version="~> 5.9" />-->
-<!--        <iosPod name="FMDB" version="~> 2.0" />-->
-<!--        <iosPod name="GzipSwift" version="~> 5.0" />-->
-<!--        <iosPod name="CryptoSwift" version="~> 1.0" />-->
-<!--        <iosPod name="SwiftyBeaver" version="~> 1.0" />-->
-
     </iosPods>
 </dependencies>

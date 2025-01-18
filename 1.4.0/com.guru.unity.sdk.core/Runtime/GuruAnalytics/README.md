@@ -3,7 +3,7 @@
 GuruAnalyticsLib 的 Unity 插件库
 
 ## 研发步骤:
-### **Android**
+-**Android**
   - 插件库内的 .aar 通过 [guru_analytics](https://github.com/castbox/guru_analytics) 项目直接构建
   - 打开 `guru_analytics` 工程，用 AndroidStudio 构建 aar 包体
     ```shell
@@ -13,15 +13,34 @@ GuruAnalyticsLib 的 Unity 插件库
   - 请删除旧版本的 aar, 将新版本的 aar 文件放置于 `./Runtime/GuruAnalytics/Plugins/Android` 目录下 
 
 
-### **iOS**
+- **iOS**
   - 插件库内的文件 通过 [GuruAnalytics_iOS](https://github.com/castbox/GuruAnalytics_iOS) 项目
-  - 请打开 repo 内的 `Example` 工程，手动执行 `pod install` 后， 打开 `GuruAnalytics.xcworkspace` 
-  - 执行 Build ， 于项目目录下生成 `GuruAnalytics/Products/GuruAnalytics_Example.app`
-  - 于 app 文件上右键执行 `Show In Finder` 打开文件路径, 后在同级目录内查找 `GuruAnalyticsLib` 文件夹 
-  - 于文件夹内， 将 `GuruAnalyticsLib.framework` 和 `GuruAnalyticsLib.bundle` 拷贝至 `./Runtime/GuruAnalytics/Plugins/iOS` 目录下
-  - 注意，上述领个文件需要在 Unity 内手动标记为 iOS 可用， 每次升级后记得查看一下
+  - (1) 请将 repo 内的两个文件夹 `Assets` 和 `Classses` 拷贝至 `./Runtime/GuruAnalytics/Plugins/iOS/GuruAnalytics` 目录下:
+  - (2) 请将部署到 Unity 内所有的 `.swift` 文件的 meta 属性内， 取消 iOS 文件属性. (因为打包时会按照 POD 导入)
+  - 注意及时更新 `GuruAnalyticsLib.podspec`文件内的更新内容
+      ```ruby
+      # 将 source 内的 git 属性内 git 源屏蔽， 只保留 tag 属性
+      # s.source    = { :git => 'git@github.com:castbox/GuruAnalytics_iOS.git', :tag => s.version.to_s }
+      s.source    = { :tag => s.version.to_s }
+      ```
 
-
+- 更新注意
+  - 升级任意平台的 Native 库版本后，请手动修改此文件内 ChangeLog 的内容
+  - 需要记录更新后 SDK 的提交 hash， 更新日志，以及 SDK 桥接文件对应的版本号
+  - 目前是使用手动的方式修改源码来固定 SDK 的版本号，此处需要在下个版本做成脚本注入式的逻辑：
+  ```swift
+  // Packages/.upm/com.guru.unity.sdk.core/Runtime/GuruAnalytics/Plugins/iOS/GuruAnalytics/Classes/Internal/Utility/Constants.swift
+  // line 29
+  private static let guruAnalyticsSDKVersion: String = {
+        return "0.4.1" // <---- 此处强制返回版本号
+  //        guard let infoDict = Bundle(for: Manager.self).infoDictionary,
+  //              let currentVersion = infoDict["CFBundleShortVersionString"] as? String else {
+  //         return ""
+  //     }
+  //      return currentVersion
+    }()
+  
+  ```
 ---
 
 ## Change Logs
@@ -101,6 +120,7 @@ GuruAnalyticsLib 的 Unity 插件库
 
 ### 1.7.5
 - 删除 `androidx.appcompat:appcompat` 库依赖
+
 
 
 ---
