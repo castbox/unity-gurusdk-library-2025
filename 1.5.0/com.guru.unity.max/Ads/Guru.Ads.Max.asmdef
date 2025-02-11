@@ -1,0 +1,21 @@
+{
+    "name": "Guru.Ads.Max",
+    "rootNamespace": "Guru.Ads.Max",
+    "references": [
+        "Guru.Runtime",
+        "Guru.Ads",
+        "MaxSdk.Scripts",
+        "Amazon",
+        "OpenWrapSDK",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

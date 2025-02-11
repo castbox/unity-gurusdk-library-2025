@@ -1,0 +1,2 @@
+-keep class com.onevcat.uniwebview.* { *; }
+-keep class com.iab.omid.* { *; }
