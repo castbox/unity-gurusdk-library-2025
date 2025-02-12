@@ -1,7 +1,7 @@
 {
   "version": "1.5.0",
-  "ts": "1739278000",
-  "desc": "MAX广告插件整体升级 2025-Q1，PUSH消息增加优先级渠道，修复Amazon广告加载问题， iap_ret_false 添加 reason， 广告加载失败添加原因, Fyber的Android Adapter 升级到 8.3.5.0",
+  "ts": "1739342806",
+  "desc": ", Fyber的Android Adapter 升级到 8.3.5.0复Amazon广告加载问题， iap_ret_false 添加 reason， 广告加载失败添加原因, Fyber的Android Adapter 升级到 8.3.5.0",
   "packages": {
     "com.coffee.git-dependency-resolver": {
       "group": "third-party",
