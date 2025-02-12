@@ -1,0 +1,7 @@
+{
+  "name": "Guru.Ads",
+  "references": [
+    "Guru.Runtime",
+    "UniTask"
+  ]
+}
