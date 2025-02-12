@@ -1,7 +1,0 @@
-{
-  "name": "GuruDebugger",
-  "references":[ 
-    "Guru.Runtime", 
-    "Guru.Ads" 
-  ]
-}

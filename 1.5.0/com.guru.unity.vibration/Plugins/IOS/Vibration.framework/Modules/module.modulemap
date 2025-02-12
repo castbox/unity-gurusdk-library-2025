@@ -1,4 +1,0 @@
-framework module Vibration {
-  header "Vibration-Swift.h"
-  requires objc
-}

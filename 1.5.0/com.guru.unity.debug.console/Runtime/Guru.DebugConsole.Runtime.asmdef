@@ -1,6 +1,0 @@
-{
-  "name": "Guru.DebugConsole.Runtime",
-  "references": [
-    "IngameDebugConsole.Runtime"
-  ]
-}

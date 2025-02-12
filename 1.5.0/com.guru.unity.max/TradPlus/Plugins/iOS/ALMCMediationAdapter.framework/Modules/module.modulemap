@@ -1,6 +1,0 @@
-framework module ALMCMediationAdapter {
-  umbrella header "ALMCMediationAdapter.h"
-  export *
-
-  module * { export * }
-}
