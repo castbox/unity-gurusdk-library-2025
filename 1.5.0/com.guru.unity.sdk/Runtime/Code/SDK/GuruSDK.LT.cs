@@ -1,4 +1,3 @@
-using Guru.Utils;
 
 namespace Guru
 {
