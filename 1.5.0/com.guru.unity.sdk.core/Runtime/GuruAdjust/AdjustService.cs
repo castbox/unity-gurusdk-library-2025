@@ -199,14 +199,13 @@ namespace Guru
 			FetchGoogleAdIdAsync(onGetGoogleAdIdCallback);
 			LogI(LOG_TAG, $"--- Start AdjustService:{VERSION}    SDK:{SdkVersion}    deferred_report_ad_revenue:{_deferredReportAdRevenueEnabled}");
 
-			DelayAction((int)(START_DELAY_SECONDS * 1000 + 100), () =>
-			{
+			DelayAction((int)(START_DELAY_SECONDS * 1000 + 100), () => {
 				_isReady = true;
 				onInitComplete?.Invoke(string.Empty);
-				
-				// 异步获取AdjustId
-				FetchAdjustIdAsync(onGetAdjustIdCallback).Forget();
 			}).Forget();
+			
+			// 异步获取AdjustId
+			FetchAdjustIdAsync(onGetAdjustIdCallback).Forget();
 		}
 
 		private async UniTaskVoid DelayAction(int delayMs, Action callback)
