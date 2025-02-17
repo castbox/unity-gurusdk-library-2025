@@ -1,0 +1,9 @@
+{
+  "name": "GuruBuildTool.Editor",
+  "references": [
+    "Guru.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}
