@@ -1,7 +1,7 @@
 {
   "name": "com.guru.unity.sdk.core",
   "displayName": "Guru SDK Core",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Guru SDK core for Unity developers",
   "unity": "2021.3",
   "author": {

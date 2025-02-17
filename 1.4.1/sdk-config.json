@@ -1,7 +1,7 @@
 {
   "version": "1.4.1",
-  "ts": "1739762748",
-  "desc": "",
+  "ts": "1739762912",
+  "desc": "修复 iOS 平台 tch_ad_rev_roas_001 打点中 productId 和 OrderID 上报错误问题",
   "packages": {
     "com.coffee.git-dependency-resolver": {
       "group": "third-party",

@@ -1,7 +1,7 @@
 {
   "name": "com.guru.unity.sdk",
   "displayName": "Guru SDK",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Guru SDK for unity project",
   "unity": "2020.3",
   "author": {
