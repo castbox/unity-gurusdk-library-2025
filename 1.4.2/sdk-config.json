@@ -1,0 +1,152 @@
+{
+  "version": "1.4.2",
+  "ts": "1740474821",
+  "desc": "删除废弃的用户属性 guru_analytics_exp，优化广告打点事件逻辑, 时序和原生接口对齐，修复 imp 和 rewarded 事件上报缺失的问题，升级 TradPlus Adpater 至 1.0.4， 修复因不匹配 MAX 13.0.1 导致的崩溃问题，优化订单上报逻辑",
+  "packages": {
+    "com.coffee.git-dependency-resolver": {
+      "group": "third-party",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.coffee.upm-git-extension": {
+      "group": "third-party",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.android.appbundle": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.external-dependency-manager": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.analytics": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.app": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.auth": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.crashlytics": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.dynamic-links": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.firestore": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.messaging": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.firebase.remote-config": {
+      "group": "firebase",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.play.common": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.play.core": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.google.play.review": {
+      "group": "google",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.adjust": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.ads": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.buildtool": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.debug.console": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.facebook": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.i2": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.l10n": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.max": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.sdk": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": [
+        "guru-sdk",
+        "firebase",
+        "google",
+        "third-party"
+      ]
+    },
+    "com.guru.unity.sdk.core": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.utils": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.vibration": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.unitask": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    }
+  }
+}
