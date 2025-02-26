@@ -355,7 +355,7 @@ namespace Guru.Editor
 	
 	        if (!string.IsNullOrEmpty(teamId))
 	        {
-		        PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+		        PlayerSettings.iOS.appleEnableAutomaticSigning = false;
 		        PlayerSettings.iOS.appleDeveloperTeamID = teamId;
 	        }
 	        

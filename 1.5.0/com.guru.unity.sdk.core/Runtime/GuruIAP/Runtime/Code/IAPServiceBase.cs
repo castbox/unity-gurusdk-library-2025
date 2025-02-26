@@ -855,16 +855,19 @@ namespace Guru.IAP
                     }
                     else if (receipt is AppleInAppPurchaseReceipt appleReceipt)
                     {
-                        ReportAppleOrder(orderType, 
-                            appleReceipt.productID,
-                            appleReceiptString,
-                            appleReceipt.transactionID,
-                            appleReceipt.purchaseDate, 
-                            level, 
-                            userCurrency, payPrice, scene, 
-                            _appBundleId,
-                            _idfv,
-                            isFree);
+                        if (receipt.productID == productId)
+                        {
+                            ReportAppleOrder(orderType, 
+                                appleReceipt.productID,
+                                appleReceiptString,
+                                appleReceipt.transactionID,
+                                appleReceipt.purchaseDate, 
+                                level, 
+                                userCurrency, payPrice, scene, 
+                                _appBundleId,
+                                _idfv,
+                                isFree);
+                        }
                     }
                     else
                     {
@@ -1120,7 +1123,7 @@ namespace Guru.IAP
                 }
                 else if( appReq != null)
                 {
-                    if (_model.IsReceiptExist(appReq.receipt))
+                    if (_model.IsReceiptExist(appReq.transactionID))
                     {
                         OnSendNextOrder(); // 跳过上报过的 Apple 订单
                         return;
@@ -1140,7 +1143,7 @@ namespace Guru.IAP
                         }
                         else if (appReq != null)
                         {
-                            _model.AddReceipt(appReq.receipt); // 记录当前的 Apple 订单
+                            _model.AddReceipt(appReq.transactionID); // 记录当前的 Apple 订单
                             _model.RemoveAppleOrder(appReq.orderData); // 成功后清除缓存 orderData
                         }
                         OnSendNextOrder(); // NEXT Order

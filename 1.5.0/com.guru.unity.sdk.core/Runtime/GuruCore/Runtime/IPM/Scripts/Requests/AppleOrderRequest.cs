@@ -10,7 +10,7 @@ namespace Guru
     
     public class AppleOrderRequest : RequestBase
     {
-        public string receipt;
+        public string transactionID;
         public AppleOrderData orderData;
 
         public AppleOrderRequest(){}
@@ -57,7 +57,7 @@ namespace Guru
         {
             var request = new AppleOrderRequest()
             {
-                receipt = receipt,
+                transactionID = orderId,
                 orderData = new AppleOrderData(orderType, productId, receipt, orderId, date, level,
                     userCurrency, payPrice, scene, bundleId, idfv, isFree, offerId, basePlanId),
             };
@@ -69,7 +69,7 @@ namespace Guru
             var request = new AppleOrderRequest()
             {
                 orderData = data,
-                receipt = data.receipt,
+                transactionID = data.orderId,
             };
             return request;
         }
