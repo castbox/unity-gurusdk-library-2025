@@ -1,29 +1,36 @@
 
+using System.Collections.Generic;
+
 namespace Guru
 {
     using System;
     using UnityEngine;
+    using AdjustSdk;
+    
+    
+    
     
     /// <summary>
     /// Revenue Model
     /// </summary>
     [Serializable]
-    internal class AdjustAdRevenueModel
+    public class AdjustModel
     {
         private const string SAVE_KEY = "gurusdk_adjust_ad_rervenue_model";
 
         public int impressionCount = 0;
         public double revenue = 0;
         public string reportDate = "";
+        public AdjustAttribution attribution = null;
         
-        public static AdjustAdRevenueModel LoadOrCreate()
+        public static AdjustModel LoadOrCreate()
         {
             var json = PlayerPrefs.GetString(SAVE_KEY, "");
             if (!string.IsNullOrEmpty(json))
             {
-                return JsonUtility.FromJson<AdjustAdRevenueModel>(json);
+                return JsonUtility.FromJson<AdjustModel>(json);
             }
-            return new AdjustAdRevenueModel();
+            return new AdjustModel();
         }
 
         private void Save()
@@ -84,10 +91,19 @@ namespace Guru
 
         public override string ToString()
         {
-            return $"[{nameof(AdjustAdRevenueModel)}]  impressionCount:{impressionCount},  revenue:{revenue}";
+            return $"[{nameof(AdjustModel)}]  impressionCount:{impressionCount},  revenue:{revenue}";
+        }
+        
+        /// <summary>
+        /// 用户来源渠道（如自然流量、Google等）
+        /// </summary>
+        public AdjustAttribution Attribution
+        {
+            get => attribution;
+            set {
+                attribution = value;
+                Save();
+            }
         }
     }
-
-
-
 }

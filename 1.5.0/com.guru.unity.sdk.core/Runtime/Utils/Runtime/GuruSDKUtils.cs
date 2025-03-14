@@ -98,6 +98,25 @@ namespace Guru
 
         #endregion
         
+        /// <summary>
+        /// 安全地比较两个可能为null的字符串
+        /// </summary>
+        /// <param name="a">第一个字符串</param>
+        /// <param name="b">第二个字符串</param>
+        /// <returns>如果两个字符串相等（包括都为null的情况），返回true；否则返回false</returns>
+        public static bool StringEquals(string a, string b)
+        {
+            // 如果两个都为null，则相等
+            if (a == null && b == null)
+                return true;
+    
+            // 如果只有一个为null，则不相等
+            if (a == null || b == null)
+                return false;
+    
+            // 两个都不为null，使用字符串的Equals方法比较
+            return a.Equals(b);
+        }
         
     }
 }

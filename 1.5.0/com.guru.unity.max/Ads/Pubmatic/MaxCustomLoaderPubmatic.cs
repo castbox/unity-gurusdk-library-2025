@@ -1,6 +1,8 @@
 namespace Guru.Ads.Max
 {
+#if UNITY_IOS || UNITY_ANDROID
     using OpenWrapSDK;
+#endif
     using System;
     using UnityEngine;
     using Guru.Ads;
@@ -20,18 +22,22 @@ namespace Guru.Ads.Max
                 Debug.LogWarning($"[Ads][Pubmatic] storeUrl is Empty, will not initial Pubmatic SDK !!!");
                 return;
             }
-
-            var appInfo = new POBApplicationInfo
-            {
-                StoreURL = new Uri(storeUrl)
-            };
             
 #if UNITY_EDITOR
             // 真机才会启动脚本
             Debug.Log($"[Ads][Pubmatic] Pubmatic Editor runner start  with storeUrl:{storeUrl}");
             return;
 #endif
+            
+#if UNITY_IOS || UNITY_ANDROID
+            var appInfo = new POBApplicationInfo
+            {
+                StoreURL = new Uri(storeUrl)
+            };
+            
+
             POBOpenWrapSDK.SetApplicationInfo(appInfo);
+#endif
         }
 
     }

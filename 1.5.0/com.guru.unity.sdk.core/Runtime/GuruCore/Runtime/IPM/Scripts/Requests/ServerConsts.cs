@@ -32,6 +32,9 @@ namespace Guru
         public static string API_AUTH_SECRET => GetFullUrl("auth/api/v1/tokens/provider/secret");
         public static string API_AUTH_RENEW_FIREBASE => GetFullUrl("auth/api/v1/renewals/firebase");
         public static string API_AUTH_RENEW_TOKEN => GetFullUrl("auth/api/v1/renewals/token");
+
+        public static string API_AUTH_EVENT_CONFIG => GetFullUrl("auth/api/v1/event-config");
+        
         public static string API_ORDER_ANDROID => GetFullUrl("order/api/v1/orders/android");
         public static string API_ORDER_IOS => GetFullUrl("order/api/v1/orders/ios");
         public static string API_DEVICE_UPLOAD => GetFullUrl("device/api/v1/devices");

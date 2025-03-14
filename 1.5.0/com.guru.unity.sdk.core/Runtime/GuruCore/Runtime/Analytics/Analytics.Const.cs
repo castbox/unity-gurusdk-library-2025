@@ -161,6 +161,10 @@ namespace Guru
 		public const string PropertyGuruSdkVersion = "sdk_version"; // GuruSDK 版本号
 		public const string PropertyUserCreatedTimestamp = "user_created_timestamp";  // FirebaseID
 
+		public const string PropertyChannel = "channel";   //用户来源渠道（如自然流量、Google等）
+		public const string PropertyCampaign = "campaign"; //用户来源的具体Campaign名称
+		public const string PropertyCreative = "creative"; //用户来源的素材ID（用于效果分析）
+
 
 		public static HashSet<string> PredefinedMidWareProperties = new HashSet<string>()
 		{

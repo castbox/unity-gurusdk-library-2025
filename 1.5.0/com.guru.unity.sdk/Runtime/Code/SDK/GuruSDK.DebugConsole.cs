@@ -132,6 +132,12 @@ namespace Guru
                 UnityEngine.Debug.Log($"{LOG_TAG} --- LT debug mode: Off");
                 Instance.SetLTDebugMode(false);
             });
+            
+            AddDebugConsoleCommand("clearuid", "Clear uid debug mode", () =>
+            {
+                UnityEngine.Debug.Log($"{LOG_TAG} --- LT debug mode: Off");
+                IPMConfig.DebugClearUID();
+            });
         }
 
 

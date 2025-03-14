@@ -79,7 +79,7 @@ namespace Guru
 		/// <summary>
 		/// 收益相关数据
 		/// </summary>
-		private readonly AdjustAdRevenueModel _revenueModel;
+		private readonly AdjustModel _adjustModel;
 
 		/// <summary>
 		/// 暂缓打点策略开关
@@ -105,7 +105,7 @@ namespace Guru
 		private AdjustService()
 		{
 			_firstOpenTime = IPMConfig.GetFirstOpenDate();
-			_revenueModel = AdjustAdRevenueModel.LoadOrCreate();
+			_adjustModel = AdjustModel.LoadOrCreate();
 
 			Adjust.GetSdkVersion(v => _sdkVersion = v);
 		}
@@ -162,6 +162,9 @@ namespace Guru
 			AdjustConfig config = new AdjustConfig(appToken, environment);
 			config.LogLevel = GetLogLevel(showLogs);
 			config.IsPreinstallTrackingEnabled = true; // Adjust Preinstall
+			// 2025-3-13 【BI】新增用户属性打点 https://www.tapd.cn/33527076/prong/stories/view/1133527076001025406?from_iteration_id=1133527076001003267
+			config.AttributionChangedDelegate = OnAttributionChanged;
+
 			// * This setting has been removed in SDK v5.
 			// config.SetDelayStart(START_DELAY_SECONDS);  // 延迟 1s 启动 Adjust，保证 <安装归因参数> 成功注入
 			if (!string.IsNullOrEmpty(fbAppId))
@@ -198,7 +201,7 @@ namespace Guru
 			// 异步加载AdId
 			FetchGoogleAdIdAsync(onGetGoogleAdIdCallback);
 			LogI(LOG_TAG, $"--- Start AdjustService:{VERSION}    SDK:{SdkVersion}    deferred_report_ad_revenue:{_deferredReportAdRevenueEnabled}");
-
+			
 			DelayAction((int)(START_DELAY_SECONDS * 1000 + 100), () => {
 				_isReady = true;
 				onInitComplete?.Invoke(string.Empty);
@@ -206,8 +209,118 @@ namespace Guru
 			
 			// 异步获取AdjustId
 			FetchAdjustIdAsync(onGetAdjustIdCallback).Forget();
+			
+			// 异步获取Adjust归因
+			// 2025-3-13 【BI】新增用户属性打点 https://www.tapd.cn/33527076/prong/stories/view/1133527076001025406?from_iteration_id=1133527076001003267
+			CheckAndFetchAdjustAttribution().Forget();
+		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		private async UniTaskVoid CheckAndFetchAdjustAttribution()
+		{
+			try
+			{
+				AdjustAttribution attribution = _adjustModel.Attribution;
+				if (attribution == null)
+				{
+					LogW(LOG_TAG, $"first fetch adjust attribution");
+					FetchAdjustAttribution().Forget();
+				}
+				else
+				{
+					ProcessAdjustAttributionChanged(attribution);
+				}
+			}
+			catch (TimeoutException)
+			{
+				LogW(LOG_TAG, $"获取 AdjustAttribution 超时");
+			}
 		}
 
+		/// <summary>
+		/// 异步获取Adjust归因信息
+		/// </summary>
+		private async UniTaskVoid FetchAdjustAttribution()
+		{
+			try
+			{  
+				var tcs = new UniTaskCompletionSource<AdjustAttribution>();
+				Adjust.GetAttribution(result =>
+				{
+					LogI(LOG_TAG, $"Get AdjustAttribution返回结果: {result}");
+					tcs.TrySetResult(result);
+				});
+				AdjustAttribution attribution = await tcs.Task.Timeout(TimeSpan.FromSeconds(15));
+				if (attribution == null)
+					attribution = new AdjustAttribution();
+				ProcessAdjustAttributionChanged(attribution); 
+			}
+			catch (Exception ex)
+			{
+				LogE(LOG_TAG, $"Failed to fetch adjust attribution: {ex.ToString()}");
+				ProcessAdjustAttributionChanged(new AdjustAttribution());
+			}
+		}
+		
+		/// <summary>
+		/// 归因更新
+		/// </summary>
+		/// <param name="attribution"></param>
+		private void OnAttributionChanged(AdjustAttribution attribution)
+		{
+			LogI(LOG_TAG, $"--- OnAttributionChanged");
+			if (attribution == null)
+				attribution = new AdjustAttribution();
+			ProcessAdjustAttributionChanged(attribution);
+		}
+
+		/// <summary>
+		/// 处理归因
+		/// </summary>
+		/// <param name="attribution"></param>
+		private void ProcessAdjustAttributionChanged(AdjustAttribution attribution)
+		{
+			string channel = attribution == null || string.IsNullOrEmpty(attribution.Network) ?"unknown" : attribution.Network;
+			Analytics.SetUserProperty(Analytics.PropertyChannel, channel);
+			
+			string campaign = attribution == null || string.IsNullOrEmpty(attribution.Campaign) ? "unknown" : attribution.Campaign;
+			Analytics.SetUserProperty(Analytics.PropertyCampaign, campaign);
+			
+			string creative = attribution == null || string.IsNullOrEmpty(attribution.Creative) ? "unknown" : attribution.Creative;
+			Analytics.SetUserProperty(Analytics.PropertyCreative, creative);
+
+			if (_adjustModel.Attribution == null  || (attribution != null && CheckAdjustAttributionChanged(_adjustModel.Attribution, attribution)))
+			{
+				_adjustModel.Attribution = attribution;
+				LogI(LOG_TAG, $"adjust attribution changed!");
+			}
+		}
+
+		private bool CheckAdjustAttributionChanged(AdjustAttribution a, AdjustAttribution b)
+		{
+			// 如果两个引用相同（包括都为null的情况），则没有变化
+			if (ReferenceEquals(a, b))
+				return false;
+    
+			// 如果其中一个为null而另一个不为null，则有变化
+			if (a == null || b == null)
+				return true;
+			
+			return GuruSDKUtils.StringEquals(a.TrackerToken, b.TrackerToken) == false ||
+			       GuruSDKUtils.StringEquals( a.TrackerName, b.TrackerName) == false ||
+			       GuruSDKUtils.StringEquals(a.Network, b.Network) == false ||
+			       GuruSDKUtils.StringEquals(a.Campaign, b.Campaign) == false ||
+			       GuruSDKUtils.StringEquals(a.Adgroup, b.Adgroup) == false ||
+			       GuruSDKUtils.StringEquals(a.Creative, b.Creative) == false ||
+			       GuruSDKUtils.StringEquals(a.ClickLabel, b.ClickLabel) == false ||
+			       GuruSDKUtils.StringEquals(a.CostType, b.CostType) == false ||
+			       a.CostAmount.Equals(b.CostAmount) == false ||
+			       GuruSDKUtils.StringEquals(a.CostCurrency,b.CostCurrency) == false ||
+			       GuruSDKUtils.StringEquals(a.FbInstallReferrer ,b.FbInstallReferrer) == false;
+		}
+		
 		private async UniTaskVoid DelayAction(int delayMs, Action callback)
 		{
 			await UniTask.Delay(delayMs);
@@ -619,9 +732,9 @@ namespace Guru
 			if (IsInDelayTimeWindow())
 			{
 				// 累加本次广告收益
-				_revenueModel.AddImpressionRevenue(value);
+				_adjustModel.AddImpressionRevenue(value);
 				// 于值更新后再打印数据
-				LogI(LOG_TAG,$"<color=orange>--- Save AdRevenue to model: {_revenueModel}, skip report!</color>");
+				LogI(LOG_TAG,$"<color=orange>--- Save AdRevenue to model: {_adjustModel}, skip report!</color>");
 				return;
 			}
 
@@ -650,7 +763,7 @@ namespace Guru
 
 		private void TrackAccumulatedAdRevenue()
 		{
-			if (!_revenueModel.HasData())
+			if (!_adjustModel.HasData())
 			{
 				LogW(LOG_TAG,$"--- Report Accumulated AdRevenue but no data exists, Failed!");
 				return;
@@ -658,14 +771,14 @@ namespace Guru
 			
 			// 上报累计收益
 			var accumulatedRevenue = new AdjustAdRevenue(_adSourceName);
-			// accumulatedRevenue.setAdImpressionsCount(_revenueModel.impressionCount); // -- V4
-			accumulatedRevenue.AdImpressionsCount = _revenueModel.impressionCount;
-			accumulatedRevenue.SetRevenue(_revenueModel.revenue, REVENUE_CURRENCY_USD);
+			// accumulatedRevenue.setAdImpressionsCount(_adjustModel.impressionCount); // -- V4
+			accumulatedRevenue.AdImpressionsCount = _adjustModel.impressionCount;
+			accumulatedRevenue.SetRevenue(_adjustModel.revenue, REVENUE_CURRENCY_USD);
 			Adjust.TrackAdRevenue(accumulatedRevenue);
 			
 			// 记录上报时间, 清除累计数据
-			LogI(LOG_TAG,$"<color=yellow>--- Report Accumulated AdRevenue -> {_revenueModel}</color>");
-			_revenueModel.SetReportDateAndClear(DateTime.UtcNow);
+			LogI(LOG_TAG,$"<color=yellow>--- Report Accumulated AdRevenue -> {_adjustModel}</color>");
+			_adjustModel.SetReportDateAndClear(DateTime.UtcNow);
 		}
 
 		#endregion

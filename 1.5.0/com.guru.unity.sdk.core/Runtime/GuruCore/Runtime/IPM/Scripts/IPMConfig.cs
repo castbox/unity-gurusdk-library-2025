@@ -114,6 +114,11 @@ namespace Guru
 			}
 		}
 
+		public static void DebugClearUID()
+		{
+			_uid = string.Empty;
+		}
+
 		/// <summary>
 		/// 后台生成的用户整型ID，与uid唯一对应
 		/// doc: https://github.com/castbox/backend-dev/blob/main/saas/%E4%B8%AD%E5%8F%B0%E6%9C%8D%E5%8A%A1%E6%8E%A5%E5%85%A5%E6%89%8B%E5%86%8C.md#5221%E5%8C%BF%E5%90%8D%E6%8E%88%E6%9D%83

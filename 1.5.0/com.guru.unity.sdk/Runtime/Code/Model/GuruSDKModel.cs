@@ -31,7 +31,16 @@ namespace Guru
         public long last_active_ts = 0; // 用户上次登录时间戳
         public int lt = 1; // 添加登录次数字段,初始值为1
         public List<PurchasedProduct> purchased = new List<PurchasedProduct>(10);
-        
+
+        /// <summary>
+        /// iOS idfa
+        /// </summary>
+        public string idfa = "";
+
+        /// <summary>
+        /// iOS idfv
+        /// </summary>
+        public string idfv = "";
         //-------------- data ---------------
     }
 
@@ -50,6 +59,8 @@ namespace Guru
         private string _uid;
         private bool _debugMode = false;
         private int _lt;
+        private string _idfa;
+        private string _idfv;
         private List<PurchasedProduct> _purchased;
 
 
@@ -75,6 +86,8 @@ namespace Guru
             _purchased = model.purchased;
             _debugMode = model.debug_mode;
             _lt = model.lt;
+            _idfv = model.idfv;
+            _idfa = model.idfa;
             _lastActiveTime = TimeUtil.ConvertTimeSpanToDateTime(model.last_active_ts);
         }
 
@@ -145,6 +158,26 @@ namespace Guru
             set => _lt = value;
         }
 
+        public string Idfa
+        {
+            get => _idfa;
+            set
+            {
+                _idfa = value;
+                Save();
+            }
+        }
+
+        public string Idfv
+        {
+            get => _idfv;
+            set
+            {
+                _idfv = value;
+                Save();
+            }
+        }
+        
         public DateTime LastActiveTime
         {
             get => _lastActiveTime;
@@ -192,7 +225,10 @@ namespace Guru
                 purchased = _purchased,
                 debug_mode = _debugMode,
                 last_active_ts = TimeUtil.GetTimeStamp(_lastActiveTime),
-                lt = _lt
+                lt = _lt,
+                
+                idfa = _idfa,
+                idfv = _idfv
             };
 
             var json = JsonUtility.ToJson(model);

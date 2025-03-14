@@ -133,6 +133,31 @@ namespace Guru
             InitServices(); // 初始化所有的服务
             
             onComplete?.Invoke(true);
+#if UNITY_IOS 
+            Delay(5, CheckIdfaAndIdfvChange);
+#endif
+        }
+
+        private void CheckIdfaAndIdfvChange()
+        {
+            bool hasChange = false;
+            if (IPMConfig.IDFA.Equals(Model.Idfa) == false)
+            {
+                hasChange = true;
+                Model.Idfa = IPMConfig.IDFA;
+            }
+
+            if (IPMConfig.IDFV.Equals(Model.Idfv) == false)
+            {
+                hasChange = true;
+                Model.Idfv = IPMConfig.IDFV;
+            }
+
+            if (hasChange)
+            {
+                AuthEventConfigRequest eventConfigRequest = new AuthEventConfigRequest();
+                eventConfigRequest.SetRetryTimes(-1).SetRetryWaitSeconds(10).Send();
+            }
         }
         
         private void InitServices()
@@ -930,8 +955,14 @@ namespace Guru
             
             // 确保跑在主线程内再进行赋值
             RunOnMainThread(() =>
-            {
+            { 
+                bool hasChange = IPMConfig.GOOGLE_ADID.Equals(googleAdId) == false;
                 IPMConfig.GOOGLE_ADID = googleAdId;
+                if (hasChange)
+                {
+                    AuthEventConfigRequest eventConfigRequest = new AuthEventConfigRequest();
+                    eventConfigRequest.SetRetryTimes(-1).SetRetryWaitSeconds(10).Send();
+                }
             });
         }
 
@@ -952,7 +983,13 @@ namespace Guru
                 // 确保跑在主线程内再进行赋值
                 RunOnMainThread(() =>
                 {
+                    bool hasChange = IPMConfig.ADJUST_DEVICE_ID.Equals(adjustDeviceId) == false;
                     IPMConfig.ADJUST_DEVICE_ID = adjustDeviceId;
+                    if (hasChange)
+                    {
+                        AuthEventConfigRequest eventConfigRequest = new AuthEventConfigRequest();
+                        eventConfigRequest.SetRetryTimes(-1).SetRetryWaitSeconds(10).Send();
+                    }
                 });
             }
         }

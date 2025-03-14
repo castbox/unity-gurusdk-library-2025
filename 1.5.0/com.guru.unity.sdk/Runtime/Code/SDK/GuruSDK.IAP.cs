@@ -208,6 +208,12 @@ namespace Guru
         private static void OnBuyStart(string productName)
         {
             Callbacks.IAP.InvokeOnPurchaseStart(productName);
+            
+            //2025-3-13 在 IAP 发起请求时，如果当前 UID 为空，发起一次匿名登陆
+            if (string.IsNullOrEmpty(IPMConfig.IPM_UID))
+            {
+                FirebaseUtil.LoginGuru();
+            }
         }
         
         /// <summary>

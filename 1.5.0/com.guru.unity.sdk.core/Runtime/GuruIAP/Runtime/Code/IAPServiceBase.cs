@@ -599,15 +599,15 @@ namespace Guru.IAP
             Product product = _storeController.products.WithID(info.Setting.ProductId);
             if (product != null && product.availableToPurchase)
             {
+                OnBuyStart?.Invoke(productName);
+                
                 if (string.IsNullOrEmpty(category)) category = info.Category;
-                _storeController.InitiatePurchase(product);
+                _storeController.InitiatePurchase(product);  // 发起购买
                 _curProductInfo = info;
                 _curProductCategory = category;
                 
                 // Analytics.IAPClick(_curProductCategory, product.definition.id);
                 // Analytics.IAPImp(_curProductCategory, product.definition.id);  // <--- Client should report this Event
-                
-                OnBuyStart?.Invoke(productName);
                 return (T)this;
             }
 
@@ -804,7 +804,7 @@ namespace Guru.IAP
             string scene = _curProductCategory ?? "Store";
             bool isFree = false;
             if (orderType == 1) isFree = IsSubscriptionFreeTrailById(productId);
-            string appleReceiptString = "";
+            
             //---------------- All Report Information --------------------
             
             LogI($"--- Report b_level:[{level}] with product id:{args.purchasedProduct.definition.id} ");
@@ -812,50 +812,51 @@ namespace Guru.IAP
 #if UNITY_EDITOR
             // // Editor 不做上报逻辑
             LogI($"--- Editor Validate Success. But Editor can't report order.");
-            // return true;
+            return true;
 #endif
             IPurchaseReceipt[] allReceipts = null;
             
             try
             {
-                
-#if UNITY_IOS
-                // ---- iOS 订单验证, 上报打点信息 ----
-                var jsonData = JsonConvert.DeserializeObject<JObject>(args.purchasedProduct.receipt);
-                if (jsonData != null && jsonData.TryGetValue("Payload", out var recp))
-                {
-                    appleReceiptString = recp.ToString();
-                    LogI($"--- [{productId}] iOS receipt: {appleReceiptString}");      
-                }
-                
-                Debug.Log($"[IAP] --- Full receipt: \n{args.purchasedProduct.receipt}");
-#endif
-                
                 allReceipts = _validator.Validate(args.purchasedProduct.receipt);
-                
-                // ---- Android 订单验证, 上报打点信息 ---- 
                 string offerId = "";
                 string basePlanId = "";
-                
-                foreach (var receipt in allReceipts)
+
+                if (Application.platform == RuntimePlatform.Android)
                 {
-                    if (receipt == null) continue;
-                    
-                    // Subscribe 订阅商品在 googleReceipt 获取 ProductID 可能为空值，直接使用商品 ID
-                    if (receipt is GooglePlayReceipt googleReceipt)
+                    // ---- Android 订单验证, 上报打点信息 ---- 
+                    foreach (var receipt in allReceipts)
                     {
-                        ReportGoogleOrder(orderType, 
-                            googleReceipt.productID,
-                            googleReceipt.purchaseToken,
-                            googleReceipt.orderID,
-                            googleReceipt.purchaseDate, 
-                            level, 
-                            userCurrency, payPrice, scene, isFree,
-                            offerId,  basePlanId);
+                        if (receipt is GooglePlayReceipt googleReceipt)
+                        {
+                            ReportGoogleOrder(orderType, 
+                                googleReceipt.productID,
+                                googleReceipt.purchaseToken,
+                                googleReceipt.orderID,
+                                googleReceipt.purchaseDate, 
+                                level, 
+                                userCurrency, payPrice, scene, isFree,
+                                offerId,  basePlanId);
+                        }
                     }
-                    else if (receipt is AppleInAppPurchaseReceipt appleReceipt)
+                }
+                else if (Application.platform == RuntimePlatform.IPhonePlayer)
+                {
+                    string appleReceiptString = "";
+                    // ---- iOS 订单验证, 上报打点信息 ----
+                    var jsonData = JsonConvert.DeserializeObject<JObject>(args.purchasedProduct.receipt);
+                    if (jsonData != null && jsonData.TryGetValue("Payload", out var recp))
                     {
-                        if (receipt.productID == productId)
+                        appleReceiptString = recp.ToString();
+                        LogI($"--- [{productId}] iOS receipt: {appleReceiptString}");      
+                    }
+                
+                    Debug.Log($"[IAP] --- Full receipt: \n{args.purchasedProduct.receipt}");
+                    
+                    foreach (var receipt in allReceipts)
+                    {
+                        if (receipt is AppleInAppPurchaseReceipt appleReceipt
+                            && receipt.productID == args.purchasedProduct.definition.id)
                         {
                             ReportAppleOrder(orderType, 
                                 appleReceipt.productID,
@@ -867,13 +868,9 @@ namespace Guru.IAP
                                 _appBundleId,
                                 _idfv,
                                 isFree);
+
+                            break;
                         }
-                    }
-                    else
-                    {
-                        string exmsg = $"--- [{productId}] :: Unknown Receipt Type: {receipt.GetType()} can't report order.";
-                        Analytics.LogCrashlytics(exmsg);
-                        LogE(exmsg);
                     }
                 }
             }
