@@ -216,7 +216,7 @@ namespace Guru
 		}
 		
 		/// <summary>
-		/// 
+		/// 检查local归因数据，如果本地没有则异步从Adjust异步获取
 		/// </summary>
 		private async UniTaskVoid CheckAndFetchAdjustAttribution()
 		{
@@ -253,14 +253,12 @@ namespace Guru
 					tcs.TrySetResult(result);
 				});
 				AdjustAttribution attribution = await tcs.Task.Timeout(TimeSpan.FromSeconds(15));
-				if (attribution == null)
-					attribution = new AdjustAttribution();
 				ProcessAdjustAttributionChanged(attribution); 
 			}
 			catch (Exception ex)
 			{
 				LogE(LOG_TAG, $"Failed to fetch adjust attribution: {ex.ToString()}");
-				ProcessAdjustAttributionChanged(new AdjustAttribution());
+				ProcessAdjustAttributionChanged(null);
 			}
 		}
 		
@@ -271,8 +269,6 @@ namespace Guru
 		private void OnAttributionChanged(AdjustAttribution attribution)
 		{
 			LogI(LOG_TAG, $"--- OnAttributionChanged");
-			if (attribution == null)
-				attribution = new AdjustAttribution();
 			ProcessAdjustAttributionChanged(attribution);
 		}
 
@@ -280,7 +276,7 @@ namespace Guru
 		/// 处理归因
 		/// </summary>
 		/// <param name="attribution"></param>
-		private void ProcessAdjustAttributionChanged(AdjustAttribution attribution)
+		private void ProcessAdjustAttributionChanged(AdjustAttribution attribution = null)
 		{
 			string channel = attribution == null || string.IsNullOrEmpty(attribution.Network) ?"unknown" : attribution.Network;
 			Analytics.SetUserProperty(Analytics.PropertyChannel, channel);
@@ -290,35 +286,38 @@ namespace Guru
 			
 			string creative = attribution == null || string.IsNullOrEmpty(attribution.Creative) ? "unknown" : attribution.Creative;
 			Analytics.SetUserProperty(Analytics.PropertyCreative, creative);
-
-			if (_adjustModel.Attribution == null  || (attribution != null && CheckAdjustAttributionChanged(_adjustModel.Attribution, attribution)))
+			
+			if (CheckAdjustAttributionChanged(attribution))
 			{
 				_adjustModel.Attribution = attribution;
 				LogI(LOG_TAG, $"adjust attribution changed!");
 			}
 		}
 
-		private bool CheckAdjustAttributionChanged(AdjustAttribution a, AdjustAttribution b)
+		private bool CheckAdjustAttributionChanged(AdjustAttribution newValue)
 		{
-			// 如果两个引用相同（包括都为null的情况），则没有变化
-			if (ReferenceEquals(a, b))
+			if (newValue == null)
 				return false;
-    
-			// 如果其中一个为null而另一个不为null，则有变化
-			if (a == null || b == null)
+
+			AdjustAttribution localAttribution = _adjustModel.Attribution;
+			if (localAttribution == null)
 				return true;
 			
-			return GuruSDKUtils.StringEquals(a.TrackerToken, b.TrackerToken) == false ||
-			       GuruSDKUtils.StringEquals( a.TrackerName, b.TrackerName) == false ||
-			       GuruSDKUtils.StringEquals(a.Network, b.Network) == false ||
-			       GuruSDKUtils.StringEquals(a.Campaign, b.Campaign) == false ||
-			       GuruSDKUtils.StringEquals(a.Adgroup, b.Adgroup) == false ||
-			       GuruSDKUtils.StringEquals(a.Creative, b.Creative) == false ||
-			       GuruSDKUtils.StringEquals(a.ClickLabel, b.ClickLabel) == false ||
-			       GuruSDKUtils.StringEquals(a.CostType, b.CostType) == false ||
-			       a.CostAmount.Equals(b.CostAmount) == false ||
-			       GuruSDKUtils.StringEquals(a.CostCurrency,b.CostCurrency) == false ||
-			       GuruSDKUtils.StringEquals(a.FbInstallReferrer ,b.FbInstallReferrer) == false;
+			// 如果两个引用相同,则没有变化
+			if (ReferenceEquals(localAttribution, newValue))
+				return false;
+			
+			return GuruSDKUtils.StringEquals(localAttribution.TrackerToken, newValue.TrackerToken) == false ||
+			       GuruSDKUtils.StringEquals( localAttribution.TrackerName, newValue.TrackerName) == false ||
+			       GuruSDKUtils.StringEquals(localAttribution.Network, newValue.Network) == false ||
+			       GuruSDKUtils.StringEquals(localAttribution.Campaign, newValue.Campaign) == false ||
+			       GuruSDKUtils.StringEquals(localAttribution.Adgroup, newValue.Adgroup) == false ||
+			       GuruSDKUtils.StringEquals(localAttribution.Creative, newValue.Creative) == false ||
+			       GuruSDKUtils.StringEquals(localAttribution.ClickLabel, newValue.ClickLabel) == false ||
+			       GuruSDKUtils.StringEquals(localAttribution.CostType, newValue.CostType) == false ||
+			       localAttribution.CostAmount.Equals(newValue.CostAmount) == false ||
+			       GuruSDKUtils.StringEquals(localAttribution.CostCurrency, newValue.CostCurrency) == false ||
+			       GuruSDKUtils.StringEquals(localAttribution.FbInstallReferrer, newValue.FbInstallReferrer) == false;
 		}
 		
 		private async UniTaskVoid DelayAction(int delayMs, Action callback)

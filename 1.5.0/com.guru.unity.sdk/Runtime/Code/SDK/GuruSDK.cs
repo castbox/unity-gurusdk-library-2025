@@ -155,8 +155,7 @@ namespace Guru
 
             if (hasChange)
             {
-                AuthEventConfigRequest eventConfigRequest = new AuthEventConfigRequest();
-                eventConfigRequest.SetRetryTimes(-1).SetRetryWaitSeconds(10).Send();
+                new PropertyEventConfigRequest(-1, 10).Send();
             }
         }
         
@@ -960,8 +959,7 @@ namespace Guru
                 IPMConfig.GOOGLE_ADID = googleAdId;
                 if (hasChange)
                 {
-                    AuthEventConfigRequest eventConfigRequest = new AuthEventConfigRequest();
-                    eventConfigRequest.SetRetryTimes(-1).SetRetryWaitSeconds(10).Send();
+                    new PropertyEventConfigRequest(-1, 10).Send();
                 }
             });
         }
@@ -987,8 +985,7 @@ namespace Guru
                     IPMConfig.ADJUST_DEVICE_ID = adjustDeviceId;
                     if (hasChange)
                     {
-                        AuthEventConfigRequest eventConfigRequest = new AuthEventConfigRequest();
-                        eventConfigRequest.SetRetryTimes(-1).SetRetryWaitSeconds(10).Send();
+                        new PropertyEventConfigRequest(-1, 10).Send();
                     }
                 });
             }

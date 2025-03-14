@@ -88,8 +88,7 @@ namespace Guru
 						
 						if (hasChange)
 						{
-							AuthEventConfigRequest eventConfigRequest = new AuthEventConfigRequest();
-							eventConfigRequest.SetRetryTimes(-1).SetRetryWaitSeconds(10).Send();
+							new PropertyEventConfigRequest(-1, 10).Send();
 						}
 					}
 					else

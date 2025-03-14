@@ -11,7 +11,9 @@ namespace Guru
     /// 【产研】优化用户属性补全逻辑
     /// https://www.tapd.cn/33527076/prong/stories/view/1133527076001025453?from_iteration_id=1133527076001003267
     /// </summary>
-    public class AuthEventConfigRequest : RequestBase
+    
+    
+    public class PropertyEventConfigRequest : RequestBase
     {
         protected override string RequestURL => ServerConst.API_AUTH_EVENT_CONFIG;
         
@@ -32,6 +34,12 @@ namespace Guru
         protected override void RequestSuccessCallBack(string response)
         {
             UnityEngine.Debug.Log("[SDK] --- Send EventConfig Success");
+        }
+
+        public PropertyEventConfigRequest(int retryTimes = -1, int waitSeconds = 10)
+        {
+            SetRetryTimes(retryTimes);
+            SetRetryWaitSeconds(waitSeconds);
         }
     }
 }
