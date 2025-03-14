@@ -135,8 +135,38 @@ namespace Guru
             
             AddDebugConsoleCommand("clearuid", "Clear uid debug mode", () =>
             {
-                UnityEngine.Debug.Log($"{LOG_TAG} --- LT debug mode: Off");
+                UnityEngine.Debug.Log($"{LOG_TAG} ---clear uid");
                 IPMConfig.DebugClearUID();
+            });
+            
+            AddDebugConsoleCommand("clearidfa", "Clear idfa debug mode", () =>
+            {
+                UnityEngine.Debug.Log($"{LOG_TAG} ---clear idfa");
+                DebugClearIdfa();
+            });
+            
+            AddDebugConsoleCommand("clearidfv", "Clear idfv debug mode", () =>
+            {
+                UnityEngine.Debug.Log($"{LOG_TAG} ---clear idfv");
+                DebugClearIdfv();
+            });
+            
+            AddDebugConsoleCommand("clearadjustid", "Clear adjust id debug mode", () =>
+            {
+                UnityEngine.Debug.Log($"{LOG_TAG} ---clear adjust id");
+                IPMConfig.DebugClearAdjustId();
+            });
+            
+            AddDebugConsoleCommand("cleargaid", "Clear gaid debug mode", () =>
+            {
+                UnityEngine.Debug.Log($"{LOG_TAG} ---clear gaid");
+                IPMConfig.DebugClearGoogleAdid();
+            });
+            
+            AddDebugConsoleCommand("clearfirebaseid", "Clear firebase id debug mode", () =>
+            {
+                UnityEngine.Debug.Log($"{LOG_TAG} ---clear firebase id");
+                IPMConfig.DebugClearFirebaseId();
             });
         }
 

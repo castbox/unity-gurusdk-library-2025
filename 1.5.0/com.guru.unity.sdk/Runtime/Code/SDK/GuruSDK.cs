@@ -144,13 +144,15 @@ namespace Guru
             if (IPMConfig.IDFA.Equals(Model.Idfa) == false)
             {
                 hasChange = true;
-                Model.Idfa = IPMConfig.IDFA;
+                if (string.IsNullOrEmpty(IPMConfig.IDFA))
+                    Model.Idfa = IPMConfig.IDFA;
             }
 
             if (IPMConfig.IDFV.Equals(Model.Idfv) == false)
             {
                 hasChange = true;
-                Model.Idfv = IPMConfig.IDFV;
+                if (string.IsNullOrEmpty(IPMConfig.IDFV) == false)
+                    Model.Idfv = IPMConfig.IDFV;
             }
 
             if (hasChange)
@@ -992,7 +994,16 @@ namespace Guru
         }
         #endregion
 
- 
+
+        public static void DebugClearIdfa()
+        {
+            Model.Idfa = "test";
+        }
+        
+        public static void DebugClearIdfv()
+        {
+            Model.Idfv = "test";
+        }
         
     }
 

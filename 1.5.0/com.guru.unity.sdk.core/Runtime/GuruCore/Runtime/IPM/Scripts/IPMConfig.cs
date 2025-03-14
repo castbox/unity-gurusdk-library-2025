@@ -117,6 +117,7 @@ namespace Guru
 		public static void DebugClearUID()
 		{
 			_uid = string.Empty;
+			PlayerPrefs.SetString(nameof(IPM_UID), "");
 		}
 
 		/// <summary>
@@ -324,6 +325,12 @@ namespace Guru
 			}
 		}
 
+		public static void DebugClearFirebaseId()
+		{
+			_firebaseId = "test";
+			PlayerPrefs.SetString(nameof(FIREBASE_ID), "test");
+		}
+
 		private static string _adjustDeviceId = "";
 		/// <summary>
 		/// Adjust 平台的 DeviceID
@@ -353,6 +360,12 @@ namespace Guru
 				_adjustDeviceId = value;
 				PlayerPrefs.SetString(nameof(ADJUST_DEVICE_ID), value);
 			}
+		}
+
+		public static void DebugClearAdjustId()
+		{
+			_adjustDeviceId = "test";
+			PlayerPrefs.SetString(nameof(ADJUST_DEVICE_ID), "test");
 		}
 		
 
@@ -445,6 +458,12 @@ namespace Guru
 				_googleAdid = value;
 				PlayerPrefs.SetString(nameof(GOOGLE_ADID), value);
 			}
+		}
+
+		public static void DebugClearGoogleAdid()
+		{
+			_googleAdid = "test";
+			PlayerPrefs.SetString(nameof(GOOGLE_ADID), "test");
 		}
 		
 		public static string ADJUST_GOOGLE_ADID

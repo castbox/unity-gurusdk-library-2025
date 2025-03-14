@@ -19,14 +19,17 @@ namespace Guru
         
         protected override UnityWebRequest CreateRequest()
         {
-            EventConfig eventConfig = new EventConfig();
-            UnityEngine.Debug.Log($"[SDK] --- Send EventConfig:{eventConfig}");
+            EventConfig data = EventConfig.Build();
+            var  json = JsonUtility.ToJson(data);
+            UnityEngine.Debug.Log($"[SDK] --- Send EventConfig:{json}");
             var request = new UnityWebRequest(RequestURL, "POST");
-            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonUtility.ToJson(eventConfig)));
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader(ServerConst.HEADER_PARAM_CONTENT_TYPE, ServerConst.HEADER_CONTENT_TYPE_VALUE);
             request.SetRequestHeader(ServerConst.HEADER_PARAM_APPID, IPMConfig.IPM_X_APP_ID);
+            request.SetRequestHeader(ServerConst.HEADER_PARAM_UID, IPMConfig.IPM_UID);
             request.SetRequestHeader(ServerConst.HEADER_PARAM_ACCESS_TOKEN, IPMConfig.IPM_AUTH_TOKEN);
+            
             return request;
         }
         
