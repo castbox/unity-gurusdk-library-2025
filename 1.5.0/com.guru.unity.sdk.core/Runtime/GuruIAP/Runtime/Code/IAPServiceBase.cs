@@ -307,6 +307,7 @@ namespace Guru.IAP
                 if (_products.ContainsKey(product.definition.id))
                 {
                     _products[product.definition.id].SetProduct(product);
+                    Debug.Log($"[IAP] productId = {product.definition.id}; product metadata = {(product.metadata == null ? "null" : "not null")}; price = {(product.metadata == null ? 0 : product.metadata.localizedPriceString)}");
                 }
             }
 
