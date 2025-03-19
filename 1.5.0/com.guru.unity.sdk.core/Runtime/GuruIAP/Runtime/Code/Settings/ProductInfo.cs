@@ -93,11 +93,11 @@ namespace Guru
 #if UNITY_IOS
                 return $"{CurrencyCode}{_product.metadata.localizedPriceString}";
 #else
-                return _product.metadata.localizedPriceString
+                return _product.metadata.localizedPriceString;
 #endif
             }
             // _product?.metadata?.localizedPriceString ?? $"{CurrencyCode}{_setting.Price}";
-        };
+        }
     }
     
 }
