@@ -90,7 +90,11 @@ namespace Guru
                     return $"{CurrencyCode}{_setting.Price}";
                 }
                 Debug.Log($"[IAP] 从商店获取价格；CurrencyCode =  {CurrencyCode}; priceStr = {(_product.metadata.localizedPriceString)}");
+#if UNITY_IOS
                 return $"{CurrencyCode}{_product.metadata.localizedPriceString}";
+#else
+                return _product.metadata.localizedPriceString
+#endif
             }
             // _product?.metadata?.localizedPriceString ?? $"{CurrencyCode}{_setting.Price}";
         };
