@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+
 namespace Guru
 {
     using System;
@@ -157,7 +159,7 @@ namespace Guru
         /// <summary>
         /// 异步获取所有远程配置
         /// </summary>
-        public async void FetchAllConfigsAsync(Action<bool, Dictionary<string, string>> updateCallback)
+        public async UniTask<(bool, Dictionary<string, string>)> FetchAllConfigsAsync()
         {
             try
             {
@@ -166,43 +168,28 @@ namespace Guru
                 await fetchTask;
                 if (fetchTask.IsFaulted || fetchTask.IsCanceled)
                 {
-                    updateCallback?.Invoke(false, null);
                     Debug.LogError($"{TAG} fetch failed");
-                    return;
+                    return (false, null);
                 }
                 
                 var activeTask = _remoteConfig.ActivateAsync();
                 await activeTask;
                 if (activeTask.Status == TaskStatus.RanToCompletion)
                 {
-                    updateCallback?.Invoke(true, GetAllConfigValues());
                     Debug.Log($"{TAG} active success");
+                    await UniTask.SwitchToMainThread();
+                    return (true, GetAllConfigValues());
                 }
                 else
                 {
-                    updateCallback?.Invoke(false, null);
                     Debug.LogError($"{TAG} active failed: {activeTask.Status}");
+                    return (false, null);
                 }
-                
-                // await _remoteConfig.ActivateAsync().ContinueWithOnMainThread(activeTask =>
-                //     {
-                //         var success = activeTask.Result;
-                //         if (success)
-                //         {
-                //             updateCallback?.Invoke(true, GetAllConfigValues());
-                //             Debug.Log($"{TAG} 配置激活成功");
-                //         }
-                //         else
-                //         {
-                //             updateCallback?.Invoke(false, null);
-                //             Debug.LogError($"{TAG} 配置激活失败");
-                //         }
-                //     });
             }
             catch (Exception e)
             {
-                updateCallback?.Invoke(false, null);
                 Debug.LogError($"{TAG} Fetch config get error: {e.Message}");
+                return (false, null);
             }
         }
         

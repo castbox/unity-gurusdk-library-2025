@@ -888,7 +888,7 @@ namespace Guru
 
             if (IsFirebaseReady)
             {
-                _remoteConfigManager.OnFirebaseReady(); // 云控初始化完成
+                // _remoteConfigManager.OnFirebaseReady(); // 云控初始化完成
 
                 try
                 {

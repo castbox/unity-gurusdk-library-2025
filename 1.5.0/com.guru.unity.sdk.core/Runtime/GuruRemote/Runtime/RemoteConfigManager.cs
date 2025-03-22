@@ -1,3 +1,6 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
+
 namespace Guru
 {
     using System;
@@ -30,6 +33,7 @@ namespace Guru
         private readonly bool _isDebugMode;                     // 是否为调试模式
         private bool _isReady;                   // 是否已初始化
         private Action<bool> _onFetchResultHandler;             // 拉取配置结果回调
+        private CancellationTokenSource _fetchCancellationSource;
 
         /// <summary>
         /// 初始化远程配置管理器
@@ -81,36 +85,116 @@ namespace Guru
         #endregion
 
         #region 数据拉取
-
         /// <summary>
-        /// 拉取所有远程配置
+        /// 拉取所有远程配置（带无限重试，兼容回调API）
         /// </summary>
         /// <param name="callback">拉取完成回调(true:成功 false:失败)</param>
-        public void FetchAllAsync(Action<bool> callback = null)
+        /// <param name="initialDelayMs">初始重试延迟（毫秒）</param>
+        /// <param name="maxDelayMs">最大重试延迟（毫秒）</param>
+        public void FetchAllAsync(Action<bool> callback = null, int initialDelayMs = 1000, int maxDelayMs = 32000)
         {
             if (!_isReady)
             {
-                LogW($"{TAG} RemoteConfig Not init");
+                LogW("RemoteConfig Not init");
                 callback?.Invoke(false);
                 return;
             }
-
-            LogI($"{TAG} Start FetchAll");
-            _remoteService.FetchAllConfigsAsync((success, configValues) =>
-            {
-                if (success)
+    
+            // 取消之前的操作（如果有）
+            CancelFetchOperations();
+    
+            // 创建新的CancellationTokenSource
+            _fetchCancellationSource = new CancellationTokenSource();
+    
+            // 使用UniTask版本的方法，但保持回调API兼容
+            FetchAllAsyncWithRetry(initialDelayMs, maxDelayMs, _fetchCancellationSource.Token)
+                .ContinueWith(success => callback?.Invoke(success))
+                .Forget(ex => 
                 {
-                    _configModel.UpdateConfigValues(configValues);
-                    LogI($"{TAG} FetchAllAsync success");
-                }
-                else
-                {
-                    LogW($"{TAG} FetchAllAsync failed");
-                }
-                callback?.Invoke(success);
-            });
+                    if (ex is OperationCanceledException)
+                    {
+                        LogW("FetchAllAsync operation was cancelled");
+                        callback?.Invoke(false);
+                    }
+                    else
+                    {
+                        LogE($"Unhandled exception in FetchAllAsync: {ex.Message}", ex);
+                        callback?.Invoke(false);
+                    }
+                });
         }
-
+        
+        /// <summary>
+        /// 拉取所有远程配置（带无限重试和指数退避）
+        /// </summary>
+        /// <param name="initialDelayMs">初始重试延迟（毫秒）</param>
+        /// <param name="maxDelayMs">最大重试延迟（毫秒）</param>
+        /// <param name="cancellationToken">取消令牌</param>
+        /// <returns>拉取结果的UniTask(true:成功)</returns>
+        private async UniTask<bool> FetchAllAsyncWithRetry( int initialDelayMs = 1000, int maxDelayMs = 32000,CancellationToken cancellationToken = default)
+        {
+            if (!_isReady)
+            {
+                LogW($"RemoteConfig Not init");
+                return false;
+            }
+            LogI($"Start FetchAll with retry");
+            int attempt = 0;
+            int delayMs = 0;
+    
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    // 如果不是第一次尝试，则等待一段时间后重试
+                    if (attempt > 0)
+                    {
+                        // 计算指数退避延迟（1s, 2s, 4s, 8s...），但不超过最大值
+                        delayMs = Math.Min(initialDelayMs * (1 << (attempt - 1)), maxDelayMs);
+                        LogI($"Retry attempt #{attempt} after {delayMs}ms");
+                        await UniTask.Delay(delayMs, cancellationToken: cancellationToken);
+                    }
+            
+                    // 执行实际的获取配置操作
+                    var (success, configValues) = await _remoteService.FetchAllConfigsAsync();
+                    if (success)
+                    {
+                        _configModel.UpdateConfigValues(configValues);
+                        LogI($"FetchAllAsync success after {attempt} retries");
+                        return true;
+                    }
+                    LogW("FetchAllAsync failed, will retry");
+                    attempt++;
+                }
+                catch (OperationCanceledException)
+                {
+                    // 操作被取消
+                    LogW($"FetchAllAsync cancelled after {attempt} attempts");
+                    throw; // 重新抛出取消异常
+                }
+                catch (Exception ex)
+                {
+                    LogE($" FetchAllAsync exception on attempt #{attempt}: {ex.Message}", ex);
+                    attempt++;
+                }
+            }
+            return false; // 只有在取消时才会到达这里
+        }
+        
+        /// <summary>
+        /// 取消所有正在进行的配置获取操作
+        /// </summary>
+        private void CancelFetchOperations()
+        {
+            if (_fetchCancellationSource != null && !_fetchCancellationSource.IsCancellationRequested)
+            {
+                LogI($"Cancelling ongoing fetch operations");
+                _fetchCancellationSource.Cancel();
+                _fetchCancellationSource.Dispose();
+                _fetchCancellationSource = null;
+            }
+        }
+        
         /// <summary>
         /// 远程配置更新回调
         /// </summary>

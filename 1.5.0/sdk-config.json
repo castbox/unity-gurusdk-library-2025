@@ -1,7 +1,7 @@
 {
   "version": "1.5.0",
-  "ts": "1741936943",
-  "desc": "版本内容：\\n1.MAX广告插件整体升级 2025-Q1\\n2.PUSH消息增加优先级渠道\\n3.修复Amazon广告加载问题\\n4.iap_ret_false 添加 reason\\n5.广告加载失败添加原因\\n6.Fyber的Android Adapter 升级到 8.3.5.0\\n7.【BI】Adjust 新增用户属性打点\\n8.【产研】优化用户属性补全逻辑\\n9.【IAP】在 IAP 支付的时候检查用户 UID 的获取情况",
+  "ts": "1742641308",
+  "desc": "版本内容：\\n1.MAX广告插件整体升级 2025-Q1\\n2.PUSH消息增加优先级渠道\\n3.修复Amazon广告加载问题\\n4.iap_ret_false 添加 reason\\n5.广告加载失败添加原因\\n6.Fyber的Android Adapter 升级到 8.3.5.0\\n7.【BI】Adjust 新增用户属性打点\\n8.【产研】优化用户属性补全逻辑\\n9.【IAP】在 IAP 支付的时候检查用户 UID 的获取情况\\n10.【优化】RemoteConfig加入拉取失败重试机制",
   "packages": {
     "com.coffee.git-dependency-resolver": {
       "group": "third-party",

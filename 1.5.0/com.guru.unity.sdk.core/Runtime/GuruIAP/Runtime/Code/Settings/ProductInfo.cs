@@ -87,10 +87,13 @@ namespace Guru
                 if (_product == null || _product.metadata == null)
                 {
                     Debug.Log($"[IAP] 获取默认价格！");
-                    return $"{CurrencyCode}{_setting.Price}";
                 }
-                Debug.Log($"[IAP] 从商店获取价格；CurrencyCode =  {CurrencyCode}; priceStr = {(_product.metadata.localizedPriceString)}");
-                return _product.metadata.localizedPriceString;
+                else
+                {
+                    Debug.Log($"[IAP] 从商店获取价格；CurrencyCode =  {CurrencyCode}; priceStr = {(_product.metadata.localizedPriceString)}");
+                }
+                
+                return _product?.metadata?.localizedPriceString ?? $"{CurrencyCode}{_setting.Price}";
             }
         }
     }
