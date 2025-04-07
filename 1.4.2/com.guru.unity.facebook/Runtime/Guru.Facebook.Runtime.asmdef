@@ -1,9 +1,7 @@
 {
-    "name": "com.guru.facebookunitysdk.runtime",
+    "name": "Guru.Facebook.Runtime",
     "rootNamespace": "",
-    "references": [
-        "GUID:d104bbfec8188407b9024e2e81d73ae5"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

@@ -153,13 +153,13 @@ namespace Guru.Notification
                             if(childNode == null) continue;
                             
                             // 判断 action/category 二者取其一
-                            if (childNode.Name == "action" && childNode.InnerXml.Contains("android.intent.action.MAIN"))
+                            if (childNode.Name == "action" && childNode.OuterXml.Contains("android.intent.action.MAIN"))
                             {
                                 var activityName = activityNode.GetAttribute("name", K_ANDROID_NAMESPACE_URI);
                                 return activityName;
                             }
                             
-                            if (childNode.Name == "category" && childNode.InnerXml.Contains("android.intent.category.LAUNCHER"))
+                            if (childNode.Name == "category" && childNode.OuterXml.Contains("android.intent.category.LAUNCHER"))
                             {
                                 var activityName = activityNode.GetAttribute("name", K_ANDROID_NAMESPACE_URI);
                                 return activityName;

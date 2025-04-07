@@ -219,8 +219,8 @@ namespace Guru
                 _defaults[ServicesConfigKey] = defaultGuruServiceJson;
             }
             
-            // RemoteConfigManager.Init(_defaults);
             // RemoteConfigManager.OnFetchCompleted += OnFetchRemoteCallback;
+            // RemoteConfigManager.Init(_defaults);
             
             InitRemoteConfigManager(_defaults, DebugModeEnabled);
             Callbacks.SDK.OnFirebaseReady += InternalFetchAllConfigs;
