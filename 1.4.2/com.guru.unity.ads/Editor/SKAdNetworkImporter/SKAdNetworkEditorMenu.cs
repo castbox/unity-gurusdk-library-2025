@@ -1,3 +1,4 @@
+#if UNITY_IOS
 namespace Guru.Editor
 {
     using UnityEditor;
@@ -13,5 +14,6 @@ namespace Guru.Editor
         }
     }
 }
+#endif
 
 
