@@ -20,7 +20,8 @@ namespace Guru
 
         public static void FetchAllRemote(bool immediately = false)
         {
-            Instance._remoteConfigManager.FetchAllAsync();
+            // Instance._remoteConfigManager.FetchAllAsync();
+            Instance._remoteConfigManager.FetchAllAsync(Callbacks.Remote.InvokeOnRemoteFetchComplete);
         }
         
         public static string GetRemoteString(string key, string defaultValue = "") => Instance._remoteConfigManager.GetStringValue(key, defaultValue);
