@@ -42,7 +42,8 @@ namespace Guru.Ads.Max
             var pubmaticLoader = new MaxCustomLoaderPubmatic(mediationProfile.storeUrl); // Pubmatic 初始化即可
             
             // --- proxies ----
-            _bannerLoader = new MaxBannerLoader(mediationProfile.bannerUnitId,mediationProfile.bannerWidth, mediationProfile.bannerBgColorHex, amazonLoader, eventObserver);
+            _bannerLoader = new MaxBannerLoader(mediationProfile.bannerUnitId, mediationProfile.bannerWidth,
+                mediationProfile.bannerBgColorHex, amazonLoader, eventObserver, mediationProfile.enableAdaptiveBanner);
             _interstitialLoader = new MaxInterstitialLoader(mediationProfile.interstitialUnitId, amazonLoader, eventObserver);
             _rewardedLoader = new MaxRewardedLoader(mediationProfile.rewardedUnitId, amazonLoader, eventObserver);
 

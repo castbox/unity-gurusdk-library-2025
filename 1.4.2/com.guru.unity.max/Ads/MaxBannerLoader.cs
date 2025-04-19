@@ -22,6 +22,7 @@ namespace Guru.Ads.Max
         private readonly ICustomAmazonLoader _customAmazonLoader;
         private readonly IAdEventObserver _eventObserver; // 广告事件监听器
         private readonly MaxReviewCreativeIdCache _reviewCreativeIdCache;
+        private readonly bool _adaptiveBannerEnabled = false;
         
         private string _maxAdUnitId;
         private bool _isBannerVisible; // Banner 是否可见
@@ -36,7 +37,6 @@ namespace Guru.Ads.Max
         private CancellationTokenSource _retryLoadCts;
 
         private bool _isLoading = false;
-  
 
         /// <summary>
         /// 构造函数
@@ -46,7 +46,8 @@ namespace Guru.Ads.Max
         /// <param name="customAmazonLoader"></param>
         /// <param name="observer"></param>
         /// <param name="adUnitId"></param>
-        public MaxBannerLoader(string adUnitId, float width, string colorHexStr, ICustomAmazonLoader customAmazonLoader, IAdEventObserver observer)
+        /// <param name="enableAdaptiveBanner"></param>
+        public MaxBannerLoader(string adUnitId, float width, string colorHexStr, ICustomAmazonLoader customAmazonLoader, IAdEventObserver observer, bool enableAdaptiveBanner = false)
         {
             _hasBannerCreated = false;
             _maxAdUnitId = adUnitId;
@@ -57,6 +58,7 @@ namespace Guru.Ads.Max
             _tag = AdConst.LOG_TAG_MAX;
             _isLoading = false;
             _reviewCreativeIdCache = new MaxReviewCreativeIdCache(12);
+            _adaptiveBannerEnabled = enableAdaptiveBanner;
             
             // --- Add Callbacks ---
             MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnAdsLoadedEvent;
@@ -136,7 +138,7 @@ namespace Guru.Ads.Max
         private void CreateMaxBanner()
         {
             MaxSdk.CreateBanner(_maxAdUnitId, MaxSdkBase.BannerPosition.BottomCenter);
-            MaxSdk.SetBannerExtraParameter(_maxAdUnitId, "adaptive_banner", "false");
+            MaxSdk.SetBannerExtraParameter(_maxAdUnitId, "adaptive_banner", _adaptiveBannerEnabled? "true" : "false");
             // Set background or background color for banners to be fully functional
             MaxSdk.SetBannerBackgroundColor(_maxAdUnitId, _backColor);
             // MaxSdk.StartBannerAutoRefresh(_maxAdUnitId);
@@ -146,7 +148,7 @@ namespace Guru.Ads.Max
                 MaxSdk.SetBannerWidth(_maxAdUnitId, _width);
             }
             _hasBannerCreated = true;
-            Debug.Log($"{_tag} --- BADS created: {_maxAdUnitId}");
+            Debug.Log($"{_tag} --- BADS created: {_maxAdUnitId}   isAdaptiveBanner: {_adaptiveBannerEnabled}");
         }
 
 

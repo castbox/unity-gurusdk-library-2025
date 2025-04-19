@@ -1,4 +1,4 @@
-
+#nullable enable
 namespace Guru
 {
     using System;
@@ -417,6 +417,8 @@ namespace Guru
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t bannerColor: {bannerColor}");
             var bannerWidth = InitConfig.BannerWidth;
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t bannerWidth: {bannerWidth}");
+            var enableAdaptiveBanner = InitConfig.EnableAdaptiveBanner;
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t enableAdaptiveBanner: {enableAdaptiveBanner}");
             var osVersion = Instance.GetOSVersionStr();
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t osVersion: {osVersion}");
             var isIapUser = Model.IsIapUser;
@@ -442,6 +444,7 @@ namespace Guru
                 .SetAmazonRewardedId(amazonRewardedId)
                 .SetStoreUrl(storeUrl)
                 .SetIsNoAds(isNoAds)
+                .SetEnableAdaptiveBanner(enableAdaptiveBanner)
                 .SetUserId(uid)
                 .SetBannerBackColorHex(bannerColor)
                 .SetBannerWidth(bannerWidth)
