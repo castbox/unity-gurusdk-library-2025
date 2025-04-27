@@ -327,7 +327,7 @@ namespace Guru.Editor
 	        ChangeBuildPlayerCommonSetting(buildParam, BuildTargetGroup.iOS);
 	        
 	        //修改打包版本号
-	        var buildNumber= GetPlayerSettingsBuildNumberStr(BuildTarget.Android);
+	        var buildNumber= GetPlayerSettingsBuildNumberStr(BuildTarget.iOS);
 	        if (buildParam.AutoSetBuildNumber)
 	        {
 		        buildNumber = CreateGuruBuildNumber();
