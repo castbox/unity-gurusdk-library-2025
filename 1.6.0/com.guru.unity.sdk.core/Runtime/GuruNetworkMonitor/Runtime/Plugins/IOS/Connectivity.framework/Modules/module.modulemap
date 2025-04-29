@@ -1,0 +1,4 @@
+framework module Connectivity {
+  header "Connectivity-Swift.h"
+  requires objc
+}

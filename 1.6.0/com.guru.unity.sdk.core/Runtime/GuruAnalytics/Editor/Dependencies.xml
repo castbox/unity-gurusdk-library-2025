@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+Sample Dependencies.xml:
+    https://github.com/googlesamples/unity-jar-resolver/blob/master/sample/Assets/ExternalDependencyManager/Editor/SampleDependencies.xml
+-->
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="androidx.core:core:1.7.0" />
+<!--        <androidPackage spec="androidx.appcompat:appcompat:1.5.1" />-->
+        <androidPackage spec="androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1" />
+<!--        <androidPackage spec="androidx.work:work-runtime:2.8.1" />-->
+<!--        <androidPackage spec="androidx.work:work-runtime-ktx:2.8.1" />-->
+<!--        <androidPackage spec="androidx.work:work-rxjava2:2.8.1" />-->
+        <androidPackage spec="androidx.work:work-runtime:2.9.0" />
+        <androidPackage spec="androidx.work:work-runtime-ktx:2.9.0" />
+        <androidPackage spec="androidx.work:work-rxjava2:2.9.0" />
+        <androidPackage spec="androidx.lifecycle:lifecycle-process:2.4.0" />
+        <androidPackage spec="com.jakewharton.timber:timber:4.7.1" />
+        <androidPackage spec="com.google.code.gson:gson:2.8.5" />
+        <androidPackage spec="androidx.room:room-runtime:2.6.1" />
+        <androidPackage spec="androidx.room:room-rxjava2:2.6.1" />
+        <androidPackage spec="com.squareup.retrofit2:retrofit:2.7.1" />
+        <androidPackage spec="com.squareup.retrofit2:converter-gson:2.7.1" />
+        <androidPackage spec="com.squareup.retrofit2:adapter-rxjava2:2.7.1" />
+        <androidPackage spec="com.squareup.okhttp3:okhttp:4.12.0" />
+        <androidPackage spec="com.squareup.okhttp3:okhttp-dnsoverhttps:4.12.0" />
+        <androidPackage spec="com.google.net.cronet:cronet-okhttp:0.1.0" />
+<!--        <androidPackage spec="com.mapzen:on-the-road:0.8.1" />-->
+<!--        <androidPackage spec="com.squareup.retrofit2:retrofit:2.7.1" />-->
+    </androidPackages>
+    <iosPods>
+        <iosPod name="GuruAnalyticsLib" bitcodeEnabled="false" path="Packages/com.guru.unity.sdk.core/Runtime/GuruAnalytics/Plugins/iOS" />
+        <iosPod name="JJException" bitcodeEnabled="false" />
+    </iosPods>
+</dependencies>

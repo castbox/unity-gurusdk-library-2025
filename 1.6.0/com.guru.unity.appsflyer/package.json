@@ -1,0 +1,11 @@
+{
+	"name": "com.guru.unity.appsflyer",
+	"displayName": "Guru AppsFlyer",
+	"description": "AppsFlyer Unity plugin",
+	"version": "6.15.3",
+	"unity": "2019.4",
+	"author": {
+        "name": "Guru Game"
+    },
+	"license": "MIT"
+  }
