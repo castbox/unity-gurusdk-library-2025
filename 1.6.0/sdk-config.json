@@ -148,7 +148,7 @@
       "embedded": true,
       "dependencies": []
     },
-    "com.guru.unikit.analytics.appsflyer": {
+    "com.guru.unity.appsflyer": {
       "group": "guru-sdk",
       "embedded": true,
       "dependencies": []
