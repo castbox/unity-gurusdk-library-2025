@@ -17,7 +17,8 @@
         "Unity.Advertisement.IosSupport",
         "Unity.Notifications.Android",
         "Unity.Notifications.iOS",
-        "GuruUtils.Runtime"
+        "GuruUtils.Runtime",
+        "AppsFlyer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

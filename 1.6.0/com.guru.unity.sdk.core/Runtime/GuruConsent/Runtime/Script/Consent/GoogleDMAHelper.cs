@@ -1,3 +1,5 @@
+
+
 namespace Guru
 {
     using System;
@@ -8,6 +10,11 @@ namespace Guru
 #if GURU_ADJUST
     using AdjustSdk;
 #endif
+    
+#if GURU_APPSFLYER
+    using AppsFlyerSDK;
+#endif
+    
     using UnityEngine;
     
     /// <summary>
@@ -61,6 +68,7 @@ namespace Guru
                 {
                     DmaResult = "not_eea";
                     ReportAdjustDMAValue(false);
+                    ReportAppsflyerDMAValue(false);
                     return;
                 }
                 return;
@@ -103,7 +111,7 @@ namespace Guru
             // Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
             ReportAdjustDMAValue(true, result[2].ToString(), result[3].ToString());
-            
+            ReportAppsflyerDMAValue(true, consentData);
             //----------- Guru DMA report ---------------
             ReportResult(purposeStr, result);
         }
@@ -133,7 +141,35 @@ namespace Guru
 #endif
         }
 
+        private static void ReportAppsflyerDMAValue(bool isEEAUser, Dictionary<ConsentType, ConsentStatus> consentData = null)
+        {
+#if GURU_APPSFLYER
+            bool? isUserSubjectToGdpr;
+            bool? hasConsentForDataUsage;
+            bool? hasConsentForAdsPersonalization;
+            
+            Log.I($"Adjust SetConsent {isEEAUser}");
+            if (isEEAUser)
+            {
+                isUserSubjectToGdpr = true;
+                hasConsentForDataUsage = true;
+                hasConsentForAdsPersonalization = 
+                    consentData.TryGetValue(ConsentType.AdPersonalization, out var adPersonalization)
+                        ? adPersonalization == ConsentStatus.Granted
+                        : null;
+            }
+            else
+            {
+                isUserSubjectToGdpr = false;
+                hasConsentForDataUsage = true;
+                hasConsentForAdsPersonalization = true;
+            }
 
+            var appsFlyerConsent = new AppsFlyerConsent(isUserSubjectToGdpr, hasConsentForDataUsage, hasConsentForAdsPersonalization);
+            AppsFlyer.setConsentData(appsFlyerConsent);
+#endif
+        }
+        
         private static void ReportResult(string purposeStr, string result)
         {
             if (!string.IsNullOrEmpty(DmaResult) && DmaResult == result)
