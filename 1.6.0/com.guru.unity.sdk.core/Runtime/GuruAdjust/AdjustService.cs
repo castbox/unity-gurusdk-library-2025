@@ -817,7 +817,7 @@ namespace Guru
 			adjustEvent.AddEventParameter("order_id", iapEvent.orderId);
 			adjustEvent.AddEventParameter("order_type", iapEvent.orderType);
 			adjustEvent.AddEventParameter("trans_ts", $"{iapEvent.transTs}");
-			// adjustEvent.AddEventParameter("sandbox", iapEvent.sandbox);
+			adjustEvent.AddEventParameter("sandbox", iapEvent.sandbox);
 			
 			
 			

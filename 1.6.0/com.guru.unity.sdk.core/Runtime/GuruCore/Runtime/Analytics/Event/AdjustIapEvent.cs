@@ -15,6 +15,7 @@ namespace Guru
         public readonly string transTs; // timestamp 13位时间戳
         public readonly string purchaseToken; // Android purchaseToken
         public readonly string receipt; // iOS receipt
+        public readonly string sandbox;//sandbox
 
         public AdjustIapEvent(string eventName, 
             double value, 
@@ -25,7 +26,8 @@ namespace Guru
             string platform = "", 
             string purchaseToken = "",
             string receipt = "",
-            string currency = "")
+            string currency = "",
+            string sandbox = "")
         {
             this.eventName = eventName;
             this.value = value;
@@ -37,6 +39,7 @@ namespace Guru
             this.platform = platform;
             this.purchaseToken = purchaseToken;
             this.receipt = receipt;
+            this.sandbox = sandbox;
 
             if (string.IsNullOrEmpty(this.currency))
             {
@@ -75,6 +78,7 @@ namespace Guru
                 ["trans_ts"] = transTs,
                 ["receipt"] = receipt,
                 ["purchase_token"] = purchaseToken,
+                ["sandbox"] = sandbox,
             };
             return dict;
         }
@@ -90,7 +94,8 @@ namespace Guru
                    $"orderType: {orderType}\n" +
                    $"transTs: {transTs}\n" +
                    $"purchaseToken: {purchaseToken}\n" +
-                   $"receipt: {receipt}\n";
+                   $"receipt: {receipt}\n" +
+                   $"sandbox: {sandbox}\n";
         }
     }
 }
