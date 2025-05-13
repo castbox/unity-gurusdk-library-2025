@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.applovin.mediation:amazon-tam-adapter:10.1.1.0@aar" />
+    </androidPackages>
+    <iosPods>
+        <iosPod name="AppLovinMediationAmazonAdMarketplaceAdapter" version="5.0.1.0" />
+    </iosPods>
+</dependencies>

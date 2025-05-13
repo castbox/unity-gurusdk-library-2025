@@ -1,0 +1,13 @@
+{
+  "name": "com.guru.unity.sdk",
+  "displayName": "Guru SDK",
+  "version": "1.4.3",
+  "description": "Guru SDK for unity project",
+  "unity": "2020.3",
+  "author": {
+    "name": "Guru Game"
+  },
+  "license": "MIT",
+  "category": "Game,Tool,Development",
+  "dependencies": {}
+}

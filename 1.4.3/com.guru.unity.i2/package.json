@@ -1,0 +1,16 @@
+{
+  "name": "com.guru.unity.i2",
+  "displayName": "I2 Localization",
+  "version": "1.0.0",
+  "description": "I2 Localization (2.8.22) for guru unity team",
+  "unity": "2020.3",
+  "author":{
+    "name": "Guru Game"
+  },
+  "category": [
+    "game",
+    "tool",
+    "localization"
+  ],
+  "type": "library"
+}
