@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dependencies>
+<!--    需求来源 （2025-05-22） WaterSort1 @刘晋洋 项目组发布传音平台，需要去掉 yandex 广告（仅安卓） -->
+<!--    <androidPackages>-->
+<!--        <androidPackage spec="com.applovin.mediation:yandex-adapter:7.8.1.0" />-->
+<!--    </androidPackages>-->
+    <iosPods>
+        <iosPod name="AppLovinMediationYandexAdapter" version="7.8.0.0" />
+    </iosPods>
+</dependencies>

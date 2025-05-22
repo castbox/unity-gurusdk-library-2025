@@ -1,0 +1,55 @@
+#if UNITY_IOS
+using System.Diagnostics;
+using System.IO;
+using UnityEditor;
+using UnityEditor.Callbacks;
+using Debug = UnityEngine.Debug;
+using UnityEditor.iOS.Xcode;
+
+public class IOSPostBuild_Demo
+{
+    // ----- 如果需要构建 DEMO, 可使用此管线注入预置的项目ID以测试数据
+    // 正式项目内请注释掉该行
+    // [PostProcessBuild(40)]
+    public static void OnPostProcessBuild(BuildTarget target, string buildPath)
+    {
+        if(target != BuildTarget.iOS)  return;
+
+        FixInfoPlist(buildPath);
+    }
+
+    /// <summary>
+    /// Update info.plist
+    /// </summary>
+    /// <param name="buildPath"></param>
+    private static void FixInfoPlist(string buildPath)
+    {
+        string filePath = $"{buildPath}/Info.plist";
+        if (File.Exists(filePath))
+        {
+            PlistDocument doc = new PlistDocument();
+            doc.ReadFromFile(filePath);
+            var dict = doc.root;
+            string key = "GADApplicationIdentifier";
+            if (!dict.values.ContainsKey(key))
+            {
+                dict.SetString(key, "ca-app-pub-2436733915645843~7788635385");
+            }
+            
+            key = "NSUserTrackingUsageDescription";
+            if (!dict.values.ContainsKey(key))
+            {
+                dict.SetString(key,
+                    "By allowing tracking, we'll be able to better tailor ads served to you on this game.");
+            }
+            
+            doc.WriteToFile(filePath);
+            Debug.Log($"<color=#88ff00>--- Info.plist has updated ---</color>");
+        }
+        else
+        {
+            Debug.LogError($"Can't find Info.plist at {filePath}");
+        }
+    }
+}
+#endif

@@ -1,0 +1,1361 @@
+{
+  "version": "2.8.22 f3",
+  "defines": [
+    {
+      "title": "Abkhazian",
+      "code": "ab",
+      "googleCode": "-"
+    },
+    {
+      "title": "Afar",
+      "code": "aa",
+      "googleCode": "-"
+    },
+    {
+      "title": "Afrikaans",
+      "code": "af",
+      "googleCode": null
+    },
+    {
+      "title": "Akan",
+      "code": "ak",
+      "googleCode": "-"
+    },
+    {
+      "title": "Albanian",
+      "code": "sq",
+      "googleCode": null
+    },
+    {
+      "title": "Amharic",
+      "code": "am",
+      "googleCode": null
+    },
+    {
+      "title": "Arabic",
+      "code": "ar",
+      "googleCode": null
+    },
+    {
+      "title": "Arabic/Algeria",
+      "code": "ar-DZ",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Bahrain",
+      "code": "ar-BH",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Egypt",
+      "code": "ar-EG",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Iraq",
+      "code": "ar-IQ",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Jordan",
+      "code": "ar-JO",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Kuwait",
+      "code": "ar-KW",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Lebanon",
+      "code": "ar-LB",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Libya",
+      "code": "ar-LY",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Morocco",
+      "code": "ar-MA",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Oman",
+      "code": "ar-OM",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Qatar",
+      "code": "ar-QA",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Saudi Arabia",
+      "code": "ar-SA",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Syria",
+      "code": "ar-SY",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Tunisia",
+      "code": "ar-TN",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/U.A.E.",
+      "code": "ar-AE",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Arabic/Yemen",
+      "code": "ar-YE",
+      "googleCode": "ar"
+    },
+    {
+      "title": "Aragonese",
+      "code": "an",
+      "googleCode": "-"
+    },
+    {
+      "title": "Armenian",
+      "code": "hy",
+      "googleCode": null
+    },
+    {
+      "title": "Assamese",
+      "code": "as",
+      "googleCode": "-"
+    },
+    {
+      "title": "Avaric",
+      "code": "av",
+      "googleCode": "-"
+    },
+    {
+      "title": "Avestan",
+      "code": "ae",
+      "googleCode": "-"
+    },
+    {
+      "title": "Aymara",
+      "code": "ay",
+      "googleCode": "-"
+    },
+    {
+      "title": "Azerbaijani",
+      "code": "az",
+      "googleCode": null
+    },
+    {
+      "title": "Bambara",
+      "code": "bm",
+      "googleCode": "-"
+    },
+    {
+      "title": "Bashkir",
+      "code": "ba",
+      "googleCode": "-"
+    },
+    {
+      "title": "Basque",
+      "code": "eu",
+      "googleCode": null
+    },
+    {
+      "title": "Basque/Spain",
+      "code": "eu-ES",
+      "googleCode": "eu"
+    },
+    {
+      "title": "Belarusian",
+      "code": "be",
+      "googleCode": null
+    },
+    {
+      "title": "Bengali",
+      "code": "bn",
+      "googleCode": null
+    },
+    {
+      "title": "Bihari",
+      "code": "bh",
+      "googleCode": "-"
+    },
+    {
+      "title": "Bislama",
+      "code": "bi",
+      "googleCode": "-"
+    },
+    {
+      "title": "Bosnian",
+      "code": "bs",
+      "googleCode": null
+    },
+    {
+      "title": "Breton",
+      "code": "br",
+      "googleCode": "-"
+    },
+    {
+      "title": "Bulgariaa",
+      "code": "bg",
+      "googleCode": null
+    },
+    {
+      "title": "Burmese",
+      "code": "my",
+      "googleCode": null
+    },
+    {
+      "title": "Catalan",
+      "code": "ca",
+      "googleCode": null
+    },
+    {
+      "title": "Chamorro",
+      "code": "ch",
+      "googleCode": "-"
+    },
+    {
+      "title": "Chechen",
+      "code": "ce",
+      "googleCode": "-"
+    },
+    {
+      "title": "Chichewa",
+      "code": "ny",
+      "googleCode": null
+    },
+    {
+      "title": "Chinese",
+      "code": "zh",
+      "googleCode": "zh-CN"
+    },
+    {
+      "title": "Chinese/Hong Kong",
+      "code": "zh-HK",
+      "googleCode": "zh-TW"
+    },
+    {
+      "title": "Chinese/Macau",
+      "code": "zh-MO",
+      "googleCode": "zh-CN"
+    },
+    {
+      "title": "Chinese/PRC",
+      "code": "zh-CN",
+      "googleCode": "zh-CN"
+    },
+    {
+      "title": "Chinese/Simplified",
+      "code": "zh-CN",
+      "googleCode": "zh-CN"
+    },
+    {
+      "title": "Chinese/Singapore",
+      "code": "zh-SG",
+      "googleCode": "zh-CN"
+    },
+    {
+      "title": "Chinese/Taiwan",
+      "code": "zh-TW",
+      "googleCode": "zh-TW"
+    },
+    {
+      "title": "Chinese/Traditional",
+      "code": "zh-TW",
+      "googleCode": "zh-TW"
+    },
+    {
+      "title": "Chuvash",
+      "code": "cv",
+      "googleCode": "-"
+    },
+    {
+      "title": "Cornish",
+      "code": "kw",
+      "googleCode": "-"
+    },
+    {
+      "title": "Corsican",
+      "code": "co",
+      "googleCode": null
+    },
+    {
+      "title": "Cree",
+      "code": "cr",
+      "googleCode": "-"
+    },
+    {
+      "title": "Croatian",
+      "code": "hr",
+      "googleCode": null
+    },
+    {
+      "title": "Croatian/Bosnia and Herzegovina",
+      "code": "hr-BA",
+      "googleCode": "hr"
+    },
+    {
+      "title": "Czech",
+      "code": "cs",
+      "googleCode": null
+    },
+    {
+      "title": "Danish",
+      "code": "da",
+      "googleCode": null
+    },
+    {
+      "title": "Divehi",
+      "code": "dv",
+      "googleCode": "-"
+    },
+    {
+      "title": "Dutch",
+      "code": "nl",
+      "googleCode": null
+    },
+    {
+      "title": "Dutch/Belgium",
+      "code": "nl-BE",
+      "googleCode": "nl"
+    },
+    {
+      "title": "Dutch/Netherlands",
+      "code": "nl-NL",
+      "googleCode": "nl"
+    },
+    {
+      "title": "Dzongkha",
+      "code": "dz",
+      "googleCode": "-"
+    },
+    {
+      "title": "English",
+      "code": "en",
+      "googleCode": null
+    },
+    {
+      "title": "English/Australia",
+      "code": "en-AU",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/Belize",
+      "code": "en-BZ",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/Canada",
+      "code": "en-CA",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/Caribbean",
+      "code": "en-CB",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/Ireland",
+      "code": "en-IE",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/Jamaica",
+      "code": "en-JM",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/New Zealand",
+      "code": "en-NZ",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/Republic of the Philippines",
+      "code": "en-PH",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/South Africa",
+      "code": "en-ZA",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/Trinidad",
+      "code": "en-TT",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/United Kingdom",
+      "code": "en-GB",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/United States",
+      "code": "en-US",
+      "googleCode": "en"
+    },
+    {
+      "title": "English/Zimbabwe",
+      "code": "en-ZW",
+      "googleCode": "en"
+    },
+    {
+      "title": "Esperanto",
+      "code": "eo",
+      "googleCode": null
+    },
+    {
+      "title": "Estonian",
+      "code": "et",
+      "googleCode": null
+    },
+    {
+      "title": "Ewe",
+      "code": "ee",
+      "googleCode": "-"
+    },
+    {
+      "title": "Faeroese",
+      "code": "fo",
+      "googleCode": "-"
+    },
+    {
+      "title": "Fijian",
+      "code": "fj",
+      "googleCode": "-"
+    },
+    {
+      "title": "Finnish",
+      "code": "fi",
+      "googleCode": null
+    },
+    {
+      "title": "French",
+      "code": "fr",
+      "googleCode": null
+    },
+    {
+      "title": "French/Belgium",
+      "code": "fr-BE",
+      "googleCode": "fr"
+    },
+    {
+      "title": "French/Canada",
+      "code": "fr-CA",
+      "googleCode": "fr"
+    },
+    {
+      "title": "French/France",
+      "code": "fr-FR",
+      "googleCode": "fr"
+    },
+    {
+      "title": "French/Luxembourg",
+      "code": "fr-LU",
+      "googleCode": "fr"
+    },
+    {
+      "title": "French/Principality of Monaco",
+      "code": "fr-MC",
+      "googleCode": "fr"
+    },
+    {
+      "title": "French/Switzerland",
+      "code": "fr-CH",
+      "googleCode": "fr"
+    },
+    {
+      "title": "Fulah",
+      "code": "ff",
+      "googleCode": "-"
+    },
+    {
+      "title": "Galician",
+      "code": "gl",
+      "googleCode": null
+    },
+    {
+      "title": "Galician/Spain",
+      "code": "gl-ES",
+      "googleCode": "gl"
+    },
+    {
+      "title": "Georgian",
+      "code": "ka",
+      "googleCode": null
+    },
+    {
+      "title": "German",
+      "code": "de",
+      "googleCode": null
+    },
+    {
+      "title": "German/Austria",
+      "code": "de-AT",
+      "googleCode": "de"
+    },
+    {
+      "title": "German/Germany",
+      "code": "de-DE",
+      "googleCode": "de"
+    },
+    {
+      "title": "German/Liechtenstein",
+      "code": "de-LI",
+      "googleCode": "de"
+    },
+    {
+      "title": "German/Luxembourg",
+      "code": "de-LU",
+      "googleCode": "de"
+    },
+    {
+      "title": "German/Switzerland",
+      "code": "de-CH",
+      "googleCode": "de"
+    },
+    {
+      "title": "Greek",
+      "code": "el",
+      "googleCode": null
+    },
+    {
+      "title": "Guaraní",
+      "code": "gn",
+      "googleCode": "-"
+    },
+    {
+      "title": "Gujarati",
+      "code": "gu",
+      "googleCode": null
+    },
+    {
+      "title": "Haitian",
+      "code": "ht",
+      "googleCode": null
+    },
+    {
+      "title": "Hausa",
+      "code": "ha",
+      "googleCode": null
+    },
+    {
+      "title": "Hebrew",
+      "code": "he",
+      "googleCode": "iw"
+    },
+    {
+      "title": "Herero",
+      "code": "hz",
+      "googleCode": "-"
+    },
+    {
+      "title": "Hindi",
+      "code": "hi",
+      "googleCode": null
+    },
+    {
+      "title": "Hiri Motu",
+      "code": "ho",
+      "googleCode": "-"
+    },
+    {
+      "title": "Hungarian",
+      "code": "hu",
+      "googleCode": null
+    },
+    {
+      "title": "Interlingua",
+      "code": "ia",
+      "googleCode": "-"
+    },
+    {
+      "title": "Indonesian",
+      "code": "id",
+      "googleCode": null
+    },
+    {
+      "title": "Interlingue",
+      "code": "ie",
+      "googleCode": "-"
+    },
+    {
+      "title": "Irish",
+      "code": "ga",
+      "googleCode": null
+    },
+    {
+      "title": "Igbo",
+      "code": "ig",
+      "googleCode": null
+    },
+    {
+      "title": "Inupiaq",
+      "code": "ik",
+      "googleCode": "-"
+    },
+    {
+      "title": "Ido",
+      "code": "io",
+      "googleCode": "-"
+    },
+    {
+      "title": "Icelandic",
+      "code": "is",
+      "googleCode": null
+    },
+    {
+      "title": "Italian",
+      "code": "it",
+      "googleCode": null
+    },
+    {
+      "title": "Italian/Italy",
+      "code": "it-IT",
+      "googleCode": "it"
+    },
+    {
+      "title": "Italian/Switzerland",
+      "code": "it-CH",
+      "googleCode": "it"
+    },
+    {
+      "title": "Inuktitut",
+      "code": "iu",
+      "googleCode": "-"
+    },
+    {
+      "title": "Japanese",
+      "code": "ja",
+      "googleCode": null
+    },
+    {
+      "title": "Javanese",
+      "code": "jv",
+      "googleCode": null
+    },
+    {
+      "title": "Kalaallisut",
+      "code": "kl",
+      "googleCode": "-"
+    },
+    {
+      "title": "Kannada",
+      "code": "kn",
+      "googleCode": null
+    },
+    {
+      "title": "Kanuri",
+      "code": "kr",
+      "googleCode": "-"
+    },
+    {
+      "title": "Kashmiri",
+      "code": "ks",
+      "googleCode": "-"
+    },
+    {
+      "title": "Kazakh",
+      "code": "kk",
+      "googleCode": null
+    },
+    {
+      "title": "Central Khmer",
+      "code": "km",
+      "googleCode": null
+    },
+    {
+      "title": "Kikuyu",
+      "code": "ki",
+      "googleCode": "-"
+    },
+    {
+      "title": "Kinyarwanda",
+      "code": "rw",
+      "googleCode": "-"
+    },
+    {
+      "title": "Kirghiz",
+      "code": "ky",
+      "googleCode": null
+    },
+    {
+      "title": "Komi",
+      "code": "kv",
+      "googleCode": "-"
+    },
+    {
+      "title": "Kongo",
+      "code": "kg",
+      "googleCode": "-"
+    },
+    {
+      "title": "Korean",
+      "code": "ko",
+      "googleCode": null
+    },
+    {
+      "title": "Kurdish",
+      "code": "ku",
+      "googleCode": null
+    },
+    {
+      "title": "Kuanyama",
+      "code": "kj",
+      "googleCode": "-"
+    },
+    {
+      "title": "Latin",
+      "code": "la",
+      "googleCode": null
+    },
+    {
+      "title": "Luxembourgish",
+      "code": "lb",
+      "googleCode": null
+    },
+    {
+      "title": "Ganda",
+      "code": "lg",
+      "googleCode": "-"
+    },
+    {
+      "title": "Limburgan",
+      "code": "li",
+      "googleCode": "-"
+    },
+    {
+      "title": "Lingala",
+      "code": "ln",
+      "googleCode": "-"
+    },
+    {
+      "title": "Lao",
+      "code": "lo",
+      "googleCode": null
+    },
+    {
+      "title": "Latvian",
+      "code": "lv",
+      "googleCode": null
+    },
+    {
+      "title": "Luba-Katanga",
+      "code": "lu",
+      "googleCode": "-"
+    },
+    {
+      "title": "Lithuanian",
+      "code": "lt",
+      "googleCode": null
+    },
+    {
+      "title": "Manx",
+      "code": "gv",
+      "googleCode": "-"
+    },
+    {
+      "title": "Macedonian",
+      "code": "mk",
+      "googleCode": null
+    },
+    {
+      "title": "Malagasy",
+      "code": "mg",
+      "googleCode": null
+    },
+    {
+      "title": "Malay",
+      "code": "ms",
+      "googleCode": null
+    },
+    {
+      "title": "Malay/Brunei Darussalam",
+      "code": "ms-BN",
+      "googleCode": "ms"
+    },
+    {
+      "title": "Malay/Malaysia",
+      "code": "ms-MY",
+      "googleCode": "ms"
+    },
+    {
+      "title": "Malayalam",
+      "code": "ml",
+      "googleCode": null
+    },
+    {
+      "title": "Maltese",
+      "code": "mt",
+      "googleCode": null
+    },
+    {
+      "title": "Maori",
+      "code": "mi",
+      "googleCode": null
+    },
+    {
+      "title": "Marathi",
+      "code": "mr",
+      "googleCode": null
+    },
+    {
+      "title": "Marshallese",
+      "code": "mh",
+      "googleCode": "-"
+    },
+    {
+      "title": "Mongolian",
+      "code": "mn",
+      "googleCode": null
+    },
+    {
+      "title": "Nauru",
+      "code": "na",
+      "googleCode": "-"
+    },
+    {
+      "title": "Navajo",
+      "code": "nv",
+      "googleCode": "-"
+    },
+    {
+      "title": "North Ndebele",
+      "code": "nd",
+      "googleCode": "-"
+    },
+    {
+      "title": "Nepali",
+      "code": "ne",
+      "googleCode": null
+    },
+    {
+      "title": "Ndonga",
+      "code": "ng",
+      "googleCode": "-"
+    },
+    {
+      "title": "Northern Sotho",
+      "code": "ns",
+      "googleCode": "st"
+    },
+    {
+      "title": "Norwegian",
+      "code": "nb",
+      "googleCode": "no"
+    },
+    {
+      "title": "Norwegian/Nynorsk",
+      "code": "nn",
+      "googleCode": "no"
+    },
+    {
+      "title": "Sichuan Yi",
+      "code": "ii",
+      "googleCode": "-"
+    },
+    {
+      "title": "South Ndebele",
+      "code": "nr",
+      "googleCode": "-"
+    },
+    {
+      "title": "Occitan",
+      "code": "oc",
+      "googleCode": "-"
+    },
+    {
+      "title": "Ojibwa",
+      "code": "oj",
+      "googleCode": "-"
+    },
+    {
+      "title": "Church Slavic",
+      "code": "cu",
+      "googleCode": "-"
+    },
+    {
+      "title": "Oromo",
+      "code": "om",
+      "googleCode": "-"
+    },
+    {
+      "title": "Oriya",
+      "code": "or",
+      "googleCode": "-"
+    },
+    {
+      "title": "Ossetian",
+      "code": "os",
+      "googleCode": "-"
+    },
+    {
+      "title": "Pali",
+      "code": "pi",
+      "googleCode": "-"
+    },
+    {
+      "title": "Pashto",
+      "code": "ps",
+      "googleCode": null
+    },
+    {
+      "title": "Persian",
+      "code": "fa",
+      "googleCode": null
+    },
+    {
+      "title": "Polish",
+      "code": "pl",
+      "googleCode": null
+    },
+    {
+      "title": "Portuguese",
+      "code": "pt",
+      "googleCode": null
+    },
+    {
+      "title": "Portuguese/Brazil",
+      "code": "pt-BR",
+      "googleCode": "pt"
+    },
+    {
+      "title": "Portuguese/Portugal",
+      "code": "pt-PT",
+      "googleCode": "pt"
+    },
+    {
+      "title": "Punjabi",
+      "code": "pa",
+      "googleCode": null
+    },
+    {
+      "title": "Quechua",
+      "code": "qu",
+      "googleCode": "-"
+    },
+    {
+      "title": "Quechua/Bolivia",
+      "code": "qu-BO",
+      "googleCode": "-"
+    },
+    {
+      "title": "Quechua/Ecuador",
+      "code": "qu-EC",
+      "googleCode": "-"
+    },
+    {
+      "title": "Quechua/Peru",
+      "code": "qu-PE",
+      "googleCode": "-"
+    },
+    {
+      "title": "Rhaeto-Romanic",
+      "code": "rm",
+      "googleCode": "ro"
+    },
+    {
+      "title": "Romanian",
+      "code": "ro",
+      "googleCode": null
+    },
+    {
+      "title": "Rundi",
+      "code": "rn",
+      "googleCode": "-"
+    },
+    {
+      "title": "Russian",
+      "code": "ru",
+      "googleCode": null
+    },
+    {
+      "title": "Russian/Republic of Moldova",
+      "code": "ru-MO",
+      "googleCode": "ru"
+    },
+    {
+      "title": "Sanskrit",
+      "code": "sa",
+      "googleCode": "-"
+    },
+    {
+      "title": "Sardinian",
+      "code": "sc",
+      "googleCode": "-"
+    },
+    {
+      "title": "Sindhi",
+      "code": "sd",
+      "googleCode": null
+    },
+    {
+      "title": "Northern Sami",
+      "code": "se",
+      "googleCode": "-"
+    },
+    {
+      "title": "Samoan",
+      "code": "sm",
+      "googleCode": null
+    },
+    {
+      "title": "Sango",
+      "code": "sg",
+      "googleCode": "-"
+    },
+    {
+      "title": "Serbian",
+      "code": "sr",
+      "googleCode": null
+    },
+    {
+      "title": "Serbian/Bosnia and Herzegovina",
+      "code": "sr-BA",
+      "googleCode": "sr"
+    },
+    {
+      "title": "Serbian/Serbia and Montenegro",
+      "code": "sr-SP",
+      "googleCode": "sr"
+    },
+    {
+      "title": "Scottish Gaelic",
+      "code": "gd",
+      "googleCode": null
+    },
+    {
+      "title": "Shona",
+      "code": "sn",
+      "googleCode": null
+    },
+    {
+      "title": "Sinhala",
+      "code": "si",
+      "googleCode": null
+    },
+    {
+      "title": "Slovak",
+      "code": "sk",
+      "googleCode": null
+    },
+    {
+      "title": "Slovenian",
+      "code": "sl",
+      "googleCode": null
+    },
+    {
+      "title": "Somali",
+      "code": "so",
+      "googleCode": null
+    },
+    {
+      "title": "Southern Sotho",
+      "code": "st",
+      "googleCode": null
+    },
+    {
+      "title": "Spanish",
+      "code": "es",
+      "googleCode": null
+    },
+    {
+      "title": "Spanish/Argentina",
+      "code": "es-AR",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Bolivia",
+      "code": "es-BO",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Castilian",
+      "code": "es-ES",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Chile",
+      "code": "es-CL",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Colombia",
+      "code": "es-CO",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Costa Rica",
+      "code": "es-CR",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Dominican Republic",
+      "code": "es-DO",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Ecuador",
+      "code": "es-EC",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/El Salvador",
+      "code": "es-SV",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Guatemala",
+      "code": "es-GT",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Honduras",
+      "code": "es-HN",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Mexico",
+      "code": "es-MX",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Nicaragua",
+      "code": "es-NI",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Panama",
+      "code": "es-PA",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Paraguay",
+      "code": "es-PY",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Peru",
+      "code": "es-PE",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Puerto Rico",
+      "code": "es-PR",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Spain",
+      "code": "es-ES",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Uruguay",
+      "code": "es-UY",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Venezuela",
+      "code": "es-VE",
+      "googleCode": "es"
+    },
+    {
+      "title": "Spanish/Latin Americas",
+      "code": "es-US",
+      "googleCode": "es"
+    },
+    {
+      "title": "Sundanese",
+      "code": "su",
+      "googleCode": null
+    },
+    {
+      "title": "Swahili",
+      "code": "sw",
+      "googleCode": null
+    },
+    {
+      "title": "Swati",
+      "code": "ss",
+      "googleCode": "-"
+    },
+    {
+      "title": "Swedish",
+      "code": "sv",
+      "googleCode": null
+    },
+    {
+      "title": "Swedish/Finland",
+      "code": "sv-FI",
+      "googleCode": "sv"
+    },
+    {
+      "title": "Swedish/Sweden",
+      "code": "sv-SE",
+      "googleCode": "sv"
+    },
+    {
+      "title": "Tamil",
+      "code": "ta",
+      "googleCode": null
+    },
+    {
+      "title": "Tatar",
+      "code": "tt",
+      "googleCode": "-"
+    },
+    {
+      "title": "Telugu",
+      "code": "te",
+      "googleCode": null
+    },
+    {
+      "title": "Tajik",
+      "code": "tg",
+      "googleCode": null
+    },
+    {
+      "title": "Thai",
+      "code": "th",
+      "googleCode": null
+    },
+    {
+      "title": "Tigrinya",
+      "code": "ti",
+      "googleCode": "-"
+    },
+    {
+      "title": "Tibetan",
+      "code": "bo",
+      "googleCode": "-"
+    },
+    {
+      "title": "Turkmen",
+      "code": "tk",
+      "googleCode": "-"
+    },
+    {
+      "title": "Tagalog",
+      "code": "tl",
+      "googleCode": null
+    },
+    {
+      "title": "Tswana",
+      "code": "tn",
+      "googleCode": "-"
+    },
+    {
+      "title": "Tonga",
+      "code": "to",
+      "googleCode": "-"
+    },
+    {
+      "title": "Turkish",
+      "code": "tr",
+      "googleCode": null
+    },
+    {
+      "title": "Tsonga",
+      "code": "ts",
+      "googleCode": "-"
+    },
+    {
+      "title": "Twi",
+      "code": "tw",
+      "googleCode": "-"
+    },
+    {
+      "title": "Tahitian",
+      "code": "ty",
+      "googleCode": "-"
+    },
+    {
+      "title": "Uighur",
+      "code": "ug",
+      "googleCode": "-"
+    },
+    {
+      "title": "Ukrainian",
+      "code": "uk",
+      "googleCode": null
+    },
+    {
+      "title": "Urdu",
+      "code": "ur",
+      "googleCode": null
+    },
+    {
+      "title": "Uzbek",
+      "code": "uz",
+      "googleCode": null
+    },
+    {
+      "title": "Venda",
+      "code": "ve",
+      "googleCode": "-"
+    },
+    {
+      "title": "Vietnamese",
+      "code": "vi",
+      "googleCode": null
+    },
+    {
+      "title": "Volapük",
+      "code": "vo",
+      "googleCode": "-"
+    },
+    {
+      "title": "Walloon",
+      "code": "wa",
+      "googleCode": "-"
+    },
+    {
+      "title": "Welsh",
+      "code": "cy",
+      "googleCode": null
+    },
+    {
+      "title": "Wolof",
+      "code": "wo",
+      "googleCode": "-"
+    },
+    {
+      "title": "Frisian",
+      "code": "fy",
+      "googleCode": null
+    },
+    {
+      "title": "Xhosa",
+      "code": "xh",
+      "googleCode": null
+    },
+    {
+      "title": "Yiddish",
+      "code": "yi",
+      "googleCode": null
+    },
+    {
+      "title": "Yoruba",
+      "code": "yo",
+      "googleCode": null
+    },
+    {
+      "title": "Zhuang",
+      "code": "za",
+      "googleCode": "-"
+    },
+    {
+      "title": "Zulu",
+      "code": "zu",
+      "googleCode": null
+    }
+  ],
+  "missings": []
+}
