@@ -3,16 +3,6 @@
   "ts": "1747120651",
   "desc": "更新amazon sdk；android 10.1.1 iOS 5.0.1",
   "packages": {
-    "com.coffee.git-dependency-resolver": {
-      "group": "third-party",
-      "embedded": true,
-      "dependencies": []
-    },
-    "com.coffee.upm-git-extension": {
-      "group": "third-party",
-      "embedded": true,
-      "dependencies": []
-    },
     "com.google.android.appbundle": {
       "group": "google",
       "embedded": true,
