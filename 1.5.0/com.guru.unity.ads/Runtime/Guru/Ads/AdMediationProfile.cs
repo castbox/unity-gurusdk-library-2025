@@ -21,6 +21,7 @@ namespace Guru.Ads
         public string[] customAdUnitIds = null;
         public string uid;
         public bool isNoAds = false;
+        public bool enableAdaptiveBanner = false;
         public bool debugModeEnabled = false;
         //---- For MAX Segments ----
         public string appVersionCode;
@@ -49,6 +50,7 @@ namespace Guru.Ads
             buff += $"  customAdUnitIds: {customAdUnitIds}\n";
             buff += $"  uid: {uid}\n";
             buff += $"  isNoAds: {isNoAds}\n";
+            buff += $"  enableAdaptiveBanner: {enableAdaptiveBanner}\n";
             buff += $"  isIapUser: {isIapUser}\n";
             buff += $"  networkStatus: {networkStatus}\n";
             buff += $"  debugModeEnabled: {debugModeEnabled}\n";
@@ -184,6 +186,11 @@ namespace Guru.Ads
         public AdInitConfigBuilder SetPreviousFBAdRevenueDate(DateTime previousDate)
         {
             _config.previousFBAdRevenueDate = previousDate;
+            return this;
+        }
+        public AdInitConfigBuilder SetEnableAdaptiveBanner(bool enableAdaptiveBanner)
+        {
+            _config.enableAdaptiveBanner = enableAdaptiveBanner;
             return this;
         }
         

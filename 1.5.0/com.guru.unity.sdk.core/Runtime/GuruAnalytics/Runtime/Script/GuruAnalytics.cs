@@ -232,8 +232,23 @@ namespace Guru
                 return;
             }
             if (string.IsNullOrEmpty(id)) return;
-            // CacheUserProperty($"adjust_id", id);
             Agent.SetAdjustId(id);
+        }
+        
+        
+        /// <summary>
+        /// 设置Adjust ID
+        /// </summary>
+        /// <param name="id"></param>
+        public void SetAppsflyerId(string id)
+        {
+            if (!_isReady)
+            {
+                Debug.LogWarning($"{LOG_TAG}[GA] --- is Not Ready SetAppsflyerId: {id}");
+                return;
+            }
+            if (string.IsNullOrEmpty(id)) return;
+            Agent.SetAppsflyerId(id);
         }
 
         /// <summary>

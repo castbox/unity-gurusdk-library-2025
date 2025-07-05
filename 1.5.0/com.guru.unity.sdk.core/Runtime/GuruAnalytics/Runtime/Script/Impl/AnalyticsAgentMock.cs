@@ -80,6 +80,12 @@ namespace Guru
             if(_isShowLog) 
                 Debug.Log($"{TAG} SetAdjustId: <color=orange>{id}</color>");
         }
+        
+        public void SetAppsflyerId(string id)
+        {
+            if(_isShowLog) 
+                Debug.Log($"{TAG} SetAppsflyerId: <color=orange>{id}</color>");
+        }
 
         public void SetDeviceId(string deviceId)
         {

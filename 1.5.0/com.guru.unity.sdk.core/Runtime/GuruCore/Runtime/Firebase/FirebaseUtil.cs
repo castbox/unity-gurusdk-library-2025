@@ -81,19 +81,18 @@ namespace Guru
 					string fid = task.Result;
 					if (task.IsCompleted && !string.IsNullOrEmpty(fid))
 					{
-						bool hasChange = IPMConfig.FIREBASE_ID.Equals(fid) == false;
 						// 保存本地ID备份
 						IPMConfig.FIREBASE_ID = fid; // 保存FirebaseID
 						Debug.Log($"[SDK] --- Get FirebaseID: {fid}");
-						
-						if (hasChange)
-						{
-							new PropertyEventConfigRequest(-1, 10).Send();
-						}
 					}
 					else
 					{
 						Debug.LogError($"[SDK] --- Fetch FirebaseID failed on start!");
+						if (!string.IsNullOrEmpty(IPMConfig.FIREBASE_ID))
+						{
+							fid = IPMConfig.FIREBASE_ID;
+							Debug.Log($"[SDK] --- Use Cached FirebaseID: {fid}");
+						}
 					}
 					_onGetFirebaseIdHandler?.Invoke(fid);
 				});
@@ -103,26 +102,6 @@ namespace Guru
 
 		#region Token and Auth
 
-		public static void LoginGuru()
-		{
-			// 没有存储UID时，从中台获取匿名认证授权
-			StartGuruLoginWithDeviceId(success =>
-			{
-				GuruDeviceInfoUploader.Instance.Upload(); //获取 UID 后，需在此上报设备信息
-					
-				_onGetGuruUIDHandler?.Invoke(success);
-				
-				if (success) {
-					// 用户 UID 不为空
-					StartLoginWithFirebase();
-				}
-				else
-				{
-					Log.W(LOG_TAG, "Get UID failed...");
-				}
-			});
-		}
-		
 		/// <summary>
 		/// 异步验证所有 Token 有效期
 		/// </summary>
@@ -131,7 +110,22 @@ namespace Guru
 			if (string.IsNullOrEmpty(IPMConfig.IPM_UID))
 			{
 				Log.I(LOG_TAG, "No Saved UID，get uid form backend API...");
-				LoginGuru();
+				// 没有存储UID时，从中台获取匿名认证授权
+				StartGuruLoginWithDeviceId(success =>
+				{
+					GuruDeviceInfoUploader.Instance.Upload(); //获取 UID 后，需在此上报设备信息
+					
+					_onGetGuruUIDHandler?.Invoke(success);
+				
+					if (success) {
+						// 用户 UID 不为空
+						StartLoginWithFirebase();
+					}
+					else
+					{
+						Log.W(LOG_TAG, "Get UID failed...");
+					}
+				});
 			}
 			else
 			{

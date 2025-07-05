@@ -229,6 +229,14 @@ namespace Guru.Editor
             {
                 settings.app_settings.enable_adjust = GetBool(value);
             }
+            else if (GetValue(line, "enable_appsflyer", out value))
+            {
+                settings.app_settings.enable_appsflyer = GetBool(value);
+            }
+            else if (GetValue(line, "enable_thinkingdata", out value))
+            {
+                settings.app_settings.enable_thinkingdata = GetBool(value);
+            }
             else if (GetValue(line, "enable_iap", out value))
             {
                 settings.app_settings.enable_iap = GetBool(value);

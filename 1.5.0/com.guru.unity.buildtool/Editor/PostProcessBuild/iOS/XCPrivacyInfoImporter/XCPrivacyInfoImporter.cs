@@ -16,7 +16,7 @@ namespace Guru.Editor
         private const string SourceFileName = "PrivacyInfo.plist";
         private static string IosPrivacyInfoPath => $"{Application.dataPath}/Plugins/iOS/{SourceFileName}";
         
-        [PostProcessBuild(200)]
+        [PostProcessBuild(0)]
         public static void OnPostProcessBuild(BuildTarget target,  string buildPath)
         {
             if (target == BuildTarget.iOS)
@@ -58,7 +58,7 @@ namespace Guru.Editor
         /// <returns></returns>
         private static string GetWorkdir()
         {
-            var guids = AssetDatabase.FindAssets($"{nameof(XCPrivacyInfoImporter)}");
+            var guids = AssetDatabase.FindAssets($"{nameof(XCPrivacyInfoImporter)} t:script");
             if (guids.Length > 0)
             {
                 var path = AssetDatabase.GUIDToAssetPath(guids[0]);

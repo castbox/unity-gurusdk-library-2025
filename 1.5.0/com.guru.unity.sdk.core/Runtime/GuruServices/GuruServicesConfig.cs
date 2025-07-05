@@ -49,6 +49,8 @@ namespace Guru
         public bool IsFirebaseEnabled() => app_settings?.enable_firebase ?? true;
         public bool IsFacebookEnabled() => app_settings?.enable_facebook ?? true;
         public bool IsAdjustEnabled() => app_settings?.enable_adjust ?? true;
+        public bool IsAppsflyerEnabled() => app_settings?.enable_appsflyer ?? false;
+        public bool IsThinkingDataEnabled() => app_settings?.enable_thinkingdata ?? false;
         
         public string AppBundleId() => app_settings?.bundle_id ?? "";
         
@@ -117,9 +119,11 @@ namespace Guru
         public string ios_store;
         public bool enable_firebase = true;
         public bool enable_facebook = true;
-        public bool enable_adjust = true;
         public bool enable_iap = false;
         public bool custom_keystore = false;
+        public bool enable_adjust = true;
+        public bool enable_appsflyer = false;
+        public bool enable_thinkingdata = false;
     }
     
     /// <summary>

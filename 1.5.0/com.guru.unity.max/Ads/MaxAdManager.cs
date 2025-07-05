@@ -31,22 +31,24 @@ namespace Guru.Ads.Max
             _isDebug = mediationProfile.debugModeEnabled;
             _invokeEventOnMainThread = invokeEventOnMainThread;
             
+            
             // --- preloader ---
             var amazonLoader = MaxCustomAmazonLoader.GetLoader(
                 mediationProfile.amazonAppId, 
                 mediationProfile.amazonBannerId, mediationProfile.amazonInterstitialId, mediationProfile.amazonRewardedId, 
                 mediationProfile.bannerUnitId, mediationProfile.interstitialUnitId, mediationProfile.rewardedUnitId,
-                true);
+                mediationProfile.debugModeEnabled);
             
             // Pubmatic
             var pubmaticLoader = new MaxCustomLoaderPubmatic(mediationProfile.storeUrl); // Pubmatic 初始化即可
             
             // --- proxies ----
-            _bannerLoader = new MaxBannerLoader(mediationProfile.bannerUnitId,mediationProfile.bannerWidth, mediationProfile.bannerBgColorHex, amazonLoader, eventObserver);
+            _bannerLoader = new MaxBannerLoader(mediationProfile.bannerUnitId, mediationProfile.bannerWidth,
+                mediationProfile.bannerBgColorHex, amazonLoader, eventObserver, mediationProfile.enableAdaptiveBanner);
             _interstitialLoader = new MaxInterstitialLoader(mediationProfile.interstitialUnitId, amazonLoader, eventObserver);
             _rewardedLoader = new MaxRewardedLoader(mediationProfile.rewardedUnitId, amazonLoader, eventObserver);
 
-            if (_isDebug)
+            if (mediationProfile.debugModeEnabled)
             {
                 Debug.Log($"{LOG_TAG} --- Debug is enabled ---");
                 Debug.Log(mediationProfile.ToString());

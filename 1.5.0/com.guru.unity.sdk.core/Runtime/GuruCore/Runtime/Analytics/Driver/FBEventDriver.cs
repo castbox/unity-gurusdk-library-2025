@@ -67,7 +67,14 @@ namespace Guru
         {
             
         }
-        
+        /// <summary>
+        /// 设置 AppsflyerId
+        /// (Firebase)
+        /// </summary>
+        protected override void ReportAppsflyerId(string appsflyerId)
+        {
+            
+        }
         /// <summary>
         /// 设置 AdId
         /// </summary>

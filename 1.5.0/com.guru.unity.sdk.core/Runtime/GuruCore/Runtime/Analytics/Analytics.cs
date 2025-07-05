@@ -1,8 +1,7 @@
+#nullable enable
 namespace Guru
 {
 	using System;
-	using System.Collections;
-	using System.Collections.Generic;
 	using UnityEngine;
 	using Firebase.Analytics;
 	using Firebase.Crashlytics;
@@ -19,28 +18,27 @@ namespace Guru
 		private static bool IsFirebaseReady => FirebaseUtil.IsFirebaseInitialized;
 		private static bool IsGuruAnalyticsReady => GuruAnalytics.IsReady;
 		
-		private static AdjustEventDriver _adjustEventDriver;
 		private static FBEventDriver _fbEventDriver;
 		private static FirebaseEventDriver _firebaseEventDriver;
 		private static GuruEventDriver _guruEventDriver;
 		private static MidWarePropertiesManager _propertiesManager;
-		
+		private static CustomEventDriverManager _customDriverManager;
 
 		#region 初始化
 
 		/// <summary>
 		/// 初始化打点模块
 		/// </summary>
-		public static void Init()
+		public static void Init(IAnalyticDelegate? customEventDelegate)
 		{
 			if (_isInitOnce) return;
 			_isInitOnce = true;
-			_adjustEventDriver = new AdjustEventDriver();
+			
+			_customDriverManager = new CustomEventDriverManager(customEventDelegate);
 			_fbEventDriver = new FBEventDriver();
 			_firebaseEventDriver = new FirebaseEventDriver();
 			_guruEventDriver = new GuruEventDriver();
-			
-			_propertiesManager = new MidWarePropertiesManager(_guruEventDriver, _firebaseEventDriver);
+			_propertiesManager = new MidWarePropertiesManager(_guruEventDriver, _firebaseEventDriver, _customDriverManager);
 		}
 		
 		/// <summary>
@@ -76,12 +74,7 @@ namespace Guru
 			Debug.Log($"{TAG} --- FBEvent is Ready -> _fbEventDriver.TriggerFlush");
 			_fbEventDriver.TriggerFlush();
 		}
-
-		public static void OnAdjustInitComplete()
-		{
-			Debug.Log($"{TAG} --- AdjustEvent is Ready -> _adjustEventDriver.TriggerFlush");
-			_adjustEventDriver.TriggerFlush();
-		}
+		
 		
 		private static void OnGuruAnalyticsInitComplete()
 		{
@@ -171,6 +164,8 @@ namespace Guru
 				// 填充相关的追踪事件
 				_guruEventDriver.AddProperty(key, value);
 				_firebaseEventDriver.AddProperty(key, value);
+				_customDriverManager?.AddProperty(key, value);
+				
 				ReportEventSuccessRate();
 				Debug.Log($"{TAG} --- SetUserProperty -> propertyName:{key}, propertyValue:{value}");
 			}
@@ -186,7 +181,6 @@ namespace Guru
 				}
 			}
 		}
-		
 
 		#endregion
 
@@ -231,15 +225,18 @@ namespace Guru
 				SafetyLogEvent(_guruEventDriver, trackingEvent);
 			}
 			
-			if (eventSetting.EnableAdjustAnalytics)
-			{
-				SafetyLogEvent(_adjustEventDriver, trackingEvent);
-			}
+			// if (eventSetting.EnableAdjustAnalytics)
+			// {
+			// 	SafetyLogEvent(_adjustEventDriver, trackingEvent);
+			// }
 			
 			if (eventSetting.EnableFacebookAnalytics)
 			{
 				SafetyLogEvent(_fbEventDriver, trackingEvent);
 			}
+
+			// 自定义渠道打点
+			_customDriverManager?.AddEvent(trackingEvent);
 		}
 
 		/// <summary>
@@ -266,9 +263,7 @@ namespace Guru
 				}
 			}
 		}
-
-
-
+		
 		#endregion
 		
 		#region 通用打点

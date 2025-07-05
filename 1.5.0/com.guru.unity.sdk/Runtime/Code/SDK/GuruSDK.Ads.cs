@@ -1,4 +1,4 @@
-
+#nullable enable
 namespace Guru
 {
     using System;
@@ -86,7 +86,7 @@ namespace Guru
         /// </summary>
         private void StartConsentFlow()
         {
-            LogI($"#4.5 ---  StartConsentFlow ---");
+            LogI($"#4.6.1 ---  StartConsentFlow ---");
             
             float time = 1;
             if (!_adServiceHasStarted && _appServicesConfig != null)
@@ -110,15 +110,22 @@ namespace Guru
 #if UNITY_IOS
             InitAttStatus(); // Consent 启动前记录 ATT 初始值
 #endif
+            
             UnityEngine.Debug.Log($"{LOG_TAG}  --- Call:StartConsentFlow ---");
-            GuruConsent.StartConsent(OnGuruConsentOver, dmaMapRule:dmaMapRule, enableCountryCheck:enableCountryCheck);
+            GuruConsent.StartConsent(OnGuruGdprResult, 
+                OnRefreshConsentResult, // 新添加的回调， 用于广播 ConsentData 状态
+                dmaMapRule:dmaMapRule, 
+                enableCountryCheck:enableCountryCheck);
         }
+        
+        
+        
 
         /// <summary>
         /// Guru Consent flow is Over
         /// </summary>
         /// <param name="code"></param>
-        private void OnGuruConsentOver(int code)
+        private void OnGuruGdprResult(int code)
         {
             
             // 无论状态如何, 都在回调内启动广告初始化
@@ -143,6 +150,12 @@ namespace Guru
                     break;
             }
         }
+
+        private void OnRefreshConsentResult(ConsentData consentData)
+        {
+            Analytics.DispatchConsentData(consentData);
+        }
+
 
         /// <summary>
         /// 启动广告服务
@@ -417,6 +430,8 @@ namespace Guru
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t bannerColor: {bannerColor}");
             var bannerWidth = InitConfig.BannerWidth;
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t bannerWidth: {bannerWidth}");
+            var enableAdaptiveBanner = InitConfig.EnableAdaptiveBanner;
+            if(DebugModeEnabled) UnityEngine.Debug.Log($"\t enableAdaptiveBanner: {enableAdaptiveBanner}");
             var osVersion = Instance.GetOSVersionStr();
             if(DebugModeEnabled) UnityEngine.Debug.Log($"\t osVersion: {osVersion}");
             var isIapUser = Model.IsIapUser;
@@ -442,6 +457,7 @@ namespace Guru
                 .SetAmazonRewardedId(amazonRewardedId)
                 .SetStoreUrl(storeUrl)
                 .SetIsNoAds(isNoAds)
+                .SetEnableAdaptiveBanner(enableAdaptiveBanner)
                 .SetUserId(uid)
                 .SetBannerBackColorHex(bannerColor)
                 .SetBannerWidth(bannerWidth)

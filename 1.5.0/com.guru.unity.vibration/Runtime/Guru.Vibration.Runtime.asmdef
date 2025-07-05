@@ -1,9 +1,7 @@
 {
     "name": "Guru.Vibration.Runtime",
     "rootNamespace": "",
-    "references": [
-        "GUID:676fb74dc79354cdebff9ca284ce3023"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

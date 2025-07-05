@@ -11,7 +11,8 @@
         "UnityEngine.Purchasing.SecurityStub",
         "UnityEngine.Purchasing.SecurityCore",
         "GuruDebugger",
-        "UniTask"
+        "UniTask",
+        "Guru.Adjust.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

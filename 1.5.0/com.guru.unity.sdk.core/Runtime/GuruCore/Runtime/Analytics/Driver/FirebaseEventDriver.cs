@@ -78,6 +78,7 @@ namespace Guru
         protected override void ReportUid(string uid)
         {
             FirebaseAnalytics.SetUserId(uid);
+            SetUserProperty(Analytics.PropertyUserID, uid);
         }
         
         protected override void ReportDeviceId(string deviceId)
@@ -87,7 +88,10 @@ namespace Guru
         protected override void ReportAdjustId(string adjustId)
         {
         }
-
+        protected override void ReportAppsflyerId(string appsflyerId)
+        {
+        }
+        
         protected override void ReportGoogleAdId(string adId)
         {
         }

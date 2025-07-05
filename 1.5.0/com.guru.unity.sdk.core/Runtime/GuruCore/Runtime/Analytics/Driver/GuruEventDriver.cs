@@ -36,6 +36,7 @@ namespace Guru
         {
             GuruAnalytics.Instance.SetUid(uid);
             Debug.Log($"{logTag} --- SetUid: {uid}");
+            SetUserProperty(Analytics.PropertyUserID, uid);
         }
 
         /// <summary>
@@ -56,6 +57,16 @@ namespace Guru
         {
             GuruAnalytics.Instance.SetAdjustId(adjustId);
             Debug.Log($"{logTag} --- SetAdjustId: {adjustId}");
+        }
+        
+        /// <summary>
+        /// 设置 AppsflyerId
+        /// (Firebase)
+        /// </summary>
+        protected override void ReportAppsflyerId(string appsflyerId)
+        {
+            GuruAnalytics.Instance.SetAppsflyerId(appsflyerId);
+            Debug.Log($"{logTag} --- SetAppsflyerId: {appsflyerId}");
         }
 
         protected override void ReportAndroidId(string androidId)

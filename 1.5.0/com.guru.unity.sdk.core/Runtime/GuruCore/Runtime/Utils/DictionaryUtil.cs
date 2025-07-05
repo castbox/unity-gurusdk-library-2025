@@ -1,4 +1,4 @@
-
+#nullable enable
 namespace Guru
 {
     using System.Collections.Generic;
@@ -50,6 +50,20 @@ namespace Guru
         }
 
 
+        public static Dictionary<string, string> ToStringDictionary(Dictionary<string, object>? dict)
+        {
+            var result = new Dictionary<string, string>();
+            if(dict == null) return result;
 
+
+            foreach (var kvp in dict)
+            {
+                if (kvp.Value != null)
+                {
+                    result[kvp.Key] =  kvp.Value.ToString();
+                }
+            }
+            return result;
+        }
     }
 }

@@ -1,3 +1,5 @@
+using UnityEditor.Build.Reporting;
+
 namespace Guru.Editor
 {
 	using System.Linq;
@@ -13,7 +15,8 @@ namespace Guru.Editor
 	/// </summary>
     public partial class AppBuilder
     {
-	    private const int DefaultAndroidTargetSdkVersion = 34;
+	    private const int DefaultAndroidTargetSdkVersion = 35;
+	    private const AndroidSdkVersions DefaultAndroidMinApiLevel = AndroidSdkVersions.AndroidApiLevel24;
 	    private const string IOSTargetOSVersion = "13.0";
 	    private const string GuruIOSTeamId = "39253T242A";
 	    private const string GuruKeystoreName = "guru_key.jks";
@@ -21,15 +24,12 @@ namespace Guru.Editor
 	    private const string GuruAliasName = "guru";
 	    private const string GuruAliasPass = "guru0622";
 
-	    private const string DEFAULT_GRADLE_PATH_MAC =
-		    "/Applications/Unity/Hub/Editor/{0}/PlaybackEngines/AndroidPlayer/Tools/gradle";
-	    private const string DEFAULT_JDK_PATH_MAC =
-		    "/Applications/Unity/Hub/Editor/{0}/PlaybackEngines/AndroidPlayer/OpenJDK";
-	    private const string DEFAULT_NDK_PATH_MAC =
-		    "/Applications/Unity/Hub/Editor/{0}/PlaybackEngines/AndroidPlayer/NDK";
-	    private const string DEFAULT_ANDROID_SDK_MAC =
-		    "/Applications/Unity/Hub/Editor/{0}/PlaybackEngines/AndroidPlayer/SDK";
+		public const string MACRO_RELEASE = "RELEASE";
+		public const string MACRO_DEBUG = "DEBUG";
+		public const string MACRO_LOG = "ENABLE_LOG";
+		public const string DEFAULT_COMPANY_NAME = "Guru Game";
 	    
+		
 	    private static string GuruKeystorePath => Application.dataPath + $"/Plugins/Android/{GuruKeystoreName}";
 	    private static string ProguardName => "proguard-user.txt";
 	    private static string ProguardPath => Application.dataPath + $"/Plugins/Android/{ProguardName}";
@@ -89,6 +89,7 @@ namespace Guru.Editor
 		    var useMinify = buildParam.AndroidUseMinify;
 	        var buildNumber= GetPlayerSettingsBuildNumberStr(BuildTarget.Android);
 	        var androidTargetVersion = buildParam.AndroidTargetVersion == 0 ? DefaultAndroidTargetSdkVersion : buildParam.AndroidTargetVersion;
+	        
 	        if (buildParam.AutoSetBuildNumber)
 	        {
 		        buildNumber = CreateGuruBuildNumber();
@@ -103,8 +104,52 @@ namespace Guru.Editor
 #if UNITY_2020_3
 	        EditorUserBuildSettings.androidCreateSymbolsZip = buildParam.IsBuildSymbols;
 #elif UNITY_2021_3
-	        EditorUserBuildSettings.androidCreateSymbols = buildParam.IsBuildSymbols? AndroidCreateSymbols.Public : AndroidCreateSymbols.Disabled; //Android 输出SymbolsZip的选项
+	        if (!buildParam.IsBuildSymbols)
+		    {
+			    EditorUserBuildSettings.androidCreateSymbols = AndroidCreateSymbols.Disabled;
+		    }
+		    else
+		    {
+			    if (buildParam.CustomAndroidCreateSymbols == null)
+			    {
+				    EditorUserBuildSettings.androidCreateSymbols = AndroidCreateSymbols.Public;
+			    }
+			    else
+			    {
+				     EditorUserBuildSettings.androidCreateSymbols =
+					    buildParam.CustomAndroidCreateSymbols switch
+					    {
+						    "debug" => AndroidCreateSymbols.Debugging,
+						    "full" => AndroidCreateSymbols.Public,
+						    _ => AndroidCreateSymbols.Disabled
+					    };
+			    }
+		    }
+#elif UNITY_6000
+		    if (!buildParam.IsBuildSymbols)
+		    {
+			    UnityEditor.Android.UserBuildSettings.DebugSymbols.level = Unity.Android.Types.DebugSymbolLevel.None;
+		    }
+		    else
+		    {
+			    if (buildParam.CustomAndroidCreateSymbols == null)
+			    {
+				    UnityEditor.Android.UserBuildSettings.DebugSymbols.level = Unity.Android.Types.DebugSymbolLevel.SymbolTable;
+			    }
+				else
+				{
+					UnityEditor.Android.UserBuildSettings.DebugSymbols.level =
+						buildParam.CustomAndroidCreateSymbols switch
+						{
+							"debug" => Unity.Android.Types.DebugSymbolLevel.SymbolTable,
+							"full" => Unity.Android.Types.DebugSymbolLevel.Full,
+							_ => Unity.Android.Types.DebugSymbolLevel.None
+						};
+				}
+
+		    }
 #endif
+		    
 	        PlayerSettings.muteOtherAudioSources = false;
 			// ---- 开启 Minify 后需要配置 proguard-user.txt 文件 ---- 
 			if (useMinify) DeployProguardTxt();
@@ -133,27 +178,19 @@ namespace Guru.Editor
 		    PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64; // 构建 armV7, arm64
 	        // PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel22;
 	        PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)androidTargetVersion;  // 设置 API Version
+	        if ((int)PlayerSettings.Android.minSdkVersion < (int)DefaultAndroidMinApiLevel)
+	        {
+		        PlayerSettings.Android.minSdkVersion = DefaultAndroidMinApiLevel; // 设置 MinAPI Level
+	        }
 	        
 	        //打包
-	        string symbolDefine = buildParam.IsBuildRelease ? GameDefine.MACRO_RELEASE : GameDefine.MACRO_DEBUG;
+	        string symbolDefine = buildParam.IsBuildRelease ? MACRO_RELEASE : MACRO_DEBUG;
 	        string version = Application.version;
 	        string extension = buildParam.IsBuildAAB ? ".aab" : ".apk";
 	        if (EditorUserBuildSettings.exportAsGoogleAndroidProject) extension = ""; // 输出工程
 		    string outputDir = Path.GetFullPath($"{Application.dataPath }/../{OutputDirName}/Android");
 	        var apkPath = $"{outputDir}/{Application.productName.Replace(" ","_")}_{symbolDefine}_{version}_{buildNumber}{extension}";
 	        if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
-
-	        // BuildOptions opts = isDebug ? BuildOptions.Development : BuildOptions.None;
-	        // if (string.IsNullOrEmpty(buildParam.AssetBundleManifestPath))
-	        // {
-		       //  BuildPipeline.BuildPlayer(
-			      //   GetBuildScenes(), 
-			      //   apkPath, 
-			      //   BuildTarget.Android, 
-			      //   opts);
-	        // }
-	        // else
-	        // {
 	        
 	        var buildPlayerOptions = new BuildPlayerOptions()
 	        {
@@ -165,19 +202,19 @@ namespace Guru.Editor
 		        extraScriptingDefines =  buildParam.ExtraScriptingDefines,
 		        options = isDebug ? BuildOptions.Development : BuildOptions.None,
 	        };
-	        BuildPipeline.BuildPlayer(buildPlayerOptions);
-
-	        // }
-
+	        var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+	        report.name = $"{Application.productName}_{version}_{buildNumber}_android";
+	        PrintBuildReport(report, outputDir);
+	        
 	        if (buildParam.BuilderType == AppBuilderType.Editor)
 	        {
 		        Open(outputDir);
 	        }
 	        
-	        if (buildParam.AutoPublish)
-	        {
-		        GuruPublishHelper.Publish(apkPath, buildParam.PgyerAPIKey); // 直接发布版本
-	        }
+	        // if (buildParam.AutoPublish)
+	        // {
+		       //  GuruPublishHelper.Publish(apkPath, buildParam.PgyerAPIKey); // 直接发布版本
+	        // }
 	        return apkPath;
 	    }
 
@@ -339,10 +376,18 @@ namespace Guru.Editor
 	        
 	        var isDebug = !buildParam.IsBuildRelease;
 
+	        // var backgroundMode = iOSBackgroundMode.None;
+
+#if UNITY_2021_3 || UNITY_2022
+		    var backgroundMode = iOSBackgroundMode.RemoteNotification | iOSBackgroundMode.Fetch;
+#elif UNITY_6000
+		    var backgroundMode = iOSBackgroundMode.RemoteNotifications | iOSBackgroundMode.BackgroundFetch;
+#endif
+		    
 	        //ios专用打包设置
 	        PlayerSettings.muteOtherAudioSources = false;
 	        PlayerSettings.iOS.appInBackgroundBehavior = iOSAppInBackgroundBehavior.Custom;
-	        PlayerSettings.iOS.backgroundModes = iOSBackgroundMode.RemoteNotification | iOSBackgroundMode.Fetch; // 后台启动配置
+	        PlayerSettings.iOS.backgroundModes = backgroundMode; // 后台启动配置
 	        PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
 	        PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
 
@@ -382,7 +427,9 @@ namespace Guru.Editor
 			        extraScriptingDefines =  buildParam.ExtraScriptingDefines,
 			        options = isDebug ? BuildOptions.Development : BuildOptions.None,
 		        };
-		        BuildPipeline.BuildPlayer(buildPlayerOptions);
+		        var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+		        report.name = $"{Application.productName}_{buildParam.BuildVersion}_{buildNumber}_ios";
+		        PrintBuildReport(report, Path.GetFullPath($"{outputDir}/../"));
 		        
 		        if (buildParam.BuilderType == AppBuilderType.Editor)
 		        {
@@ -451,7 +498,7 @@ namespace Guru.Editor
 		    PlayerSettings.SetScriptingBackend(buildTargetGroup, backend);
 			
 		    var companyName = buildParam.CompanyName;
-		    if(string.IsNullOrEmpty(companyName)) companyName = GameDefine.CompanyName;
+		    if(string.IsNullOrEmpty(companyName)) companyName = DEFAULT_COMPANY_NAME;
 		    PlayerSettings.companyName = companyName;
 		    
 		    var bundleVersion = buildParam.BuildVersion;
@@ -467,14 +514,14 @@ namespace Guru.Editor
 
 		    if (defines.Count > 0)
 		    {
-			    defines.Remove(GameDefine.MACRO_RELEASE);
-			    defines.Remove(GameDefine.MACRO_DEBUG);
+			    defines.Remove(MACRO_RELEASE);
+			    defines.Remove(MACRO_DEBUG);
 		    }
 		    
-		    defines.Add(buildParam.IsBuildRelease ? GameDefine.MACRO_RELEASE : GameDefine.MACRO_DEBUG);
+		    defines.Add(buildParam.IsBuildRelease ? MACRO_RELEASE : MACRO_DEBUG);
 		    if (!buildParam.IsBuildRelease || buildParam.IsBuildShowLog)
 		    {
-			    defines.Add(GameDefine.MACRO_LOG);
+			    defines.Add(MACRO_LOG);
 		    }
 
 		    if (buildParam.BuilderType == AppBuilderType.Jenkins)
@@ -527,7 +574,11 @@ namespace Guru.Editor
 		    return "";
 	    }
 
-
+		/// <summary>
+		/// 保存构建版本
+		/// </summary>
+		/// <param name="version"></param>
+		/// <param name="code"></param>
 	    private static void SaveBuildVersion(string version, string code)
 	    {
 		    GuruAppVersion.SaveToDisk(version, code);
@@ -563,6 +614,166 @@ namespace Guru.Editor
 #endif
 		    
 	    }
+
+	    /// <summary>
+	    /// 打印构建报告
+	    /// </summary>
+	    /// <param name="report"></param>
+	    /// <param name="outputPath"></param>
+	    private static void PrintBuildReport(BuildReport report = null, string outputPath = null)
+	    {
+		    try
+		    {
+			    if (report == null)
+			    {
+				    Debug.LogError($"=== Can not find Build report after build ===");
+				    return;
+			    }
+			    
+			    var header =
+				    $"------------------------------------ Build Report [{report.name}] ------------------------------------\n\n";
+			    Debug.Log(header);
+			    
+			    var sb = new System.Text.StringBuilder();
+			    sb.Append($"\n\tBuild Result: {report.summary.result}\n\n");
+			    sb.Append($"\tPlatform: {report.summary.platform}\n");
+			    sb.Append($"\tTotal Time: {report.summary.totalTime}\n");
+			    sb.Append($"\tOptions: {report.summary.options}\n");
+			    sb.Append($"\tTotal Errors: {report.summary.totalErrors}\n");
+			    sb.Append($"\tTotal Warnings: {report.summary.totalWarnings}\n\n");
+			    sb.Append($"\tTotal Size: {report.summary.totalSize}\n");
+			    
+			    if (report.summary.result != BuildResult.Succeeded)
+			    {
+#if UNITY_2022_3_OR_NEWER
+				    sb.Append($"\tSummarizeErrors:\n\t\t{report.SummarizeErrors()}\n\n");
+#endif
+			    }
+			    
+			    Debug.Log(sb.ToString());
+			    
+			    // Files
+			    sb.Append($"\n=== Files ===\n\n");
+#if UNITY_2022_3_OR_NEWER
+			    var files = report.GetFiles().ToList();
+#elif UNITY_2021_3 
+				var files = report.files.ToList();
+#endif
+			    if (files == null || files.Count == 0)
+			    {
+				    sb.Append($"\n\tNo Files Found\n\n");
+			    }
+				else{
+					files.Sort((a, b) =>
+					{
+						if (a.size > b.size) return -1;
+						if (a.size < b.size) return 1;
+						return 0;
+					});
+					foreach (var file in files)
+					{
+						sb.Append($"[{file.path}]:\n\t[{file.role}]:{file.size * 0.001f:F4}M\n");
+					}
+				}
+			    
+			    sb.Append($"\n=== Files ===\n\n");
+			    
+
+			    // Steps
+			    sb.Append($"\n=== BuildSteps ===\n\n");
+
+			    if (report.steps == null || report.steps.Length == 0)
+			    {
+					sb.Append($"\n\tNo Steps Found\n\n");    
+			    }
+			    else
+			    {
+				    foreach (var step in report.steps)
+				    {
+					    sb.Append($"\n[{step.name}]: {step.duration}    depth:{step.depth}\n\n");
+					    foreach (var m in step.messages)
+					    {
+						    sb.Append($"\t-[{m.type}]: {m.content}\n");
+					    }
+				    }
+			    }
+			    sb.Append($"\n=== BuildSteps ===\n\n");
+			    
+			    
+
+			    sb.Append($"\n=== PackedAssets ===\n\n");
+			    if (report.packedAssets == null || report.packedAssets.Length == 0)
+			    {
+				    sb.Append($"\n\tNo PackedAssets Found\n\n");
+			    }
+			    else
+			    {
+				    foreach (var asset in report.packedAssets)
+				    {
+					    sb.Append($"[{asset.name ?? "?"}]: {asset.shortPath}\n");
+					    foreach (var c in asset.contents)
+					    {
+						    sb.Append($"[{c.id}][{c.sourceAssetPath}]  size: {c.packedSize} k\n");
+					    }
+				    }
+			    }
+			    
+			    sb.Append($"\n=== PackedAssets ===\n\n");
+
+
+			    if (report.strippingInfo != null)
+			    {
+				    sb.Append($"\n=== StrippingInfo ===\n\n");
+				    if (report.strippingInfo != null || !report.strippingInfo.includedModules.Any())
+				    {
+					    sb.Append($"\n\tNo strippingInfo Modules Found!\n\n");
+				    }
+				    else
+				    {
+					    foreach (var module in report.strippingInfo.includedModules)
+					    {
+						    var reasons = report.strippingInfo.GetReasonsForIncluding(module) ?? null;
+						    var reasonStr = "null";
+						    if (reasons != null)
+						    {
+							    reasonStr = string.Join(", ", reasons);
+						    }
+
+						    sb.Append($"[ {module} ]: {reasonStr}\n");
+					    }
+				    }
+				    
+				    sb.Append($"\n=== StrippingInfo ===\n\n");
+			    }
+
+			    var footer =
+				    $"\n\n------------------------------------ Build Report End ------------------------------------\n\n";
+			    sb.Append(footer);
+			    Debug.Log(footer);
+			    
+			    // Write To File
+			    if (outputPath != null)
+			    {
+				    if (!Directory.Exists(outputPath))
+				    { 
+					    Directory.CreateDirectory(outputPath);   
+				    }
+
+				    var outpath = Path.Combine(outputPath, $"buildreport_{report.name}.log");
+				    File.WriteAllText(outpath, sb.ToString());
+			    }
+
+
+		    }
+		    catch (Exception e)
+		    {
+			    Debug.LogError($"Print Build Report failed:\n{e.Message}");
+		    }
+	    }
+		
+		
+		
+		
 	    #endregion
 
 	    #region 单元测试

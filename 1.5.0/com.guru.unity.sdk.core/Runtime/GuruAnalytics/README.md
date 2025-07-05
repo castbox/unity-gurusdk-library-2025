@@ -48,6 +48,17 @@ GuruAnalyticsLib 的 Unity 插件库
 - [SDK Repo [ guru_analytics ] ](git@github.com:castbox/guru_analytics.git)
 - [SDK Repo [ GuruAnalytics_iOS ] ](git@github.com:castbox/GuruAnalytics_iOS.git)
 
+### 1.13.2
+- Android 端对齐 `1.1.6` （ 25 Apr 10 ）
+- Unity 中台更新日期：25/04/10
+  > Hash: 10865291c46e64c53fcababa06eb053e3a1d4ec7
+- iOS 端对齐 `0.4.1` （ 25 Jan 15 ）
+- Unity 中台更新日期：25/1/17
+  > Hash: dc095f10187605f3b8761c2f11e78e3a58ceaf0b
+- 单 Android 库更新，解决 appsflyer 打点 ID 问题
+- C# 接口新增 Appsflyer ID 的赋值
+
+
 ### 1.13.1
 - Android 端对齐 `1.1.2` （ 24 Spe 18 ）
 - Unity 中台更新日期：24/11/20

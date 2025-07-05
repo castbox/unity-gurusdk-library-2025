@@ -140,7 +140,8 @@ namespace Guru
 		public const string PropertyGrade = "grade"; //当游戏玩家角色升级时触发
 		public const string PropertyIsIAPUser = "is_iap_user"; 		//付费成功后设置属性参数为true，如果没有发生付费可以不用设置该属性
 		public const string PropertyNetwork = "network"; 		// network属性
-		public const string PropertyAdjustId = "adjust_id"; 		// network属性
+		public const string PropertyAdjustId = "adjust_id"; 		// adjust_id
+		public const string PropertyAppsflyerId = "appsflyer_id"; 		// appsflyer_id
 		public const string PropertyIAPCoin = "iap_coin"; //付费所得的总金币数(iap获取累计值)\
 		public const string PropertyNonIAPCoin = "noniap_coin"; //非付费iap获取累计值
 		public const string PropertyCoin = "coin"; //当前金币数
@@ -160,10 +161,6 @@ namespace Guru
 		public const string PropertyAnalyticsExperimentalGroup = "guru_analytics_exp"; // Analytics Experimental Group
 		public const string PropertyGuruSdkVersion = "sdk_version"; // GuruSDK 版本号
 		public const string PropertyUserCreatedTimestamp = "user_created_timestamp";  // FirebaseID
-
-		public const string PropertyChannel = "channel";   //用户来源渠道（如自然流量、Google等）
-		public const string PropertyCampaign = "campaign"; //用户来源的具体Campaign名称
-		public const string PropertyCreative = "creative"; //用户来源的素材ID（用于效果分析）
 
 
 		public static HashSet<string> PredefinedMidWareProperties = new HashSet<string>()

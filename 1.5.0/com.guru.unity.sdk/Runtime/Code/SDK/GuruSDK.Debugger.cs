@@ -187,7 +187,7 @@ namespace Guru
                     _ => "white"
                 };
                 var uri = $"{TAB_NAME_REMOTE}/{key}\n<size=10><color={color}>{source}</color></size>";
-                Debugger.AddOption(uri, () => $"{value.Value}");
+                Debugger.AddOption(uri, () => $"{value.Value}").AddCopyButton();
             }
         }
 

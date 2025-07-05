@@ -10,7 +10,9 @@ namespace Guru.Editor
     using System.IO;
     using Facebook.Unity.Settings;
     using UnityEditor.Compilation;
+#if GURU_ADJUST
     using AdjustSdk;
+#endif
 
     public class GuruSDKManager: EditorWindow
     {
@@ -965,6 +967,7 @@ namespace Guru.Editor
         //------------------------- AdjustSettings --------------------------------
         private void ImportAdjustSettings()
         {
+#if GURU_ADJUST
             AdjustSettings settings = null;
             string p = FindAssetPath(nameof(AdjustSettings), "ScriptableObject");
             if (!string.IsNullOrEmpty(p))
@@ -1036,6 +1039,7 @@ namespace Guru.Editor
             so.ApplyModifiedProperties();
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssetIfDirty(settings);
+#endif
         }
         
         
@@ -1368,12 +1372,11 @@ namespace Guru.Editor
         #endregion
 
         #region OtherCommands
-
-
+        
         private void RemoveOldAdjustSignatureFiles()
         {
             // 删除无用的 Adjust 文件
-            AdjustEditorHelper.RemoveOldSignatureFiles();        
+            AdjustFileCleaner.RemoveOldSignatureFiles();        
         }
 
         #endregion

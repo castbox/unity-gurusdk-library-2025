@@ -1,4 +1,6 @@
 
+using Cysharp.Threading.Tasks;
+
 namespace Guru
 {
     using UnityEngine;
@@ -133,39 +135,13 @@ namespace Guru
             InitServices(); // 初始化所有的服务
             
             onComplete?.Invoke(true);
-#if UNITY_IOS 
-            Delay(5, CheckIdfaAndIdfvChange);
-#endif
-        }
-
-        private void CheckIdfaAndIdfvChange()
-        {
-            bool hasChange = false;
-            if (IPMConfig.IDFA.Equals(Model.Idfa) == false)
-            {
-                hasChange = true;
-                if (string.IsNullOrEmpty(IPMConfig.IDFA))
-                    Model.Idfa = IPMConfig.IDFA;
-            }
-
-            if (IPMConfig.IDFV.Equals(Model.Idfv) == false)
-            {
-                hasChange = true;
-                if (string.IsNullOrEmpty(IPMConfig.IDFV) == false)
-                    Model.Idfv = IPMConfig.IDFV;
-            }
-
-            if (hasChange)
-            {
-                new PropertyEventConfigRequest(-1, 10).Send();
-            }
         }
         
         private void InitServices()
         {
             // --- Start Analytics ---
             LogI($"#1.1 ---- Init Analytics ----");
-            Analytics.Init();
+            Analytics.Init(InitConfig?.CustomAnalyticDelegate);
             ReportBasicUserProperties(); // 立即上报基础用户属性
             
             //--- Start Firebase ---
@@ -208,17 +184,25 @@ namespace Guru
             return "";
         }
         
+        
+        private bool _firstFetchSuccess = false;
         /// <summary>
         /// 首次拉取云控参数完成
         /// </summary>
         /// <param name="success"></param>
-        private void OnFirstFetchRemoteComplete(bool success)
+        private void OnFetchRemoteComplete(bool success)
         {
-            LogI($"#6 --- Remote fetch complete: {success} ---");
-            ABTestManager.Init(); // 启动AB测试解析器
+            if (!_firstFetchSuccess && success)
+            {
+                _firstFetchSuccess = true;
+                LogI($"#6 --- Remote fetch complete: {success} ---");
+                ABTestManager.Init(); // 启动AB测试解析器
+                UpdateSDKRemoteConfigs(); // 启动内置的 RemoteConfig 解析
+            }
             Callbacks.Remote.InvokeOnRemoteFetchComplete(success);
-            UpdateSDKRemoteConfig(); // 启动内置的 RemoteConfig 解析
         }
+        
+
 
         private void Update()
         {
@@ -245,16 +229,18 @@ namespace Guru
                 _defaults[ServicesConfigKey] = defaultGuruServiceJson;
             }
             
-            // RemoteConfigManager.Init(_defaults);
             // RemoteConfigManager.OnFetchCompleted += OnFetchRemoteCallback;
+            // RemoteConfigManager.Init(_defaults);
             
             InitRemoteConfigManager(_defaults, DebugModeEnabled);
-            Callbacks.SDK.OnFirebaseReady += InternalFetchAllConfigs;
         }
 
         private void InternalFetchAllConfigs(bool result)
         {
-            Callbacks.SDK.OnFirebaseReady -= InternalFetchAllConfigs;
+            if (!result)
+            {
+                UnityEngine.Debug.LogError($"#7 --- Internal FetchAllConfigs failed---");
+            }
             _remoteConfigManager.OnFirebaseReady();
         }
 
@@ -262,20 +248,11 @@ namespace Guru
         /// <summary>
         /// 开始解析内置的云控参数
         /// </summary>
-        private void UpdateSDKRemoteConfig()
+        private void UpdateSDKRemoteConfigs()
         {
-            // TODO ----------- 
-            // Adjust 延迟时间
-            if (_remoteConfigManager.TryGetRemoteData(AdjustService.REMOTE_DELAY_TIME_KEY, out var data))
-            {
-                var dataSource = data.Source switch
-                {
-                    ValueSource.Local => DelayMinutesSource.Local,
-                    ValueSource.Remote => DelayMinutesSource.RemoteConfig,
-                    _ => DelayMinutesSource.Default
-                };
-                AdjustService.Instance.SetAdRevDelayMinutes(data.GetValue(AdjustService.DEFAULT_DELAY_MINUTES), dataSource);
-            }
+#if GURU_ADJUST
+            UpdateAdjustDelayStrategy();
+#endif
         }
         
         #endregion
@@ -291,8 +268,6 @@ namespace Guru
             SetSDKEventPriority();
             // -------- Init Notification -----------
             InitNotiPermission();
-            // -------- Init LT ------------
-            InitLTProperty();
             
             bool useKeywords = false;
             bool useIAP = _initConfig.IAPEnabled;
@@ -326,6 +301,7 @@ namespace Guru
                             _appServicesConfig.adjust_settings.iOSToken());
                         // 更新 Adjust Events
                         GuruSettings.UpdateAdjustEvents(_appServicesConfig.adjust_settings.events);
+                        InitAdjustEventMap();
                     }
                 
                     LogI($"#4.2 --- Start GuruSettings ---");
@@ -828,7 +804,7 @@ namespace Guru
         private void InitFirebase()
         {
             FirebaseUtil.Init(OnFirebaseDepsCheckResult, 
-                OnGetFirebaseId, 
+                firebaseId => InternalInitAnalyticFlow(firebaseId).Forget(),
                 OnGetGuruUID, 
                 OnFirebaseLoginResult); // 确保所有的逻辑提前被调用到
         }
@@ -858,20 +834,37 @@ namespace Guru
             
             Callbacks.SDK.InvokeOnGuruUserAuthResult(success);
         }
-        
-        private void OnGetFirebaseId(string fid)
-        {
-            // 初始化 Adjust 服务
-            InitAdjustService(fid, InitConfig.OnAdjustDeeplinkCallback);
-            // 初始化自打点
-            Analytics.InitGuruAnalyticService(fid, Version);
 
+        /// <summary>
+        /// 内部初始化打点操作
+        /// </summary>
+        private async UniTask InternalInitAnalyticFlow(string firebaseId)
+        {
+            // 初始化自打点服务
+            Analytics.InitGuruAnalyticService(firebaseId, Version);
+            LogI($"#4 --- Apply remote services config ---");
+            // 根据缓存的云控配置来初始化参数， 包括请求 Consent 流程
+            InitAllGuruServices();
+            
+            // 预初始化所有的自定义 Driver
+            PrepareCustomEventDrivers();
+            
             // SDK 的启动 Session 结束 
             OnBoostSessionOver();
+            
+            // 刷新 Consent 数据
+            GuruConsent.RefreshConsentData();
+            
+            // 延迟 2 秒启动
+            await UniTask.Delay(TimeSpan.FromSeconds(2));
+            
+            LogI($"#5 --- Init all custom drivers ---");
+            // 初始化外部打点
+            Analytics.InitCustomDrives().Forget();
         }
         
-        // TODO: 需要之后用宏隔离应用和实现
-        // Auth 登录认证
+
+        // Firebase Auth 登录认证
         private void OnFirebaseLoginResult(bool success, Firebase.Auth.FirebaseUser firebaseUser)
         {
             _firebaseUser = firebaseUser;
@@ -892,6 +885,7 @@ namespace Guru
 
                 try
                 {
+                    InternalFetchAllConfigs(success);
                     Callbacks.SDK.InvokeOnFirebaseReady(success);
                 }
                 catch (Exception ex)
@@ -901,9 +895,10 @@ namespace Guru
                 
                 Analytics.OnFirebaseInitCompleted(); // 此处 Firebase 已经 Ready
             
-                LogI($"#4 --- Apply remote services config ---");
-                // 根据缓存的云控配置来初始化参数
-                InitAllGuruServices();
+                // 这里挪到 获取 FirebaseID 之后
+                // LogI($"#4 --- Apply remote services config ---");
+                // // 根据缓存的云控配置来初始化参数
+                // InitAllGuruServices();
             }
             else
             {
@@ -914,96 +909,147 @@ namespace Guru
         }
 
         #endregion
-        		
-        #region Adjust服务
-        
-        /// <summary>
-        /// 启动 Adjust 服务
-        /// </summary>
-        private static void InitAdjustService(string firebaseId, Action<string> onDeeplinkCallback = null)
-        {
-            LogI($"#5 --- InitAdjustService ---");
-            // 启动 AdjustService
-            string app_token = GuruSettings.Instance.AdjustSetting?.GetAppToken() ?? "";
-            string fb_app_id = GuruSettings.Instance.IPMSetting.FacebookAppId;
-            bool enabled_deferred_report_ad_revenue = InitConfig.AdjustDeferredReportAdRevenueEnabled;
-            int iOSAttWaitingTime = InitConfig.AdjustIOSAttWaitingTime;
 
-            // if (!string.IsNullOrEmpty(IPMConfig.ADJUST_ID))
-            //     Analytics.SetAdjustId(IPMConfig.ADJUST_ID); // 二次启动后，若有值则立即上报属性
-            
-            AdjustService.Instance.Start(app_token, fb_app_id, firebaseId, DeviceId, 
-                enabled_deferred_report_ad_revenue, // Adjust 延迟打点开关
-                iOSAttWaitingTime, // iOS Att 延迟判定时间
-                OnAdjustInitComplete, onDeeplinkCallback ,OnGetGoogleAdId, OnGetAdjustId);
+        #region 控制台
+#if GURU_DEBUG_CONSOLE
+        /// <summary>
+        /// 显示控制台
+        /// </summary>
+        /// <param name="popupEnabled">是否显示弹窗关闭后的 popup 小窗（可再次唤起显示 Console）</param>
+        public static void ShowDebugConsole()
+        {
+            if (!UnityEngine.Debug.unityLogger.logEnabled)
+            {
+                UnityEngine.Debug.unityLogger.logEnabled = true; // 打开日志显示
+            }
+            Guru.Debug.GuruDebugConsole.Instance.ShowConsole();
+        }
+        /// <summary>
+        /// 添加控制台命令
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="description"></param>
+        /// <param name="onCommandExecuted"></param>
+        public static void AddDebugConsoleCommand(string command, string description, Action onCommandExecuted)
+        {
+            Guru.Debug.GuruDebugConsole.Instance.AddCommand(command, description, onCommandExecuted);
+        }
+        /// <summary>
+        /// 添加控制台命令 参数 1
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="description"></param>
+        /// <param name="onCommandExecuted"></param>
+        /// <typeparam name="T1"></typeparam>
+        public static void AddDebugConsoleCommand<T1>(string command, string description, Action<T1> onCommandExecuted)
+        {
+            Guru.Debug.GuruDebugConsole.Instance.AddCommand(command, description, onCommandExecuted);
         }
 
         /// <summary>
-        /// Adjust 初始化结束
+        /// 添加控制台命令 参数 2
         /// </summary>
-        /// <param name="adjustDeviceId"></param>
-        /// <param name="idfv"></param>
-        /// <param name="idfa"></param>
-        private static void OnAdjustInitComplete(string adjustDeviceId)
+        /// <param name="command"></param>
+        /// <param name="description"></param>
+        /// <param name="onCommandExecuted"></param>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        public static void AddDebugConsoleCommand<T1,T2>(string command, string description, Action<T1,T2> onCommandExecuted)
         {
-            Analytics.OnAdjustInitComplete();
+            Guru.Debug.GuruDebugConsole.Instance.AddCommand(command, description, onCommandExecuted);
         }
 
-        private static void OnGetGoogleAdId(string googleAdId)
+        /// <summary>
+        /// 添加控制台命令 参数 3
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="description"></param>
+        /// <param name="onCommandExecuted"></param>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        public static void AddDebugConsoleCommand<T1,T2,T3>(string command, string description, Action<T1,T2,T3> onCommandExecuted)
         {
-            UnityEngine.Debug.Log($"{LOG_TAG} --- OnGetGoogleAdId: {googleAdId}");
-            Analytics.SetGoogleAdId(googleAdId);
+            Guru.Debug.GuruDebugConsole.Instance.AddCommand(command, description, onCommandExecuted);
+        }
+
+
+        /// <summary>
+        /// 添加 Guru 默认的命令
+        /// </summary>
+        private static void AddGuruCommand()
+        {
+            // ---------------- Add Adjust Command ---------------- 
+            AddDebugConsoleCommand("adjust", "Show Adjust Debug Info", () =>
+            {
+                Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword(AdjustService.LOG_TAG);
+            });
             
-            // 确保跑在主线程内再进行赋值
-            RunOnMainThread(() =>
-            { 
-                bool hasChange = IPMConfig.GOOGLE_ADID.Equals(googleAdId) == false;
-                IPMConfig.GOOGLE_ADID = googleAdId;
-                if (hasChange)
-                {
-                    new PropertyEventConfigRequest(-1, 10).Send();
-                }
+            AddDebugConsoleCommand("guru", "Show SDK Debug Info", () =>
+            {
+                Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword(GuruSDK.LOG_TAG);
+            });
+            
+            AddDebugConsoleCommand("ads", "Show Ads Debug Info", () =>
+            {
+                Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword(AdService.LOG_TAG);
+            });
+            
+            AddDebugConsoleCommand("max", "Show MAX Debug Info", () =>
+            {
+                Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword(AdService.Instance.GetMediationLogTag());
+            });
+            
+            AddDebugConsoleCommand("fb", "Show Facebook Debug Info", () =>
+            {
+                Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword(FBService.LOG_TAG);
+            });
+            
+            AddDebugConsoleCommand("firebase", "Show Firebase Debug Info", () =>
+            {
+                Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword(FirebaseUtil.LOG_TAG);
+            });
+            
+            AddDebugConsoleCommand("loadrv", "Force to load RV", () =>
+            {
+                UnityEngine.Debug.Log($"{LOG_TAG} --- Force call load RV");
+                LoadRewardAd();
+            });
+            
+            AddDebugConsoleCommand("loadiv", "Force to load IV", () =>
+            {
+                UnityEngine.Debug.Log($"{LOG_TAG} --- Force call load IV");
+                LoadInterstitialAd();
             });
         }
 
-        /// <summary>
-        /// 获取AdjustId回调
-        /// </summary>
-        /// <param name="adjustDeviceId"></param>
-        /// <param name="idfv"></param>
-        /// <param name="idfa"></param>
-        private static void OnGetAdjustId(string adjustDeviceId)
+
+        private static void PrintSystemInfoOnConsole()
         {
-            UnityEngine.Debug.Log($"{LOG_TAG} --- OnAdjustInitComplete:  adjustId:{adjustDeviceId}");
-            
-            // 获取 ADID 
-            if (!string.IsNullOrEmpty(adjustDeviceId))
-            {
-                Analytics.SetAdjustDeviceId(adjustDeviceId);
-                // 确保跑在主线程内再进行赋值
-                RunOnMainThread(() =>
-                {
-                    bool hasChange = IPMConfig.ADJUST_DEVICE_ID.Equals(adjustDeviceId) == false;
-                    IPMConfig.ADJUST_DEVICE_ID = adjustDeviceId;
-                    if (hasChange)
-                    {
-                        new PropertyEventConfigRequest(-1, 10).Send();
-                    }
-                });
-            }
+            Guru.Debug.GuruDebugConsole.Instance.SetSearchKeyword("");
+            Guru.Debug.GuruDebugConsole.Instance.PrintSystemInfo();
         }
-        #endregion
 
 
-        public static void DebugClearIdfa()
+        private static void ClearLogs()
         {
-            Model.Idfa = "test";
+            Guru.Debug.GuruDebugConsole.Instance.ClearLogs();
         }
         
-        public static void DebugClearIdfv()
+        /// <summary>
+        /// 测试发送 tch02 事件
+        /// </summary>
+        private static void DebugSendTch001Event()
         {
-            Model.Idfv = "test";
+            AdService.Instance.SetTch001Revenue(0.01);
         }
+        private static void DebugSendTch02Event()
+        {
+            AdService.Instance.SetTch02Revenue(0.2);
+        }
+
+#endif  
+        #endregion
         
     }
 

@@ -8,7 +8,7 @@ namespace Guru
 	
 	/// <summary>
 	/// 接口文档参见:
-	/// https://github.com/castbox/backend-dev/blob/main/saas/%E4%B8%AD%E5%8F%B0%E6%9C%8D%E5%8A%A1%E6%8E%A5%E5%85%A5%E6%89%8B%E5%86%8C.md#531%E8%AE%BE%E5%A4%87%E6%95%B0%E6%8D%AE%E4%B8%8A%E6%8A%A5
+	/// <a>https://github.com/castbox/backend-dev/blob/main/saas/%E4%B8%AD%E5%8F%B0%E6%9C%8D%E5%8A%A1%E6%8E%A5%E5%85%A5%E6%89%8B%E5%86%8C.md#531%E8%AE%BE%E5%A4%87%E6%95%B0%E6%8D%AE%E4%B8%8A%E6%8A%A5</a>
 	/// </summary>
 	public class DeviceInfoUploadRequest : RequestBase
 	{

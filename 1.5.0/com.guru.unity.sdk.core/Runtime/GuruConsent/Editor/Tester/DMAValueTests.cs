@@ -14,16 +14,16 @@ namespace Guru.Editor
         public static void TestDMAValue()
         {
             
-            GoogleDMAHelper.SetDMAStatus("0");
+            GoogleDMAHelper.UpdateDmaStatus("0");
             Debug.Log($"\n-----------\n\n");
             
-            GoogleDMAHelper.SetDMAStatus("1011");
+            GoogleDMAHelper.UpdateDmaStatus("1011");
             Debug.Log($"\n-----------\n\n");
 
-            GoogleDMAHelper.SetDMAStatus("10000010");
+            GoogleDMAHelper.UpdateDmaStatus("10000010");
             Debug.Log($"\n-----------\n\n");
 
-            GoogleDMAHelper.SetDMAStatus("10110010000");
+            GoogleDMAHelper.UpdateDmaStatus("10110010000");
             Debug.Log($"\n-----------\n\n");
 
         }

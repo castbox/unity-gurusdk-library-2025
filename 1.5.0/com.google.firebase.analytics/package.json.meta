@@ -1,8 +1,7 @@
 fileFormatVersion: 2
-guid: 2a1630dddf674a3d9e3ef50fe0f9dcc2
-labels:
-- gupmr_manifest
-- gvh
-- gvh_version-12.2.1
-- gvhp_exportpath-package.json
-timeCreated: 0
+guid: ea5cef8fe59ea4cbe82d93464d6516d5
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

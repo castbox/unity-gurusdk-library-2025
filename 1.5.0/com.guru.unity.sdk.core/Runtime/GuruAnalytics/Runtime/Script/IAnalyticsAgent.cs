@@ -13,6 +13,7 @@ namespace Guru
         void SetUserProperty(string key, string value);
         void SetFirebaseId(string id);
         void SetAdjustId(string id);
+        void SetAppsflyerId(string id);
         void SetDeviceId(string deviceId);
         void SetUid(string uid);
         bool IsDebug { get; }

@@ -1,13 +1,10 @@
-
-
 namespace Guru
 {
     using System;
     using UnityEngine;
     using System.Collections.Generic;
     using System.Linq;
-    using Cysharp.Threading.Tasks;
-
+    
     
     [Serializable]
     class PurchasedProduct
@@ -28,44 +25,27 @@ namespace Guru
         public int b_play = 0;
         public bool no_ads = false;
         public bool debug_mode = false;
-        public long last_active_ts = 0; // 用户上次登录时间戳
-        public int lt = 1; // 添加登录次数字段,初始值为1
         public List<PurchasedProduct> purchased = new List<PurchasedProduct>(10);
-
-        /// <summary>
-        /// iOS idfa
-        /// </summary>
-        public string idfa = "";
-
-        /// <summary>
-        /// iOS idfv
-        /// </summary>
-        public string idfv = "";
+        
         //-------------- data ---------------
     }
-
+    
     [Serializable]
-    internal class GuruSDKModel: ILTPropertyDataHolder
+    internal class GuruSDKModel
     {
-        private const float SAVE_INTERVAL = 3;
-        private const string SAVE_KEY = "com.guru.sdk.model.save";
+        private const float SaveInterval = 3;
+        private const string SaveKey = "com.guru.sdk.model.save";
+        private DateTime _lastSavedTime = new DateTime(1970,1,1);
         
-        private DateTime _lastSavedTime = DateTime.UnixEpoch;
-        private DateTime _lastActiveTime;
-
         private bool _noAds = false;
         private int _bLevel;
         private int _bPlay;
         private string _uid;
         private bool _debugMode = false;
-        private int _lt;
-        private string _idfa;
-        private string _idfv;
         private List<PurchasedProduct> _purchased;
-
-
+        
+        
         private static GuruSDKModel _instance;
-
         public static GuruSDKModel Instance
         {
             get
@@ -85,12 +65,7 @@ namespace Guru
             _bPlay = model.b_play;
             _purchased = model.purchased;
             _debugMode = model.debug_mode;
-            _lt = model.lt;
-            _idfv = model.idfv;
-            _idfa = model.idfa;
-            _lastActiveTime = TimeUtil.ConvertTimeSpanToDateTime(model.last_active_ts);
         }
-
         
         public int BLevel
         {
@@ -103,7 +78,6 @@ namespace Guru
                     UnityEngine.Debug.LogWarning($"[SDK] :: Set b_level [{value}] should not be less than original value [{_bLevel}]");
                     return;
                 }
-
                 _bLevel = value;
                 Save();
             }
@@ -131,7 +105,7 @@ namespace Guru
 
 
         public bool IsIapUser => _purchased.Count > 0;
-
+        
         public bool IsNoAds
         {
             get => _noAds;
@@ -152,53 +126,20 @@ namespace Guru
             }
         }
 
-        public int LT
-        {
-            get => _lt;
-            set => _lt = value;
-        }
-
-        public string Idfa
-        {
-            get => _idfa;
-            set
-            {
-                _idfa = value;
-                Save();
-            }
-        }
-
-        public string Idfv
-        {
-            get => _idfv;
-            set
-            {
-                _idfv = value;
-                Save();
-            }
-        }
-        
-        public DateTime LastActiveTime
-        {
-            get => _lastActiveTime;
-            set => _lastActiveTime = value;
-        }
-
-
         #region 初始化
 
 
         private GuruSDKSerializedModel LoadModel()
         {
             GuruSDKSerializedModel model = null;
-            if (PlayerPrefs.HasKey(SAVE_KEY))
+            if (PlayerPrefs.HasKey(SaveKey))
             {
-                var json = PlayerPrefs.GetString(SAVE_KEY, "");
+                var json = PlayerPrefs.GetString(SaveKey, "");
                 if (!string.IsNullOrEmpty(json))
                 {
                     try
                     {
-                        model = JsonUtility.FromJson<GuruSDKSerializedModel>(json);
+                        model =  JsonUtility.FromJson<GuruSDKSerializedModel>(json);
                     }
                     catch (Exception e)
                     {
@@ -206,11 +147,10 @@ namespace Guru
                     }
                 }
             }
-
-            if (model == null) model = new GuruSDKSerializedModel();
+            if(model == null) model = new GuruSDKSerializedModel();
             return model;
         }
-
+        
         /// <summary>
         /// 保存至 PlayerPrefs 数据
         /// </summary>
@@ -224,47 +164,32 @@ namespace Guru
                 no_ads = _noAds,
                 purchased = _purchased,
                 debug_mode = _debugMode,
-                last_active_ts = TimeUtil.GetTimeStamp(_lastActiveTime),
-                lt = _lt,
-                
-                idfa = _idfa,
-                idfv = _idfv
             };
-
+            
             var json = JsonUtility.ToJson(model);
             if (!string.IsNullOrEmpty(json))
             {
-                PlayerPrefs.SetString(SAVE_KEY, json);
+                PlayerPrefs.SetString(SaveKey, json);
             }
         }
-
+        
         /// <summary>
         /// 保存数据
         /// </summary>
         /// <param name="forceSave"></param>
         public void Save(bool forceSave = false)
         {
-            SafeSaveInMainThread(forceSave).Forget();
-        }
-
-        /// <summary>
-        /// 安全存储到主线程
-        /// </summary>
-        /// <param name="forceSave"></param>
-        private async UniTask SafeSaveInMainThread(bool forceSave = false)
-        {
-            await UniTask.SwitchToMainThread();
-            
             SetToMemory(); // 每次保存都要设置到 PlayerPrefs 内
 
-            bool shouldWriteToDisk = forceSave || (DateTime.Now - _lastSavedTime) >= TimeSpan.FromSeconds(SAVE_INTERVAL);
+            bool shouldWriteToDisk = forceSave || (DateTime.Now - _lastSavedTime)>= TimeSpan.FromSeconds(SaveInterval);
             if (!shouldWriteToDisk) return;
             _lastSavedTime = DateTime.Now; // 更新最后保存时间
             PlayerPrefs.Save(); // 写入到磁盘
         }
-
+        
         #endregion
         
+
         #region 订单记录
         
         /// <summary>
@@ -306,7 +231,8 @@ namespace Guru
             receipts.AddRange(from purchasedProduct in _purchased where purchasedProduct.productName == productName select purchasedProduct.receipt);
             return receipts.ToArray();
         }
-        
+
+
         public string[] GetReceiptsById(string productId)
         {
             var receipts = new List<string>();
@@ -314,17 +240,19 @@ namespace Guru
             return receipts.ToArray();
         }
         
-        #endregion
         
+
+        #endregion
+
+
         #region 清除数据
 
         public void ClearData()
         {
-            PlayerPrefs.DeleteKey(SAVE_KEY);
+            PlayerPrefs.DeleteKey(SaveKey);
         }
 
         #endregion
-        
     }
 
 

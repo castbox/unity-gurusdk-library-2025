@@ -29,11 +29,6 @@ namespace Guru
         /// </summary>
         public bool AutoNotificationPermission = true;
         /// <summary>
-        /// 自动记录完成的关卡
-        /// </summary>
-        [Obsolete("Will be removed from InitConfig in next version. Use the <b_level> and <b_play> data from the GameUserData from game itself instead!")]
-        public bool AutoRecordFinishedLevels = false;
-        /// <summary>
         /// 自定义 Service 云控 Key
         /// </summary>
         public string CustomServiceKey = "";
@@ -45,6 +40,10 @@ namespace Guru
         /// 设置 banner 的宽
         /// </summary>
         public float BannerWidth = 0;
+        /// <summary>
+        /// 开启自适应 Banner 开关
+        /// </summary>
+        public bool EnableAdaptiveBanner = false;
         /// <summary>
         /// 已购买去广告道具
         /// </summary>
@@ -66,6 +65,11 @@ namespace Guru
         /// </summary>
         public int AdjustIOSAttWaitingTime = 0;
 
+        /// <summary>
+        /// 自定义打点代理
+        /// </summary>
+        public IAnalyticDelegate CustomAnalyticDelegate = null;
+        
         private Dictionary<string, object> _defaultRemoteData = new Dictionary<string, object>();
         /// <summary>
         /// 云控参数的默认配置
@@ -110,6 +114,7 @@ namespace Guru
             sb.AppendLine($"\t  CustomServiceKey: {CustomServiceKey}");
             sb.AppendLine($"\t  BannerBgColor: {BannerBgColor}");
             sb.AppendLine($"\t  BannerWidth: {BannerWidth}");
+            sb.AppendLine($"\t  EnableAdaptiveBanner: {EnableAdaptiveBanner}");
             sb.AppendLine($"\t  IsBuyNoAds: {IsBuyNoAds}");
             sb.AppendLine($"\t  DebugMode: {DebugMode}");
             sb.AppendLine($"\t  DefaultRemote: Count: {DefaultRemoteData.Count}");
@@ -183,6 +188,11 @@ namespace Guru
             _config.BannerWidth = value;
             return this;
         }
+        public GuruSDKInitConfigBuilder SetEnableAdaptiveBanner(bool value)
+        {
+            _config.EnableAdaptiveBanner = value;
+            return this;
+        }
         public GuruSDKInitConfigBuilder SetDebugMode(bool value)
         {
             _config.DebugMode = value;
@@ -231,6 +241,11 @@ namespace Guru
         public GuruSDKInitConfigBuilder SetAdjustIOSAttWaitingTime(int value)
         {
             _config.AdjustIOSAttWaitingTime = value;
+            return this;
+        }
+        public GuruSDKInitConfigBuilder SetCustomAnalyticDelegate(IAnalyticDelegate value)
+        {
+            _config.CustomAnalyticDelegate = value;
             return this;
         }
         

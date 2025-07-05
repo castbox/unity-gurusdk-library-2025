@@ -14,13 +14,14 @@ namespace Guru
         private void InitRemoteConfigManager(Dictionary<string, object> defaults = null, bool isDebug = false)
         {
             _remoteConfigManager = new RemoteConfigManager(defaults, 
-                OnFirstFetchRemoteComplete,
+                OnFetchRemoteComplete,
                 isDebug);
         }
 
-        public static void FetchAllRemote(bool immediately = false)
+        public static void FetchAllRemote()
         {
-            Instance._remoteConfigManager.FetchAllAsync();
+            // Instance._remoteConfigManager.FetchAllAsync();
+            Instance._remoteConfigManager.FetchAllAsync().Forget();
         }
         
         public static string GetRemoteString(string key, string defaultValue = "") => Instance._remoteConfigManager.GetStringValue(key, defaultValue);
@@ -62,7 +63,5 @@ namespace Guru
             
             return configValues;
         }
-
-
     }
 }

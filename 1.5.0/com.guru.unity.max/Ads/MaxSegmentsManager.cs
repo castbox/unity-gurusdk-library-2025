@@ -197,7 +197,7 @@ namespace Guru.Ads.Max
         public bool isPaidUser = false;            // 是否付费用户
         public DateTime firstInstallDate = new(1970, 1, 1);  // 首次安装日期
         public string networkStatus = string.Empty;       // 网络状态
-        public DateTime previousFbAdRevenueDate = new(1970, 1, 1);
+        public DateTime previousFbAdRevenueDate = new(1970, 1, 1); // FB上次收入日期
     }
 
 }

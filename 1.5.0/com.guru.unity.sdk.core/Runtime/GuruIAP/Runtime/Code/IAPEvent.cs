@@ -108,7 +108,7 @@ namespace Guru.IAP
                 GetPlatform(),
                 _productToken,
                 _receipt,
-                _currency);
+                _currency,_isSandbox? "true": "false");
             
         }
     }

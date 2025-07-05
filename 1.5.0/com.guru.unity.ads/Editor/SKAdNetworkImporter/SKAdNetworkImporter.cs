@@ -1,3 +1,4 @@
+#if UNITY_IOS
 namespace Guru.Editor
 {
 	using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace Guru.Editor
 
 		
 		
-#if UNITY_IOS
+
 		[PostProcessBuild(10)]
 		private static void OnPostProcessBuild(BuildTarget buildTarget, string path)
 		{
@@ -49,7 +50,7 @@ namespace Guru.Editor
 			AddPlatformADNetworkIdentifier(plistElementArray, defaultNetworkIdentifiers);
 			plist.WriteToFile(plistPath);
 		}
-#endif
+
 		
 		public static void ReadSKADNetworkPlistFile()
 		{
@@ -244,5 +245,6 @@ namespace Guru.Editor
 		}
 		
 	}
-
 }
+
+#endif

@@ -1,5 +1,3 @@
-using Cysharp.Threading.Tasks;
-
 namespace Guru
 {
     using System;
@@ -8,8 +6,6 @@ namespace Guru
     public partial class GuruSDK
     {
         public static bool IsIAPReady = false;
-
-        private static bool _isOnGuruLogin = false;
 
         //---------- 支付失败原因 ----------
         public const string BuyFail_PurchasingUnavailable = "PurchasingUnavailable";
@@ -212,37 +208,8 @@ namespace Guru
         private static void OnBuyStart(string productName)
         {
             Callbacks.IAP.InvokeOnPurchaseStart(productName);
-            
-            //2025-3-13 在 IAP 发起请求时，如果当前 UID 为空，发起一次匿名登陆
-            if (string.IsNullOrEmpty(IPMConfig.IPM_UID))
-            {
-                if (_isOnGuruLogin) return;
-                CallGuruLogin().Forget();
-            }
         }
-
-        private static async UniTask CallGuruLogin()
-        {
-            int retryCount = 0;
-            _isOnGuruLogin = true;
-
-            while (!FirebaseUtil.IsReady && retryCount < 3)
-            {
-                retryCount++;
-                await UniTask.Delay(TimeSpan.FromSeconds(5));
-            }
-            
-            if (FirebaseUtil.IsReady)
-            {
-                FirebaseUtil.LoginGuru();
-            }
-            else
-            {
-                UnityEngine.Debug.LogWarning($"{LOG_TAG}: firebase is not ready !");
-            }
-            _isOnGuruLogin = false;
-        }
-
+        
         /// <summary>
         /// 支付失败
         /// </summary>

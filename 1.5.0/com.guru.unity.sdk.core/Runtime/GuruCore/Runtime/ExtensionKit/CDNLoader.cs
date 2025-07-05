@@ -32,27 +32,31 @@ public class CDNConfig
     public int retry;
     public int timeout;
 
-    private static CDNConfig _config;
+    // private static CDNConfig _config;
     
     
     /// <summary>
     /// 加载配置
     /// </summary>
     /// <returns></returns>
-    public static CDNConfig Load()
+    public static CDNConfig Load( string remoteKey = "")
     {
-        if (_config != null)  return _config;
+        if(string.IsNullOrEmpty(remoteKey))
+            remoteKey = CDN_CONFIG_REMOTE_KEY;
+
+        CDNConfig config = null;
+        // if (_config != null)  return _config;
         try
         {
             if (!FirebaseUtil.IsReady) return null;
-            _config = FirebaseUtil.GetRemoteConfig<CDNConfig>(CDN_CONFIG_REMOTE_KEY);
+            config = FirebaseUtil.GetRemoteConfig<CDNConfig>(remoteKey);
         }
         catch (Exception e)
         {
             Log.E(e);
             FirebaseUtil.LogException(e);
         }
-        return _config;
+        return config;
     }
 }
 
@@ -193,14 +197,7 @@ public class CDNLoader : MonoBehaviour
     /// <returns></returns>
     public string GetUrl(string originUrl,  bool useFallback = false)
     {
-        if (_config == null)
-        {
-            _config = CDNConfig.Load();
-        }
-
-        CDNConfig config = _config;
-        if (config == null) config = _defaultConfig;
-
+        CDNConfig config = GetConfig();
         if (config == null)
         {
             Debug.LogError($"[CDNLoader] GetUrl failed, config is null, return <originUrl>:{originUrl}");
@@ -361,6 +358,36 @@ public class CDNLoader : MonoBehaviour
     }
 
     /// <summary>
+    /// 获取云控配置
+    /// </summary>
+    /// <returns></returns>
+    private CDNConfig GetConfig()
+    {
+        // 有则返回
+        if(_config != null) 
+            return _config;
+        
+        // 尝试加载
+        _config = CDNConfig.Load();
+        if (_config != null)
+        {
+            Debug.Log($"<color=#88ff00>[CDNLoader] Using onlineConfig !</color>");
+            return _config;
+        }
+
+
+        if (_defaultConfig != null)
+        {
+            Debug.Log($"<color=yellow>[CDNLoader] Using defaultConfig !</color>");
+            return _defaultConfig;
+        }
+
+        Debug.LogError($"[CDNLoader] Get config failed, no config exsits!!");
+        return null;
+    }
+
+
+    /// <summary>
     /// 协程加载任务
     /// </summary>
     /// <returns></returns>
@@ -370,8 +397,9 @@ public class CDNLoader : MonoBehaviour
         var task = GetTask();
         if (task != null)
         {
+            var config = GetConfig(); // 尝试获取 CdnConfig
             // 检查配置有效性
-            if (_config == null)
+            if (config == null) 
             {
                 var result = LoadResult.Create(task, false, "CDN configuration is missing");
                 task.onComplete?.Invoke(result);
@@ -389,7 +417,7 @@ public class CDNLoader : MonoBehaviour
                 else
                     www.downloadHandler = new DownloadHandlerBuffer();
 
-                www.timeout = _config.timeout > 0 ? _config.timeout : DEFAULT_TIMEOUT;
+                www.timeout = config.timeout > 0 ? config.timeout : DEFAULT_TIMEOUT;
                 yield return www.SendWebRequest();
                 
                 var result = LoadResult.Create(task);
@@ -399,7 +427,7 @@ public class CDNLoader : MonoBehaviour
                 }
                 else
                 {
-                    ProcessFailedResponse(www, task, result);
+                    ProcessFailedResponse(www, task, result, config);
                 }
 
                 _isOnLoading = false;
@@ -436,12 +464,12 @@ public class CDNLoader : MonoBehaviour
     /// <summary>
     /// 处理失败的响应
     /// </summary>
-    private void ProcessFailedResponse(UnityWebRequest www, LoadTask task, LoadResult result)
+    private void ProcessFailedResponse(UnityWebRequest www, LoadTask task, LoadResult result, CDNConfig config)
     {
         Debug.LogError($"CDNLoader load failed -> code:{www.responseCode} error:{www.error} URL:{task.fixedUrl} type:{task.type}");
         
         task.retryNum++;
-        int maxRetry = _config.retry > 0 ? _config.retry : DEFAULT_MAX_RETRY;
+        int maxRetry = config.retry > 0 ? config.retry : DEFAULT_MAX_RETRY;
         
         if (task.retryNum > maxRetry)
         {

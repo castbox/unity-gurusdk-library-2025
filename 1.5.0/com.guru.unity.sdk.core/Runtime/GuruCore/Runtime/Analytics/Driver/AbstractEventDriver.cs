@@ -134,8 +134,7 @@ namespace Guru
         /// </summary>
         /// <param name="evt"></param>
         protected abstract void FlushTrackingEvent(ITrackingEvent evt);
-
-
+        
         protected abstract void SetUserProperty(string key, string value);
         
         /// <summary>
@@ -178,6 +177,24 @@ namespace Guru
             else
             {
                 _predefinedPropertyDelayedActions.Add(new MidWarePropertyDelayedAction(Analytics.PropertyAdjustId, adjustId, ReportAdjustId));
+            }
+            
+        }
+        
+        
+        /// <summary>
+        /// 设置 AdjustId
+        /// (Firebase)
+        /// </summary>
+        public void SetAppsflyerId(string appsflyerId)
+        {
+            if (_isDriverReady)
+            {
+                ReportAppsflyerId(appsflyerId);
+            }
+            else
+            {
+                _predefinedPropertyDelayedActions.Add(new MidWarePropertyDelayedAction(Analytics.PropertyAppsflyerId, appsflyerId, ReportAppsflyerId));
             }
             
         }
@@ -262,6 +279,12 @@ namespace Guru
         /// (Firebase)
         /// </summary>
         protected abstract void ReportAdjustId(string adjustId);
+        
+        /// <summary>
+        /// 设置 AdjustId
+        /// (Firebase)
+        /// </summary>
+        protected abstract void ReportAppsflyerId(string adjustId);
         
         /// <summary>
         /// 设置 googleAdId

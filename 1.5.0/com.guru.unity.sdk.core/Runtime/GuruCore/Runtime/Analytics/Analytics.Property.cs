@@ -1,3 +1,4 @@
+#nullable enable
 namespace Guru
 {
 	/// <summary>
@@ -97,6 +98,7 @@ namespace Guru
 		/// </summary>
 		public static void SetAdjustDeviceId(string adjustId)
 		{
+			if (string.IsNullOrEmpty(adjustId)) adjustId = "not_set";
 			_propertiesManager.ReportAdjustId(adjustId);
 		}
 		
@@ -147,6 +149,12 @@ namespace Guru
 			if (string.IsNullOrEmpty(idfa)) idfa = "not_set";
 			_propertiesManager.ReportIDFA(idfa);
 		}
+
+		public static void SetAppsflyerId(string appsflyerId)
+		{
+			if (string.IsNullOrEmpty(appsflyerId)) appsflyerId = "not_set";
+			_propertiesManager.ReportAppsflyerId(appsflyerId);
+		}
 		
 		public static void SetUserCreatedTime(string timestamp)
 		{
@@ -193,11 +201,15 @@ namespace Guru
 
 		private readonly GuruEventDriver _guruEventDriver;
 		private readonly FirebaseEventDriver _firebaseEventDriver;
+		private readonly CustomEventDriverManager? _extEventDriverManager;
 		
-		public MidWarePropertiesManager(GuruEventDriver guruDriver, FirebaseEventDriver firebaseDriver)
+		public MidWarePropertiesManager(GuruEventDriver guruDriver, 
+			FirebaseEventDriver firebaseDriver, 
+			CustomEventDriverManager? extEventDriverManager)
 		{
 			_guruEventDriver = guruDriver;
 			_firebaseEventDriver = firebaseDriver;
+			_extEventDriverManager = extEventDriverManager;
 		}
 
 
@@ -205,34 +217,35 @@ namespace Guru
 		public void ReportUid(string uid)
         {
 			if (string.IsNullOrEmpty(uid)) return; // 空值不予上报
-	        
 	        _guruEventDriver.SetUid(uid);
-	        _guruEventDriver.AddProperty(Analytics.PropertyUserID, uid);
-	        
 	        _firebaseEventDriver.SetUid(uid);
-	        _firebaseEventDriver.AddProperty(Analytics.PropertyUserID, uid);
+	        _extEventDriverManager?.SetUid(uid);
         }
         public void ReportBLevel(string bLevel)
         {
 	        _guruEventDriver.AddProperty(Analytics.PropertyLevel, bLevel);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyLevel, bLevel);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertyLevel, bLevel);
         }
         public void ReportBPlay(string bPlay)
         {
 	        _guruEventDriver.AddProperty(Analytics.PropertyPlay, bPlay);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyPlay, bPlay);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertyPlay, bPlay);
         }
 
         public void ReportAnalyticsExperimentGroup(string groupName)
         {
 	        _guruEventDriver.AddProperty(Analytics.PropertyAnalyticsExperimentalGroup, groupName);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyAnalyticsExperimentalGroup, groupName);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertyAnalyticsExperimentalGroup, groupName);
         }
         
         public void ReportSignUpMethod(string methodName)
         {
 	        _guruEventDriver.AddProperty(Analytics.PropertySignUpMethod, methodName);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertySignUpMethod, methodName);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertySignUpMethod, methodName);
         }
         
         public void ReportDeviceId(string deviceId)
@@ -242,24 +255,30 @@ namespace Guru
 	        _guruEventDriver.SetDeviceId(deviceId);
 	        _guruEventDriver.AddProperty(Analytics.PropertyDeviceID, deviceId);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyDeviceID, deviceId);
+	        _extEventDriverManager?.SetDeviceId(deviceId);
+
         }
         
         public void ReportFirstOpenTime(string firstOpenTime)
         {
 	        _guruEventDriver.AddProperty(Analytics.PropertyFirstOpenTime, firstOpenTime);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyFirstOpenTime, firstOpenTime);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertyFirstOpenTime, firstOpenTime);
         }
 
         public void ReportIsIapUser(string isIapUser)
         {
 	        _guruEventDriver.AddProperty(Analytics.PropertyIsIAPUser, isIapUser);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyIsIAPUser, isIapUser);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertyIsIAPUser, isIapUser);
+	        
         }
         
         public void ReportNetworkStatus(string networkStatus)
         {
 	        _guruEventDriver.AddProperty(Analytics.PropertyNetwork, networkStatus);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyNetwork, networkStatus);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertyNetwork, networkStatus);
         }
         
         public void ReportAdjustId(string adjustId)
@@ -268,14 +287,24 @@ namespace Guru
 	        
 	        _guruEventDriver.SetAdjustId(adjustId);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyAdjustId, adjustId);
+	        _extEventDriverManager?.SetAdjustId(adjustId);
         }
-        
+
+        public void ReportAppsflyerId(string appsflyerId)
+        {
+	        if (string.IsNullOrEmpty(appsflyerId)) return;
+	        _guruEventDriver.SetAppsflyerId(appsflyerId);
+	        _firebaseEventDriver.AddProperty(Analytics.PropertyAppsflyerId, appsflyerId);
+	        _extEventDriverManager?.SetAppsflyerId(appsflyerId);
+        }
+
         public void ReportAttStatus(string attStatus)
         {
 	        if (string.IsNullOrEmpty(attStatus)) return; // 空值不予上报
 	        
 	        _guruEventDriver.AddProperty(Analytics.PropertyAttStatus, attStatus);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyAttStatus, attStatus);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertyAttStatus, attStatus);
         }
         
         public void ReportNotiPerm(string notiPerm)
@@ -284,6 +313,7 @@ namespace Guru
 	        
 	        _guruEventDriver.AddProperty(Analytics.PropertyNotiPerm, notiPerm);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyNotiPerm, notiPerm);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertyNotiPerm, notiPerm);
         }
         
         public void ReportAndroidId(string androidId)
@@ -293,6 +323,7 @@ namespace Guru
 	        _guruEventDriver.SetAndroidId(androidId);
 	        _guruEventDriver.AddProperty(Analytics.PropertyAndroidId, androidId);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyAndroidId, androidId);
+	        _extEventDriverManager?.SetAndroidId(androidId);
         }
         
         public void ReportGoogleAdId(string googleAdId)
@@ -302,6 +333,7 @@ namespace Guru
 	        _guruEventDriver.SetGoogleAdId(googleAdId);
 	        _guruEventDriver.AddProperty(Analytics.PropertyGoogleAdId, googleAdId);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyGoogleAdId, googleAdId);
+	        _extEventDriverManager?.SetGoogleAdId(googleAdId);
         }
         
         public void ReportIDFV(string idfv)
@@ -311,6 +343,7 @@ namespace Guru
 	        _guruEventDriver.SetIDFV(idfv);
 	        _guruEventDriver.AddProperty(Analytics.PropertyIDFV, idfv);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyIDFV, idfv);
+	        _extEventDriverManager?.SetIDFV(idfv);
         }
         public void ReportIDFA(string idfa)
         {
@@ -319,6 +352,7 @@ namespace Guru
 	        _guruEventDriver.SetIDFA(idfa);
 	        _guruEventDriver.AddProperty(Analytics.PropertyIDFA, idfa);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyIDFA, idfa);
+	        _extEventDriverManager?.SetIDFA(idfa);
         }
         
         public void ReportUserCreatedTimestamp(string timestamp)
@@ -327,6 +361,7 @@ namespace Guru
 	        
 	        _guruEventDriver.AddProperty(Analytics.PropertyUserCreatedTimestamp, timestamp);
 	        _firebaseEventDriver.AddProperty(Analytics.PropertyUserCreatedTimestamp, timestamp);
+	        _extEventDriverManager?.AddProperty(Analytics.PropertyUserCreatedTimestamp, timestamp);
         }
     }
     

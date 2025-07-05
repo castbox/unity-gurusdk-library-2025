@@ -324,6 +324,26 @@ namespace Guru
 				PlayerPrefs.SetString(nameof(FIREBASE_ID), value);
 			}
 		}
+		
+		private static string _appsflyerId = "";
+		public static string APPSFLYER_ID
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_appsflyerId))
+				{
+					_appsflyerId = PlayerPrefs.GetString(nameof(APPSFLYER_ID), "");
+				}
+				return _appsflyerId;
+			}
+			set
+			{
+				if(string.IsNullOrEmpty(value)) return;
+				
+				_appsflyerId = value;
+				PlayerPrefs.SetString(nameof(_appsflyerId), value);
+			}
+		}
 
 		public static void DebugClearFirebaseId()
 		{

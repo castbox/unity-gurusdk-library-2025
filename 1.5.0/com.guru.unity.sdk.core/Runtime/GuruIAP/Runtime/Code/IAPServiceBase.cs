@@ -204,14 +204,12 @@ namespace Guru.IAP
                 if(_products != null) _products.Clear();
                 _products = new Dictionary<string, ProductInfo>(len);
                 _productNameList = new string[len];
-                
-                ProductSetting item;
-                IDs ids;
+
                 bool emptyIDs = false;
                 for (int i = 0; i < len; i++)
                 {
-                    item = settings[i];
-                    ids = new IDs();
+                    var item = settings[i];
+                    var ids = new StoreSpecificIds();
                     if (!string.IsNullOrEmpty(item.GooglePlayProductId))
                     {
                         ids.Add(item.GooglePlayProductId, GooglePlay.Name);

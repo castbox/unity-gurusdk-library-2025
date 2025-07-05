@@ -27,7 +27,7 @@ namespace Guru.Ads
             nameof(OnEventIadsClick),
             nameof(OnEventIadsClose),
             
-            // RAADS
+            // RADS
             nameof(OnEventRadsImp),
             nameof(OnEventRadsLoaded),
             nameof(OnEventRadsFailed),

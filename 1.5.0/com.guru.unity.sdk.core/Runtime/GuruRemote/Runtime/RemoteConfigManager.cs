@@ -1,5 +1,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace Guru
 {
@@ -28,12 +29,13 @@ namespace Guru
 
         public bool IsReady => _isReady; // 云控管理器是否可用
 
+        private bool _isRunning = false;
+
         private readonly RemoteConfigModel _configModel;        // 配置数据模型
         private FirebaseRemoteService _remoteService;  // 远程服务管理器
         private readonly bool _isDebugMode;                     // 是否为调试模式
         private bool _isReady;                   // 是否已初始化
-        private Action<bool> _onFetchResultHandler;             // 拉取配置结果回调
-        private CancellationTokenSource _fetchCancellationSource;
+        private readonly Action<bool> _onFetchResultHandler;             // 拉取配置结果回调
 
         /// <summary>
         /// 初始化远程配置管理器
@@ -45,11 +47,11 @@ namespace Guru
             Action<bool> onFetchResult = null,
             bool isDebugMode = false)
         {
+            _isRunning = false;
 			_isDebugMode = isDebugMode;
             _onFetchResultHandler = onFetchResult;
 			// 初始化数据模型
             _configModel = new RemoteConfigModel(defaults ?? new Dictionary<string, object>());
-     
         }
 
         #region 拉取成功回调
@@ -63,8 +65,8 @@ namespace Guru
                    
             _isReady = true;
             
-            // 启动时立即拉取所有配置
-            FetchAllAsync(_onFetchResultHandler);
+            // 启动时立即拉取所有配置, 尝试重试
+            FetchAllAsyncWithRetry(10).Forget();
         }
 
         #endregion
@@ -89,112 +91,83 @@ namespace Guru
         /// 拉取所有远程配置（带无限重试，兼容回调API）
         /// </summary>
         /// <param name="callback">拉取完成回调(true:成功 false:失败)</param>
-        /// <param name="initialDelayMs">初始重试延迟（毫秒）</param>
-        /// <param name="maxDelayMs">最大重试延迟（毫秒）</param>
-        public void FetchAllAsync(Action<bool> callback = null, int initialDelayMs = 1000, int maxDelayMs = 32000)
+        /// <param name="timeout">初始重试延迟（毫秒）</param>
+        public async UniTaskVoid FetchAllAsync(int timeout = 5)
         {
             if (!_isReady)
             {
                 LogW("RemoteConfig Not init");
-                callback?.Invoke(false);
+                CallFetchResultHandler(false);
                 return;
             }
-    
-            // 取消之前的操作（如果有）
-            CancelFetchOperations();
-    
-            // 创建新的CancellationTokenSource
-            _fetchCancellationSource = new CancellationTokenSource();
-    
-            // 使用UniTask版本的方法，但保持回调API兼容
-            FetchAllAsyncWithRetry(initialDelayMs, maxDelayMs, _fetchCancellationSource.Token)
-                .ContinueWith(success => callback?.Invoke(success))
-                .Forget(ex => 
-                {
-                    if (ex is OperationCanceledException)
-                    {
-                        LogW("FetchAllAsync operation was cancelled");
-                        callback?.Invoke(false);
-                    }
-                    else
-                    {
-                        LogE($"Unhandled exception in FetchAllAsync: {ex.Message}", ex);
-                        callback?.Invoke(false);
-                    }
-                });
+            
+            var result = await FetchAllConfigAsync();
+            CallFetchResultHandler(result);
         }
-        
-        /// <summary>
-        /// 拉取所有远程配置（带无限重试和指数退避）
-        /// </summary>
-        /// <param name="initialDelayMs">初始重试延迟（毫秒）</param>
-        /// <param name="maxDelayMs">最大重试延迟（毫秒）</param>
-        /// <param name="cancellationToken">取消令牌</param>
-        /// <returns>拉取结果的UniTask(true:成功)</returns>
-        private async UniTask<bool> FetchAllAsyncWithRetry( int initialDelayMs = 1000, int maxDelayMs = 32000,CancellationToken cancellationToken = default)
+
+        private void CallFetchResultHandler(bool success)
         {
-            if (!_isReady)
+            _onFetchResultHandler?.Invoke(success);
+        }
+
+        private async UniTask<bool> FetchAllConfigAsync()
+        {
+            if (_isRunning)
             {
-                LogW($"RemoteConfig Not init");
-                return false;
+                LogE("Fetch All is on going");
+                return false; 
             }
-            LogI($"Start FetchAll with retry");
-            int attempt = 0;
-            int delayMs = 0;
-    
-            while (!cancellationToken.IsCancellationRequested)
+            _isRunning = true;
+            bool result = false;
+
+            if (Application.internetReachability != NetworkReachability.NotReachable)
             {
                 try
                 {
-                    // 如果不是第一次尝试，则等待一段时间后重试
-                    if (attempt > 0)
-                    {
-                        // 计算指数退避延迟（1s, 2s, 4s, 8s...），但不超过最大值
-                        delayMs = Math.Min(initialDelayMs * (1 << (attempt - 1)), maxDelayMs);
-                        LogI($"Retry attempt #{attempt} after {delayMs}ms");
-                        await UniTask.Delay(delayMs, cancellationToken: cancellationToken);
-                    }
-            
-                    // 执行实际的获取配置操作
                     var (success, configValues) = await _remoteService.FetchAllConfigsAsync();
+                    result = success;
                     if (success)
                     {
                         _configModel.UpdateConfigValues(configValues);
-                        LogI($"FetchAllAsync success after {attempt} retries");
-                        return true;
                     }
-                    LogW("FetchAllAsync failed, will retry");
-                    attempt++;
-                }
-                catch (OperationCanceledException)
-                {
-                    // 操作被取消
-                    LogW($"FetchAllAsync cancelled after {attempt} attempts");
-                    throw; // 重新抛出取消异常
                 }
                 catch (Exception ex)
                 {
-                    LogE($" FetchAllAsync exception on attempt #{attempt}: {ex.Message}", ex);
-                    attempt++;
+                    LogEx(ex);
                 }
             }
-            return false; // 只有在取消时才会到达这里
+            
+            _isRunning = false;
+            return result;
         }
-        
+
+
+
+
         /// <summary>
-        /// 取消所有正在进行的配置获取操作
+        /// 拉取所有远程配置（带无限重试和指数退避）
         /// </summary>
-        private void CancelFetchOperations()
+        /// <returns>拉取结果的UniTask(true:成功)</returns>
+        private async UniTaskVoid FetchAllAsyncWithRetry(int retryCount = 6)
         {
-            if (_fetchCancellationSource != null && !_fetchCancellationSource.IsCancellationRequested)
+            int retry = 0;
+
+            while (retry++ < retryCount)
             {
-                LogI($"Cancelling ongoing fetch operations");
-                _fetchCancellationSource.Cancel();
-                _fetchCancellationSource.Dispose();
-                _fetchCancellationSource = null;
+                
+                var result = await FetchAllConfigAsync();
+                if (result)
+                {
+                    CallFetchResultHandler(true);
+                    return;
+                }
+                await UniTask.Delay(TimeSpan.FromSeconds(Mathf.Min(Mathf.Pow(2, retry), 64)));
+
             }
+            CallFetchResultHandler(false);
         }
         
+
         /// <summary>
         /// 远程配置更新回调
         /// </summary>
@@ -221,9 +194,25 @@ namespace Guru
             }
             catch (Exception ex)
             {
-                LogE("Handle remote value changed and get error:", ex);
+                LogEx(ex);
             }
         }
+
+        /// <summary>
+        /// 确保网络连接可用
+        /// </summary>
+        /// <param name="noNetworkCheckInterval"></param>
+        /// <param name="cancellationToken"></param>
+        private async UniTask EnsureNetworkConnected(float noNetworkCheckInterval)
+        {
+            // 如果网络不可用，则尝试等待
+            while (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(noNetworkCheckInterval));
+            }
+            // 可用后再继续
+        }
+
 
         #endregion
 
@@ -298,7 +287,7 @@ namespace Guru
             }
             catch (Exception ex)
             {
-                LogE($"Fetch Config get error:", ex);
+                LogEx(ex);
                 return defaultValue;
             }
         }
@@ -311,10 +300,14 @@ namespace Guru
         private static void LogI(string msg) => 
             Log.I(TAG, msg);
         
-        private static void LogE(string msg, Exception ex)
+        private static void LogE(string msg)
         {
             Log.E(TAG, msg);
-            if(ex != null) Log.Exception(ex);
+        }
+        
+        private static void LogEx(Exception ex)
+        {
+            Log.Exception(ex);
         }
         
         private static void LogW(string msg) => 

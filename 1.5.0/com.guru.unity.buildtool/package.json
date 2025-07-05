@@ -1,7 +1,7 @@
 {
   "name": "com.guru.unity.buildtool",
   "displayName": "Guru Build Tool",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Guru Build Tool for export Package quickly and simple",
   "unity": "2021.3",
   "author":{

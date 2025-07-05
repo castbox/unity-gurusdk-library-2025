@@ -101,9 +101,6 @@ namespace Guru
             set => Model.BPlay = value;
         }
         
-        
-        
-        
     }
 
 

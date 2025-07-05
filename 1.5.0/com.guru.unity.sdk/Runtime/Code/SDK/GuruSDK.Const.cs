@@ -3,7 +3,7 @@ namespace Guru
     public partial class GuruSDK
     {
 	    // GURU SDK MAIN VERSION 
-	    private const string MAIN_VERSION = "1.5.0"; // Gen by SDK Publisher. (2/12/2025 2:46 PM)
+	    private const string MAIN_VERSION = "1.5.0"; // Gen by SDK Publisher. (6/24/2025 10:41 PM)
 	    
         /// <summary>
         /// Consts values
@@ -236,7 +236,6 @@ namespace Guru
 			public const string PropertyNotiPerm = "noti_perm";  // Notification Permission 状态
 			public const string PropertyAdjustId = "adjust_id";  // AdjustId
 			public const string PropertyGDPR = "gdpr"; // GDPR状态
-			public const string PropertyLT = "lt";  // LT
 			
 			// 经济相关
 			public const string ParameterBalance = "balance"; // 用于余额
