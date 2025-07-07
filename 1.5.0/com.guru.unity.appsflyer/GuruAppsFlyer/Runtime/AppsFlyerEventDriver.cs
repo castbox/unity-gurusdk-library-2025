@@ -40,7 +40,7 @@ namespace Guru
         {
             await _service.InitializeAsync();
             TriggerFlush(); // 写入事件
-            Debug.Log($"{Tag} --- InitializeAsync");
+            Debug.Log($"{Tag} --- Appsflyer InitializeAsync :: TriggerFlush");
         }
 
         /// <summary>

@@ -27,12 +27,13 @@ internal struct Constants {
     }()
     
     private static let guruAnalyticsSDKVersion: String = {
-        return "0.4.1" // <---- 此处强制返回版本号
-//         guard let infoDict = Bundle(for: Manager.self).infoDictionary,
-//               let currentVersion = infoDict["CFBundleShortVersionString"] as? String else {
-//             return ""
-//         }
-//         return currentVersion
+        return "0.4.3"
+        /* Original code:guard let infoDict = Bundle(for: Manager.self).infoDictionary,
+              let currentVersion = infoDict["CFBundleShortVersionString"] as? String else {
+            return ""
+        }
+        return currentVersion */
+    
     }()
     
     /// 中台库版本，由外部更新

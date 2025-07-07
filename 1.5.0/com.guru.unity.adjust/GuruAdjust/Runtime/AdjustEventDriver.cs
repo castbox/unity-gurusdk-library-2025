@@ -102,6 +102,7 @@ namespace Guru
                 OnGetGoogleAdId);
             
             TriggerFlush(); // 写入缓存打点事件
+            Debug.Log($"{logTag} --- Adjust InitializeAsync :: TriggerFlush");
         }
 
         protected override void SendEvent(ITrackingEvent evt)

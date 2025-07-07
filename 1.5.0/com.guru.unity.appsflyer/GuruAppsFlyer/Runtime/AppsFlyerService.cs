@@ -68,7 +68,7 @@ namespace Guru
             };
             try
             {
-                AppsFlyer.initSDK(_config.DevKey, _config.AppId);
+                AppsFlyer.initSDK(_config.DevKey, _config.AppId,  GuruAppsflyerManagerV1.Instance);
                 AppsFlyer.setAdditionalData(userProperties);
                 AppsFlyer.setCustomerUserId(_guruSDK.DeviceId);
                 AppsFlyer.setIsDebug(_config.DebugMode);

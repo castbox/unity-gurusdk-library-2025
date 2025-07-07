@@ -2,7 +2,7 @@ namespace Guru
 {
     using Guru.IAP;
     
-    internal class GuruIAP: IAPServiceBase<GuruIAP>
+    internal class GuruIAP: IAPServiceBaseV4<GuruIAP>
     {
         
         /// <summary>

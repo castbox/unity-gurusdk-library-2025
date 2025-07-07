@@ -1,4 +1,4 @@
-
+#nullable enable
 namespace Guru
 {
     using System;
@@ -63,10 +63,10 @@ namespace Guru
     [Serializable]
     public partial class ProductInfo
     {
-        private Product _product;
+        private Product? _product = null;
         private ProductSetting _setting;
         public ProductSetting Setting => _setting;
-        public Product Product => _product;
+        public Product? Product => _product;
         
         public ProductInfo(ProductSetting setting)
         {

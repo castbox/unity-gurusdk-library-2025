@@ -10,7 +10,7 @@ namespace Guru.IAP
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     
-    public abstract class IAPServiceBase<T>: IStoreListener where T: IAPServiceBase<T> , new()
+    public abstract class IAPServiceBaseV4<T>: IStoreListener where T: IAPServiceBaseV4<T> , new()
     {
         private const int OrderRequestTimeout = 10;
         private const int OrderRequestRetryTimes = 3;
@@ -961,6 +961,7 @@ namespace Guru.IAP
 
 
         #endregion
+
 
         #region 数据初始化
 

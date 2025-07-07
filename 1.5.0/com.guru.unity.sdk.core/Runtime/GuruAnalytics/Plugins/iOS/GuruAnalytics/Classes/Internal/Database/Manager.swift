@@ -9,7 +9,6 @@ import Foundation
 import RxCocoa
 import RxSwift
 
-
 internal class Manager {
     
     // MARK: - temporary, will be removed soon
@@ -184,17 +183,6 @@ internal class Manager {
         return sessionNumber
     }()
     
-    /// Check if running in app extension
-    private var isRunningInAppExtension: Bool {
-        return UIApplicationUtil.isExecutingInAppExtension
-    }
-    
-    /// Get shared application if available (not in extension)
-    
-    private var sharedApplication: UIApplication? {
-        return UIApplicationUtil.sharedApplication
-    }
-    
     private init() {
         
         //
@@ -282,7 +270,8 @@ internal extension Manager {
                             deviceId: userProperty.removeValue(forKey: PropertyName.deviceId.rawValue),
                             adjustId: userProperty.removeValue(forKey: PropertyName.adjustId.rawValue),
                             adId: userProperty.removeValue(forKey: PropertyName.adId.rawValue),
-                            firebaseId: userProperty.removeValue(forKey: PropertyName.firebaseId.rawValue)
+                            firebaseId: userProperty.removeValue(forKey: PropertyName.firebaseId.rawValue),
+                            appsflyerId: userProperty.removeValue(forKey: PropertyName.appsflyerId.rawValue)
                         )
                         
                         let event = try Entity.Event(timestamp: timestamp,
@@ -343,41 +332,32 @@ private extension Manager {
             })
             .disposed(by: bag)
         
-        // Only observe app lifecycle notifications if not in extension
-        if !isRunningInAppExtension {
-            var activeNoti = NotificationCenter.default.rx.notification(UIApplication.didBecomeActiveNotification)
-            
-            if sharedApplication?.applicationState == .active {
-                activeNoti = activeNoti.startWith(.init(name: UIApplication.didBecomeActiveNotification))
-            }
-            
-            activeNoti
-                .subscribe(onNext: { [weak self] _ in
-                    self?.onAppActive()
-                })
-                .disposed(by: bag)
-            
-            NotificationCenter.default.rx.notification(UIApplication.didEnterBackgroundNotification)
-                .subscribe(onNext: { [weak self] _ in
-                    guard let `self` = self else { return }
-                    //这里log fg和上传events任务并行关系改为前后依赖关系
-                    _ = self.logForegroundDuration()
-                        .catchAndReturn(())
-                        .map { self.consumeEvents() }
-                        .subscribe()
-                    self._serverTimeSynced.accept(false)
-                    self.invalidFgAccumulateTimer()
-                })
-                .disposed(by: bag)
-        } else {
-            onAppActive()
+        var activeNoti = NotificationCenter.default.rx.notification(UIApplication.didBecomeActiveNotification)
+        
+        if UIApplication.shared.applicationState == .active {
+            activeNoti = activeNoti.startWith(.init(name: UIApplication.didBecomeActiveNotification))
         }
-    }
-    
-    func onAppActive() {
-        syncServerTrigger.onNext(())
-        // fg计时器
-        setupFgAccumulateTimer()
+        
+        activeNoti
+            .subscribe(onNext: { [weak self] _ in
+                self?.syncServerTrigger.onNext(())
+                // fg计时器
+                self?.setupFgAccumulateTimer()
+            })
+            .disposed(by: bag)
+        
+        NotificationCenter.default.rx.notification(UIApplication.didEnterBackgroundNotification)
+            .subscribe(onNext: { [weak self] _ in
+                guard let `self` = self else { return }
+                //这里log fg和上传events任务并行关系改为前后依赖关系
+                _ = self.logForegroundDuration()
+                    .catchAndReturn(())
+                    .map { self.consumeEvents() }
+                    .subscribe()
+                self._serverTimeSynced.accept(false)
+                self.invalidFgAccumulateTimer()
+            })
+            .disposed(by: bag)
     }
     
     func syncServerTime() {
@@ -529,40 +509,28 @@ private extension Manager {
                 disposable.dispose()
             }
             
-            // Only use background task in main app, not in extension
-            if let application = self?.sharedApplication {
-                // Request the task assertion and save the ID.
-                backgroundTaskID = application.beginBackgroundTask(withName: "com.guru.analytics.manager.background.task", expirationHandler: {
-                    // End the task if time expires.
-                    self?.eventsLogger.verbose("performBackgroundTask expirationHandler: \(backgroundTaskID?.rawValue ?? -1)")
-                    stopTaskHandler()
-                })
-            }
+            // Request the task assertion and save the ID.
+            backgroundTaskID = UIApplication.shared.beginBackgroundTask (withName: "com.guru.analytics.manager.background.task", expirationHandler: {
+                // End the task if time expires.
+                self?.eventsLogger.verbose("performBackgroundTask expirationHandler: \(backgroundTaskID?.rawValue ?? -1)")
+                stopTaskHandler()
+            })
             
             self?.eventsLogger.verbose("performBackgroundTask start: \(backgroundTaskID?.rawValue ?? -1)")
-            var taskIdValue: Int?
             if let taskID = backgroundTaskID {
-                taskIdValue = taskID.rawValue
-            } else if self?.isRunningInAppExtension == true {
-                // If we're in an extension or couldn't start background task, just execute the task
-                taskIdValue = UUID().hashValue
-            }
-            
-            if let id = taskIdValue {
                 task({
-                    self?.eventsLogger.verbose("performBackgroundTask finish: \(id)")
+                    self?.eventsLogger.verbose("performBackgroundTask finish: \(taskID.rawValue)")
                     subscriber(.success(()))
-                }, id)
+                }, taskID.rawValue)
             }
             
             return Disposables.create {
-                if var taskID = backgroundTaskID,
-                   let application = self?.sharedApplication {
+                if var taskID = backgroundTaskID {
                     self?.eventsLogger.verbose("performBackgroundTask dispose: \(taskID.rawValue)")
-                    application.endBackgroundTask(taskID)
+                    UIApplication.shared.endBackgroundTask(taskID)
                     taskID = .invalid
+                    backgroundTaskID = nil
                 }
-                backgroundTaskID = nil
             }
         }
         .subscribe(on: rxBgWorkScheduler)
