@@ -207,7 +207,7 @@ namespace Guru
         {
             var status = ATTManager.Instance.GetAttStatusString();
             LogI($"[SDK] ---- OnCheckAttStatusComplete");
-            AdjustService.Instance.CheckNewAttStatus(); // 通知 Adjust 更新一下 ATT 状态
+            // AdjustService.Instance.CheckNewAttStatus(); // 通知 Adjust 更新一下 ATT 状态
             Callbacks.SDK.InvokeOnAttResult(status); // 返回 ATT 状态回调
             CheckNotiPermission();
         }

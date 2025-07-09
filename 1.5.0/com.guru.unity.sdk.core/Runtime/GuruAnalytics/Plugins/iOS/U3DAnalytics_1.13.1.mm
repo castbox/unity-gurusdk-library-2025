@@ -345,7 +345,7 @@ extern "C" {
     }
     
     // 设置用户 AppsFlyerID
-    void unitySetAdjustID(const char *appsFlyerId){
+    void unitySetAppsflyerId(const char *appsFlyerId){
         [GuruAnalytics setAppFlyersId:[U3DAnalytics charToString:appsFlyerId]];
     }
     

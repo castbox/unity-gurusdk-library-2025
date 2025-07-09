@@ -21,7 +21,7 @@ namespace Guru.IAP
         private const string DefaultCategory = "Store";
 
         private static bool _showLog;
-        
+        private Dictionary<string, string> _purchasedReceiptDict = new Dictionary<string, string>();
         private ConfigurationBuilder _configBuilder; // 商店配置创建器
         
         private IStoreController _storeController;
@@ -210,31 +210,30 @@ namespace Guru.IAP
                 {
                     var item = settings[i];
                     var ids = new StoreSpecificIds();
+#if UNITY_ADNROID
                     if (!string.IsNullOrEmpty(item.GooglePlayProductId))
                     {
                         ids.Add(item.GooglePlayProductId, GooglePlay.Name);
                     }
                     else
                     {
-#if UNITY_ADNROID
                         emptyIDs = true;
                         LogE($"[IAP] --- GoogleProductId is empty, please check the product setting: {item.ProductName}");
-#endif
                     }
+#endif
 
-
+#if UNITY_IOS
                     if (!string.IsNullOrEmpty(item.AppStoreProductId))
                     {
                         ids.Add(item.AppStoreProductId, AppleAppStore.Name);
                     }
                     else
                     {
-#if UNITY_IOS
-                       emptyIDs = true;
+                        emptyIDs = true;
                         LogE($"[IAP] --- AppleProductId is empty, please check the product setting: {item.ProductName}");
-#endif
                     }
-
+#endif
+                    
                     if (emptyIDs)
                     {
                         continue;
@@ -248,6 +247,8 @@ namespace Guru.IAP
                     _productNameList[i] = item.ProductName;
                 }
             }
+            
+            
             // 调用插件初始化
             UnityPurchasing.Initialize(this, _configBuilder);
         }
@@ -271,6 +272,8 @@ namespace Guru.IAP
             }
             LogI($"--- IAP Initialized Success. With UID: {_uid} UUID: {uuid} DeviceId: {IPMConfig.IPM_DEVICE_ID}");
 
+            UnityIAPServices.DefaultPurchase().AddFetchPurchasesFailedAction(OnFetchPurchaseFaild);
+            UnityIAPServices.DefaultPurchase().AddFetchedPurchasesAction(OnFetchPurchase);
 #if UNITY_IOS
             _appleExtensions = extensions.GetExtension<IAppleExtensions>();
             _appleExtensions.SetApplicationUsername(uuid);  // SetUp UUID (8)-(4)-(4)-(12): xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -311,6 +314,39 @@ namespace Guru.IAP
 
             InitValidator(); // 初始化订单验证器
             OnInitResult?.Invoke(true);
+        }
+         
+        private void OnFetchPurchase(Orders orders)
+        {
+            do
+            {
+                if (orders == null)
+                    break;
+
+                foreach (var confirmedOrder in orders.ConfirmedOrders)
+                {
+                    if (confirmedOrder.CartOrdered == null || string.IsNullOrEmpty(confirmedOrder.Info.Receipt))
+                        continue;
+
+                    var items = confirmedOrder.CartOrdered.Items();
+                    if (items == null || items.Count < 1)
+                        continue;
+                    _purchasedReceiptDict[items[0].Product.definition.id] = confirmedOrder.Info.Receipt;
+                }
+            } while (false);
+
+            OnRestoreHandle(true, string.Empty);
+        }
+        
+        private void OnFetchPurchaseFaild(PurchasesFetchFailureDescription failure)
+        {
+            OnRestoreHandle(false, failure.message);
+        }
+
+
+        private bool IsExistReceipt(string prodictId)
+        {
+            return _purchasedReceiptDict.ContainsKey(prodictId);
         }
 
          /// <summary>
@@ -461,7 +497,7 @@ namespace Guru.IAP
         public bool IsProductHasReceipt(string productName)
         {
             var product = GetProduct(productName);
-            if (product != null) return product.hasReceipt;
+            if (product != null) return  product.hasReceipt || IsExistReceipt(product.definition.id);
             return false;
         }
 
@@ -545,7 +581,7 @@ namespace Guru.IAP
                 for (int i = 0; i < _storeController.products.all.Length; i++)
                 {
                     var product = _storeController.products.all[i];
-                    if (product.hasReceipt)
+                    if (product.definition.type != ProductType.Consumable && (product.hasReceipt || IsExistReceipt(product.definition.id)))
                     {
                         isIAPUser = true;
                     }
