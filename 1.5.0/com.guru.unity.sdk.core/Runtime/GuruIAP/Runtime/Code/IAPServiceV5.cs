@@ -1,3 +1,5 @@
+#if GURU_IAP_V5
+
 #nullable enable
 using System;
 using System.Collections.Generic;
@@ -12,30 +14,9 @@ using UnityEngine;
 
 namespace Guru.IAP
 {
-    public class GuruIAPService
+    public class IAPServiceV5: IGuruIapService
     {
-
-        #region 单例
-
-        private static GuruIAPService? _instance = null;
-
-        public static GuruIAPService Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new GuruIAPService();
-                }
-                return _instance;
-            }
-        }
-
         
-
-        #endregion
-        
-
         #region 属性定义
 
         private const string Tag = "[IAP]";
@@ -43,7 +24,7 @@ namespace Guru.IAP
         private const string UnknownProductName = "unknown_product";
 
         private static bool _showLog;
-        protected IAPModel _model;
+        private IAPModel _model;
         
         // --------- V5 Attrs ----------------
         // private StoreController _storeController;
@@ -58,10 +39,8 @@ namespace Guru.IAP
 
         private ProductSetting[] _localProductSettings;
         private Dictionary<string, ProductInfo> _productMap;
-        private CrossPlatformValidator _googlePlatformValidator;
-
-        private byte[] googlePublicKey;
-        private byte[] applePublicKey;
+        private CrossPlatformValidator _googlePlatformValidator; // Google 订单验证器
+        private GuruAppleValidator _appleValidator; // Apple 订单验证器
         
         /// <summary>
         /// 是否是首次购买
@@ -77,7 +56,7 @@ namespace Guru.IAP
         /// </summary>
         public bool IsFirstIAP => PurchaseCount == 0;
          
-        private GuruIAPInitConfig _initConfig;
+        private IGuruIapDataProvider _iapDataProvider;
         
         #endregion
 
@@ -102,17 +81,29 @@ namespace Guru.IAP
         #endregion
 
         #region 初始化
-
-        public async UniTask Initialize(GuruIAPInitConfig initConfig)
+        
+        
+        /// <summary>
+        /// 初始化控制器
+        /// </summary>
+        /// <param name="provider"></param>
+        public void Initialize(IGuruIapDataProvider provider)
         {
-            _initConfig = initConfig;
-            _googlePlatformValidator = CreateGooglePlatformValidator(initConfig.GooglePublicKeys, initConfig.GoogleBundleId);
+            InitializeAsync(provider).Forget();
+        }
+        
+
+        public async UniTask InitializeAsync(IGuruIapDataProvider provider)
+        {
+            _iapDataProvider = provider;
+            _googlePlatformValidator = CreateGooglePlatformValidator(_iapDataProvider.GooglePublicKeys, _iapDataProvider.AppBundleId);
+            _appleValidator = new GuruAppleValidator(_iapDataProvider.AppleRootCerts);
             _storeController = new GuruStoreController();
             
             // 初始化数据模块
             InitModel();
 
-            _localProductSettings = _initConfig.productSettings;
+            _localProductSettings = _iapDataProvider.ProductSettings;
             
             // ------ Callback -----
             AddStoreCallbacks();
@@ -187,38 +178,72 @@ namespace Guru.IAP
         /// 标记是否为付费用户
         /// </summary>
         /// <param name="value"></param>
-        private static void SetIsIAPUser(bool value = true)
+        private void SetIsIAPUser(bool value = true)
         {
-            if (Instance != null && Instance._model != null && value)
+            if (_model != null && value)
             {
-                Instance._model.SetIsIapUser(true); // 用户属性
+                _model.SetIsIapUser(true); // 用户属性
             }
             Analytics.SetIsIapUser(value);
         }
-        
-        
-        /// <summary>
-        /// UID
-        /// </summary>
-        /// <param name="uid"></param>
-        public void SetUid(string uid)
-        {
-        }
-
-        /// <summary>
-        /// Apple Account Token
-        /// </summary>
-        /// <param name="accountToken"></param>
-        public void SetAccountToken(string accountToken)
-        {
-        }
-
 
         #endregion
 
-        #region 数据查询
+        #region 接口实现
+
+
+        public string CurrentBuyingProductId => _curPurchasingInfo?.Product.definition.id ?? "";
         
-        
+        public void SetUID(string uid)
+        {
+            _storeController.SetObfuscatedAccountId(uid);
+        }
+
+        public void SetUUID(string uuid)
+        {
+            _storeController.SetAppleAccountId(uuid);
+        }
+
+        public void ClearData()
+        {
+            _model?.ClearData();
+        }
+
+        public void AddInitResultAction(Action<bool> onInitResult)
+        {
+            OnInitResult = onInitResult;
+        }
+
+        public void AddRestoredAction(Action<bool, string> onRestored)
+        {
+            OnRestored = onRestored;
+        }
+
+        public void AddPurchaseStartAction(Action<string> onBuyStart)
+        {
+            OnBuyStart += onBuyStart;
+        }
+
+        public void AddPurchaseEndAction(Action<string, bool> onBuyEnd)
+        {
+            OnBuyEnd += onBuyEnd;
+        }
+
+        public void AddPurchaseFailedAction(Action<string, string> onBuyFailed)
+        {
+            OnBuyFailed += onBuyFailed;
+        }
+
+        public void AddGetProductReceiptAction(Action<string, string, bool> onGetProductReceipt)
+        {
+            OnGetProductReceipt += onGetProductReceipt;
+        }
+
+        public void Restore()
+        {
+            _storeController.Restore();
+        }
+
         public ProductInfo? GetInfo(string productName)
         {
             return _productMap.Count == 0 ? null : 
@@ -230,6 +255,16 @@ namespace Guru.IAP
             return _productMap.Count == 0 ? null 
                 : _productMap.Values.FirstOrDefault(c => c.Id == productId);
         }
+
+        public bool IsProductHasReceipt(string productName)
+        {
+            throw new NotImplementedException();
+        }
+        
+        #endregion
+
+        
+        #region 数据查询
         
         /// <summary>
         /// ProductName 转 ProductId
@@ -273,8 +308,12 @@ namespace Guru.IAP
         {
             return GetInfo(productName)?.LocalizedPriceString ?? "Loading";
         }
-        
-        
+
+        public ProductInfo[] GetAllProductInfos()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
         
         #region 商店连接（启动）
@@ -475,6 +514,7 @@ namespace Guru.IAP
             if (product == null)
             {
                 // TODO： 支付失败
+                OnBuyEnd(productName, false);
                 return;
             }
             
@@ -517,16 +557,18 @@ namespace Guru.IAP
         /// <summary>
         /// 支付成功
         /// </summary>
-        /// <param name="successOrder"></param>
-        private void OnPurchaseConfirmed(Order successOrder)
+        /// <param name="order"></param>
+        private void OnPurchaseConfirmed(Order order)
         {
-            var transId = successOrder.Info.TransactionID;
-            var receipt =  successOrder.Info.Receipt;
-            var productId = successOrder.Info.PurchasedProductInfo.First().productId;
+            var transId = order.Info.TransactionID;
+            var receipt =  order.Info.Receipt;
+            var productId = order.Info.PurchasedProductInfo.First().productId;
             var info = GetInfoById(productId);
             var productName = UnknownProductName;
             bool success = false;
-
+            
+            Debug.Log($"[IAP] --- OnPurchaseConfirmed");
+            
             if (info == null)
             {
                 string msg = $"{Tag} ---  Purchased end, but can't find ProductInfo with ID: {productId}";
@@ -544,7 +586,7 @@ namespace Guru.IAP
                 if (_curPurchasingInfo != null)
                 {
                     // 当前支付中的 Product 不为空
-                    ReportPurchasedOrder(successOrder); // 订单上报
+                    ReportPurchasedOrder(order); // 订单上报
                     
                     // 真实购买后上报对应的事件
                     if (IsFirstIAP) {
@@ -585,20 +627,18 @@ namespace Guru.IAP
                 return;
             }
 
-            foreach (var item in pendingOrder.CartOrdered.Items())
-            {
-                
-            }
-            
-            
-            
-            
-            
-            var receipt = pendingOrder.Info.Receipt;
+            Debug.Log($"[IAP] --- ConfirmPurchase PendingOrder {pendingOrder.Info.TransactionID}" );
+            _storeController.ConfirmPurchase(pendingOrder);
 
-            var productId = pendingOrder.Info.PurchasedProductInfo.First().productId;
-            var info = GetInfoById(productId);
-            var productName = info?.Name ?? UnknownProductName;
+            // foreach (var item in pendingOrder.CartOrdered.Items())
+            // {
+            //     
+            // }
+
+            // var receipt = pendingOrder.Info.Receipt;
+            // var productId = pendingOrder.Info.PurchasedProductInfo.First().productId;
+            // var info = GetInfoById(productId);
+            // var productName = info?.Name ?? UnknownProductName;
         }
 
         /// <summary>
@@ -642,27 +682,17 @@ namespace Guru.IAP
         private void ReportPurchasedOrder(Order order)
         {
             //---------------- All Report Information --------------------
-            int level = _initConfig.BLevel;
+            int level = _iapDataProvider.BLevel;
             string? scene = _curProductCategory ?? DefaultCategory;
 
             if (Application.platform == RuntimePlatform.Android)
             {
                 ValidateGoogleOrder(order.Info.Receipt, level, scene);
-                return;
             }
-
-            if (Application.platform == RuntimePlatform.IPhonePlayer)
+            
+            else if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
-                
-                foreach (var productInfo in order.Info.PurchasedProductInfo)
-                {
-                    
-                    // ValidateSingleAppleOrder(order.Info.Receipt, order.Info.Apple,
-                    //     productInfo, level, scene, );
-                }
-                
-                
-                return;
+                ValidateAppleOrder(order, level, scene, _iapDataProvider.IDFV, _iapDataProvider.AppBundleId);
             }
 
         }
@@ -719,7 +749,7 @@ namespace Guru.IAP
                         out var payPrice, 
                         out var isFree);
                     
-                    if(googleParseResult) Debug.LogError($"[IAP] --- Fetch Purchased Product details for product: {productId} is Failed");
+                    if(!googleParseResult) Debug.LogError($"[IAP] --- Parse Purchased Product details for product: {productId} is Failed");
                     
                     ReportGoogleOrder(orderType, 
                         googleReceipt.productID,
@@ -766,47 +796,60 @@ namespace Guru.IAP
         }
 
 
-        private void ValidateSingleAppleOrder(string receipt, 
-            IPurchasedProductInfo purchasedInfo, 
-            IAppleOrderInfo appleOrderInfo,
+        private void ValidateAppleOrder(Order order,
             int level, string scene, string idfv, string appBundleId)
         {
+
+            var receipt = order.Info.Receipt;
+            // TODO: fixme:: 这里需要检查一下是否是真正购买的道具 ID
+            // 实现上只取了第一个
+            var purchasedProductId = order.Info.PurchasedProductInfo.First().productId; 
+            
+            
             string appleReceiptString = "";
             // ---- iOS 订单验证, 上报打点信息 ----
-            var jsonData = JsonConvert.DeserializeObject<JObject>(receipt);
+            var jsonData = JsonConvert.DeserializeObject<Dictionary<string, object>>(receipt);
             if (jsonData != null && jsonData.TryGetValue("Payload", out var recp))
             {
                 appleReceiptString = recp.ToString();
                 // Debug.Log($"--- [{productId}] iOS receipt: {appleReceiptString}");      
             }
-                
             
-  
-            
-            
-            // Debug.Log($"[IAP] --- Full receipt: \n{args.purchasedProduct.receipt}");
+            var appleReceipts = _appleValidator.Validate(receipt);
+            Debug.Log($"[IAP] --- Full receipt: \n{receipt}");
+            foreach (var r in appleReceipts)
+            {
+                if (r is AppleInAppPurchaseReceipt appleReceipt
+                    && r.productID == purchasedProductId)  
+                {
                     
-            // foreach (var r in allReceipts)
-            // {
-            //     if (receipt is AppleInAppPurchaseReceipt appleReceipt
-            //         && receipt.productID == args.purchasedProduct.definition.id)
-            //     {
-            //         ReportAppleOrder(orderType, 
-            //             appleReceipt.productID,
-            //             appleReceiptString,
-            //             appleReceipt.transactionID,
-            //             appleReceipt.purchaseDate, 
-            //             level, 
-            //             userCurrency, 
-            //             payPrice, 
-            //             scene, 
-            //             appBundleId,
-            //             idfv,
-            //             isFree);
-            //
-            //         break;
-            //     }
-            // }
+                    var parseResult = FetchProductDetails(r.productID, 
+                        out var orderType, 
+                        out var userCurrency, 
+                        out var payPrice, 
+                        out var isFree);
+
+                    if (!parseResult)
+                    {
+                        Debug.LogError($"[IAP] --- [{r.productID}] iOS product parse failed");   
+                    }
+
+                    ReportAppleOrder(orderType, 
+                        appleReceipt.productID,
+                        appleReceiptString,
+                        appleReceipt.transactionID,
+                        appleReceipt.purchaseDate, 
+                        level, 
+                        userCurrency, 
+                        payPrice, 
+                        scene, 
+                        appBundleId,
+                        idfv,
+                        isFree);
+            
+                    break;
+                }
+            }
         }
 
 
@@ -996,24 +1039,76 @@ namespace Guru.IAP
         
         #endregion
 
-    }
 
+        #region 订阅接口
 
-    public class GuruIAPInitConfig
-    {
-        // Google Bundle ID
-        public string GoogleBundleId;
         
-        // Apple Bundle ID
-        public string AppleBundleId;
-        
-        public byte[] GooglePublicKeys;
+        public bool IsSubscriptionCancelled(string productName)
+        {
+            throw new NotImplementedException();
+        }
 
-        public string IDFV;
+        public bool IsSubscriptionAvailable(string productName)
+        {
+            throw new NotImplementedException();
+        }
 
-        public ProductSetting[] productSettings;
+        public bool IsSubscriptionExpired(string productName)
+        {
+            throw new NotImplementedException();
+        }
 
-        public int BLevel { get; }
+        public bool IsSubscriptionFreeTrail(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsSubscriptionAutoRenewing(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsSubscriptionIntroductoryPricePeriod(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DateTime GetSubscriptionExpireDate(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DateTime GetSubscriptionPurchaseDate(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DateTime GetSubscriptionCancelDate(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TimeSpan GetSubscriptionRemainingTime(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TimeSpan GetSubscriptionIntroductoryPricePeriod(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TimeSpan GetSubscriptionFreeTrialPeriod(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetSubscriptionInfoJsonString(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
     }
 
@@ -1030,19 +1125,19 @@ namespace Guru.IAP
 
         #region Callbacks
         // Connection
-        public event Action<StoreConnectionFailureDescription> OnStoreDisconnected;
+        internal event Action<StoreConnectionFailureDescription> OnStoreDisconnected;
         // Fetch
-        public event Action<List<Product>> OnProductsFetched;
-        public event Action<ProductFetchFailed> OnProductsFetchFailed;
+        internal event Action<List<Product>> OnProductsFetched;
+        internal event Action<ProductFetchFailed> OnProductsFetchFailed;
     
 
         // ------ 支付行为回调 -------
-        public event Action<PendingOrder> OnPurchasePending;
-        public event Action<ConfirmedOrder> OnPurchaseConfirmed;
-        public event Action<FailedOrder> OnPurchaseFailed;
-        public event Action<Entitlement> OnCheckEntitlement;
-        public event Action<PurchasesFetchFailureDescription> FetchPurchasesFailed;
-        public event Action<DeferredOrder> OnPurchaseDeferred;
+        internal event Action<PendingOrder> OnPurchasePending;
+        internal event Action<ConfirmedOrder> OnPurchaseConfirmed;
+        internal event Action<FailedOrder> OnPurchaseFailed;
+        internal event Action<Entitlement> OnCheckEntitlement;
+        internal event Action<PurchasesFetchFailureDescription> FetchPurchasesFailed;
+        internal event Action<DeferredOrder> OnPurchaseDeferred;
 
         #endregion
 
@@ -1185,21 +1280,36 @@ namespace Guru.IAP
             _purchaseService.Purchase(cart);
         }
 
+        public void ConfirmPurchase(PendingOrder pendingOrder)
+        {
+            Debug.Log($"[IAP] GuruStoreController --- Confirm PendingOrder");
+            _purchaseService.ConfirmOrder(pendingOrder); // 非消耗品调用后不会进行处理
+        }
 
         private void OnFetchedPurchasesAction(Orders orders)
         {
             if (orders.PendingOrders.Count > 0)
             {
-                foreach (var po in orders.PendingOrders)
+                foreach (var pendingOrder in orders.PendingOrders)
                 {
-                    
+                    //TODO: 完善逻辑
+                }
+            }
+
+            if (orders.ConfirmedOrders.Count > 0)
+            {
+                foreach (var confirmedOrder in orders.ConfirmedOrders)
+                {
+                    //TODO: 完善逻辑
                 }
             }
         }
 
 
         private void OnPendingOrderUpdatedAction(PendingOrder pendingOrder)
-            => OnPurchasePending(pendingOrder);
+        {
+            OnPurchasePending(pendingOrder);
+        }
 
         private void OnConfirmedOrderUpdatedAction(ConfirmedOrder confirmedOrder)
             => OnPurchaseConfirmed(confirmedOrder);
@@ -1219,6 +1329,22 @@ namespace Guru.IAP
 
         #endregion
 
+        #region Restore
+
+        // TODO: 恢复购买的逻辑需要好好检查一下
+        
+        /// <summary>
+        /// 恢复购买
+        /// </summary>
+        public void Restore()
+        {
+            _purchaseService.FetchPurchases();
+        }
+
+
+        #endregion
     }
     
 }
+
+#endif
