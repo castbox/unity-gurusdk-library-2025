@@ -2,7 +2,7 @@ namespace Guru
 {
     using Guru.IAP;
     
-    internal class GuruIAP: IAPServiceBaseV4<GuruIAP>
+    internal class GuruIAP: IAPServiceBase<GuruIAP>
     {
         
         /// <summary>
@@ -22,12 +22,4 @@ namespace Guru
             _model.ClearData();
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
 }

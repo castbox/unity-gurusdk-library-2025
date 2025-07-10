@@ -1,17 +1,16 @@
 
 using Cysharp.Threading.Tasks;
-using UnityEngine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Guru.Ads;
-using Guru.Network;
-using Guru.IAP;
 
 namespace Guru
 {
-
+    using UnityEngine;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Firebase.RemoteConfig;
+    using Guru.Ads;
+    using Guru.Network;
     
     public partial class GuruSDK: MonoBehaviour
     {
@@ -86,10 +85,6 @@ namespace Guru
         // SDK 启动属性
         private readonly GuruSDKSessionInfo _sessionInfo = new GuruSDKSessionInfo();
         public static double BoostDuration => Instance._sessionInfo.boostDuration;
-        
-        // 支付服务
-        private static IGuruIapService _guruIAPService;
-        
         
         #region 初始化
         
@@ -361,12 +356,11 @@ namespace Guru
                     }
                     
                     // 初始化支付服务
-                    // InitIAP(UID, 
-                    //     _initConfig.GoogleKeys, 
-                    //     _initConfig.AppleRootCerts,
-                    //     _appServicesConfig.AppBundleId(),
-                    //     IDFV); // 初始化IAP
-                    InitIAP();
+                    InitIAP(UID, 
+                        _initConfig.GoogleKeys, 
+                        _initConfig.AppleRootCerts,
+                        _appServicesConfig.AppBundleId(),
+                        IDFV); // 初始化IAP
                 }, ex =>
                 {
                     LogE($"--- ERROR on useIAP: {ex.Message}");
@@ -822,10 +816,10 @@ namespace Guru
                 var uid = IPMConfig.IPM_UID;
                 
                 Model.UserId = uid;
-                if (_guruIAPService != null)
+                if (GuruIAP.Instance != null)
                 {
-                    _guruIAPService.SetUID(uid);
-                    _guruIAPService.SetUUID(UUID);
+                    GuruIAP.Instance.SetUID(uid);
+                    GuruIAP.Instance.SetUUID(UUID);
                 }
                 
                 // 自打点设置用户 ID

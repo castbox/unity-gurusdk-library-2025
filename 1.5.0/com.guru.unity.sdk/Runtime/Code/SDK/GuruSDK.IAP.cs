@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using Guru.IAP;
-using UnityEngine;
-
 namespace Guru
 {
     using System;
@@ -26,36 +22,18 @@ namespace Guru
         /// <summary>
         /// 初始化IAP 功能
         /// </summary>
-        // public static void InitIAP(string uid, byte[] googleKey, byte[] appleRootCerts, string bundleId, string idfv = "")
-        private static void InitIAP()
+        public static void InitIAP(string uid, byte[] googleKey, byte[] appleRootCerts, string bundleId, string idfv = "")
         {
-            // Instance._guruIAPManager.OnInitResult += OnIAPInitResult;
-            // Instance._guruIAPManager.OnRestored += OnRestored;
-            // Instance._guruIAPManager.OnBuyStart += OnBuyStart;
-            // Instance._guruIAPManager.OnBuyEnd += OnBuyEnd;
-            // Instance._guruIAPManager.OnBuyFailed += OnBuyFailed;
-            // Instance._guruIAPManager.OnGetProductReceipt += OnGetReceipt;
+            GuruIAP.Instance.OnInitResult += OnIAPInitResult;
+            GuruIAP.Instance.OnRestored += OnRestored;
+            GuruIAP.Instance.OnBuyStart += OnBuyStart;
+            GuruIAP.Instance.OnBuyEnd += OnBuyEnd;
+            GuruIAP.Instance.OnBuyFailed += OnBuyFailed;
+            GuruIAP.Instance.OnGetProductReceipt += OnGetReceipt;
             
-            // Instance._guruIAPManager.InitWithKeys(uid, googleKey, appleRootCerts, bundleId, idfv, DebugModeEnabled);
-
-            
-            // -------- 使用宏来选择注入支付服务的版本 --------------
-#if GURU_IAP_V5
-            _guruIAPService = new IAPServiceV5();     
-#else
-            _guruIAPService = new IAPServiceV4();
-#endif
-            
-            
-            // 初始化新版的 SDK
-            _guruIAPService.AddInitResultAction(OnIAPInitResult);
-            _guruIAPService.AddPurchaseStartAction(OnBuyStart);
-            _guruIAPService.AddPurchaseEndAction(OnBuyEnd);
-            _guruIAPService.AddPurchaseFailedAction(OnBuyFailed);
-            _guruIAPService.AddGetProductReceiptAction(OnGetReceipt);
-            
-            _guruIAPService.Initialize(new GuruSDKIapDataProvider());
             Callbacks.IAP.InvokeOnIAPInitStart(); // 初始化之前进行调用
+
+            GuruIAP.Instance.InitWithKeys(uid, googleKey, appleRootCerts, bundleId, idfv, DebugModeEnabled);
         }
         
         /// <summary>
@@ -91,7 +69,7 @@ namespace Guru
         /// <returns></returns>
         public static ProductInfo GetProductInfo(string productName)
         {
-            return _guruIAPService?.GetInfo(productName);
+            return GuruIAP.Instance?.GetInfo(productName);
         }
         
         /// <summary>
@@ -101,7 +79,7 @@ namespace Guru
         /// <returns></returns>
         public static ProductInfo GetProductInfoById(string productId)
         {
-            return _guruIAPService?.GetInfoById(productId);
+            return GuruIAP.Instance?.GetInfoById(productId);
         }
         
         
@@ -134,13 +112,13 @@ namespace Guru
         /// <returns></returns>
         public static bool IsProductHasReceipt(string productName)
         {
-            return _guruIAPService.IsProductHasReceipt(productName);
+            return GuruIAP.Instance.IsProductHasReceipt(productName);
         }
 
 
         public static string GetProductLocalizedPriceString(string productName)
         {
-            return _guruIAPService.GetLocalizedPriceString(productName);
+            return GuruIAP.Instance.GetLocalizedPriceString(productName);
         }
 
         
@@ -152,7 +130,7 @@ namespace Guru
         /// <returns></returns>
         public static ProductInfo[] GetAllProductInfos()
         {
-            return _guruIAPService?.GetAllProductInfos() ?? null;
+            return GuruIAP.Instance?.GetAllProductInfos() ?? null;
         }
 
 
@@ -184,7 +162,7 @@ namespace Guru
             InvokeOnPurchaseCallback = purchaseCallback;
             if (CheckIAPReady())
             {
-                _guruIAPService.Purchase(productName, category);
+                GuruIAP.Instance.Buy(productName, category);
             }
             else
             {
@@ -255,7 +233,7 @@ namespace Guru
             if( restoreCallback != null) Callbacks.IAP.OnIAPRestored += restoreCallback;
             if (CheckIAPReady())
             {
-                _guruIAPService.Restore();
+                GuruIAP.Instance.Restore();
             }
         }
         private static void OnRestored(bool success, string msg)
@@ -284,10 +262,6 @@ namespace Guru
 
         #region Subscriptions
 
-        // ------- 保险起见， 先注销所有和订阅相关的逻辑 -------------
-        /**
-        
-        
         /// <summary>
         /// 订阅是否被取消
         /// </summary>
@@ -295,7 +269,7 @@ namespace Guru
         /// <returns></returns>
         public static bool IsSubscriptionCancelled(string productName)
         {
-            return _guruIAPService.IsSubscriptionCancelled(productName);
+            return GuruIAP.Instance.IsSubscriptionCancelled(productName);
         }
         
         /// <summary>
@@ -305,7 +279,7 @@ namespace Guru
         /// <returns></returns>
         public static bool IsSubscriptionAvailable(string productName)
         {
-            return _guruIAPService.IsSubscriptionAvailable(productName);
+            return GuruIAP.Instance.IsSubscriptionAvailable(productName);
         }
         
         /// <summary>
@@ -315,135 +289,64 @@ namespace Guru
         /// <returns></returns>
         public static bool IsSubscriptionExpired(string productName)
         {
-            return _guruIAPService.IsSubscriptionExpired(productName);
+            return GuruIAP.Instance.IsSubscriptionExpired(productName);
         }
         
         public static bool IsSubscriptionFreeTrail(string productName)
         {
-            return _guruIAPService.IsSubscriptionFreeTrail(productName);
+            return GuruIAP.Instance.IsSubscriptionFreeTrail(productName);
         }
         
         public static bool IsSubscriptionAutoRenewing(string productName)
         {
-            return _guruIAPService.IsSubscriptionAutoRenewing(productName);
+            return GuruIAP.Instance.IsSubscriptionAutoRenewing(productName);
         }
         
         public static bool IsSubscriptionIntroductoryPricePeriod(string productName)
         {
-            return _guruIAPService.IsSubscriptionIntroductoryPricePeriod(productName);
+            return GuruIAP.Instance.IsSubscriptionIntroductoryPricePeriod(productName);
         }
         
         public DateTime GetSubscriptionExpireDate(string productName)
         {
-            return _guruIAPService.GetSubscriptionExpireDate(productName);
+            return GuruIAP.Instance.GetSubscriptionExpireDate(productName);
         }
         
         
         public DateTime GetSubscriptionPurchaseDate(string productName)
         {
-            return _guruIAPService.GetSubscriptionPurchaseDate(productName);
+            return GuruIAP.Instance.GetSubscriptionPurchaseDate(productName);
         }
         
         
         public DateTime GetSubscriptionCancelDate(string productName)
         {
-            return _guruIAPService.GetSubscriptionCancelDate(productName);
+            return GuruIAP.Instance.GetSubscriptionCancelDate(productName);
         }
         
 
         public TimeSpan GetSubscriptionRemainingTime(string productName)
         {
-            return _guruIAPService.GetSubscriptionRemainingTime(productName);
+            return GuruIAP.Instance.GetSubscriptionRemainingTime(productName);
         }
         
         public TimeSpan GetSubscriptionIntroductoryPricePeriod(string productName)
         {
-            return _guruIAPService.GetSubscriptionIntroductoryPricePeriod(productName);
+            return GuruIAP.Instance.GetSubscriptionIntroductoryPricePeriod(productName);
         }
         
         
         public TimeSpan GetSubscriptionFreeTrialPeriod(string productName)
         {
-            return _guruIAPService.GetSubscriptionFreeTrialPeriod(productName);
+            return GuruIAP.Instance.GetSubscriptionFreeTrialPeriod(productName);
         }
         
         public string GetSubscriptionInfoJsonString(string productName)
         {
-            return _guruIAPService.GetSubscriptionInfoJsonString(productName);
+            return GuruIAP.Instance.GetSubscriptionInfoJsonString(productName);
         }
         
-        **/
 
-        #endregion
-
-
-        #region SDK IAP 数据接口
-
-        
-        internal class GuruSDKIapDataProvider: IGuruIapDataProvider
-        {
-            public string AppBundleId => GetAppBundleId();
-            public byte[] GooglePublicKeys => GetGooglePublicKeys();
-            public byte[] AppleRootCerts => GetAppleRootCerts();
-            public string IDFV => GetIdfv();
-            public string UID => GetUID();
-            public string UUID => GetUUID();
-            public ProductSetting[] ProductSettings => GetProductSettings();
-            public int BLevel => Model.BLevel;
-            
-            public bool IsDebug => PlatformUtil.IsDebug();
-
-
-            public GuruSDKIapDataProvider()
-            {
-                
-            }
-
-
-            private string GetAppBundleId()
-            {
-                return _appServicesConfig?.AppBundleId() ?? Application.identifier;
-            }
-
-            private byte[] GetGooglePublicKeys()
-            {
-                return Instance._initConfig.GoogleKeys;
-            }
-
-            private byte[] GetAppleRootCerts()
-            {
-                return Instance._initConfig.AppleRootCerts;
-            }
-
-            private string GetIdfv()
-            {
-                if (!string.IsNullOrEmpty(GuruSDK.IDFV))
-                    return GuruSDK.IDFV;
-
-#if UNITY_IOS
-                return Device.vendorIdentifier;
-#endif
-                return "";
-            }
-
-            private string GetUID() => GuruSDK.UID;
-            private string GetUUID() => GuruSDK.UUID;
-
-            private ProductSetting[] GetProductSettings()
-            {
-                if (GuruSettings == null)
-                {
-                    return new ProductSetting[] { };
-                }
-                return GuruSettings.Products;
-            }
-
-        }
-        
         #endregion
     }
-
-
-
-
 }

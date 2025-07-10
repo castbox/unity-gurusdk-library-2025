@@ -86,7 +86,7 @@ namespace Guru
         public static void ClearData()
         {
             Model.ClearData();
-            _guruIAPService?.ClearData();
+            GuruIAP.Instance.ClearData();
             PlayerPrefs.DeleteAll();
             PlayerPrefs.Save();
         }
