@@ -1,3 +1,4 @@
+#if !GURU_IAP_V5
 
 namespace Guru.IAP
 {
@@ -10,7 +11,11 @@ namespace Guru.IAP
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     
-    public abstract class IAPServiceBase<T>: IStoreListener where T: IAPServiceBase<T> , new()
+    // public abstract class IAPServiceBaseV4<T>: IStoreListener where T: IAPServiceBaseV4<T> , new()
+
+    
+    // TODO: 还原为 之前 IAPServiceBase 的所有逻辑
+    public class IAPServiceV4: IGuruIapService, IStoreListener
     {
         private const int OrderRequestTimeout = 10;
         private const int OrderRequestRetryTimes = 3;
@@ -21,7 +26,6 @@ namespace Guru.IAP
         private const string DefaultCategory = "Store";
 
         private static bool _showLog;
-        
         private ConfigurationBuilder _configBuilder; // 商店配置创建器
         
         private IStoreController _storeController;
@@ -30,6 +34,8 @@ namespace Guru.IAP
         private IGooglePlayStoreExtensions _googlePlayStoreExtensions;
         
         private CrossPlatformValidator _validator;
+        private AppleValidator _appleValidator;
+        
         private Dictionary<string, ProductInfo> _products;
         protected Dictionary<string, ProductInfo> Products => _products;
         private string[] _productNameList;
@@ -52,10 +58,10 @@ namespace Guru.IAP
             
         }
 
-        protected IAPModel _model;
+        private IAPModel _model;
         private string _appBundleId;
         private string _idfv;
-        
+        private IGuruIapDataProvider _dataProvider;
         
         /// <summary>
         /// 是否是首次购买
@@ -78,91 +84,42 @@ namespace Guru.IAP
         /// <summary>
         /// 服务初始化回调
         /// </summary>
-        public event Action<bool> OnInitResult;
+        private event Action<bool> OnInitResult;
         
         /// <summary>
         /// 恢复购买回调
         /// </summary>
-        public event Action<bool, string> OnRestored;
+        private event Action<bool, string> OnRestored;
 
-        public event Action<string> OnBuyStart;
-        public event Action<string, bool> OnBuyEnd;
-        public event Action<string, string> OnBuyFailed;
-        public event Action<string, string, bool> OnGetProductReceipt;
+        private event Action<string> OnBuyStart;
+        private event Action<string, bool> OnBuyEnd;
+        private event Action<string, string> OnBuyFailed;
+        private event Action<string, string, bool> OnGetProductReceipt;
+        private event Action<Product> OnAppStorePurchaseDeferred;
 
-#if UNITY_IOS
-        /// <summary>
-        /// AppStore 支付, 处理苹果支付延迟反应
-        /// </summary>
-        /// <returns></returns>
-        public event Action<Product> OnAppStorePurchaseDeferred;
-#endif
 
         #endregion
         
-        #region 单利模式
-        
-        protected static T _instance;
-        private static object _locker = new object();
-        
-        public static T Instance
-        {
-            get
-            {
-                if (null == _instance)
-                {
-                    lock (_locker)
-                    {
-                        _instance = Activator.CreateInstance<T>();
-                        _instance.OnCreatedInit();
-                    }
-                }
-                return _instance;
-            }
-        }
-
-        /// <summary>
-        /// 组件创建初始化
-        /// </summary>
-        protected virtual void OnCreatedInit()
-        {
-            Debug.Log("--- IAPService Init");
-        }
-        
-
-        #endregion
         
         #region 初始化
 
         /// <summary>
         /// 初始化支付服务
         /// </summary>
-        public virtual void Initialize(string uid, string bundleId, string idfv = "", bool showLog = false)
+        // public virtual void Initialize(string uid, string bundleId, string idfv = "", bool showLog = false)
+        public void Initialize(IGuruIapDataProvider dataProvider)
         {
             
-            if (string.IsNullOrEmpty(uid)) uid = IPMConfig.IPM_UID;
-            _uid = uid;
-            _showLog = showLog;
-            _appBundleId = bundleId;
-            _idfv = idfv;
-            InitPurchasing();
-        }
-
-        /// <summary>
-        /// 带有校验器的初始化
-        /// </summary>
-        /// <param name="uid"></param>
-        /// <param name="googlePublicKey"></param>
-        /// <param name="appleRootCert"></param>
-        /// <param name="idfv"></param>
-        /// <param name="showLog"></param>
-        /// <param name="bundleId"></param>
-        public virtual void InitWithKeys(string uid, byte[] googlePublicKey, byte[] appleRootCert, string bundleId, string idfv = "", bool showLog = false)
-        {
-            _googlePublicKey = googlePublicKey;
-            _appleRootCert = appleRootCert;
+            _dataProvider = dataProvider;
+            _uid = _dataProvider.UID;
+            if (string.IsNullOrEmpty(_uid)) _uid = IPMConfig.IPM_UID;
+            _showLog = _dataProvider.IsDebug;
+            _appBundleId = _dataProvider.AppBundleId;
+            _idfv = dataProvider.IDFV;
+            _googlePublicKey = _dataProvider.GooglePublicKeys;
+            _appleRootCert = _dataProvider.AppleRootCerts;
             InitModel();
-            Initialize(uid, bundleId, idfv, showLog);
+            InitPurchasing();
         }
 
 
@@ -187,6 +144,40 @@ namespace Guru.IAP
             }
         }
 
+        public void ClearData()
+        {
+            _model?.ClearData();
+        }
+
+        public void AddInitResultAction(Action<bool> onInitResult)
+        {
+            OnInitResult += onInitResult;
+        }
+
+        public void AddRestoredAction(Action<bool, string> onRestored)
+        {
+            OnRestored += onRestored;
+        }
+
+        public void AddPurchaseStartAction(Action<string> onBuyStart)
+        {
+            OnBuyStart += onBuyStart;
+        }
+
+        public void AddPurchaseEndAction(Action<string, bool> onBuyEnd)
+        {
+            OnBuyEnd += onBuyEnd;
+        }
+
+        public void AddPurchaseFailedAction(Action<string, string> onBuyFailed)
+        {
+            OnBuyFailed += onBuyFailed;
+        }
+
+        public void AddGetProductReceiptAction(Action<string, string, bool> onGetProductReceipt)
+        {
+            OnGetProductReceipt += onGetProductReceipt;
+        }
 
 
         /// <summary>
@@ -210,31 +201,30 @@ namespace Guru.IAP
                 {
                     var item = settings[i];
                     var ids = new IDs();
+#if UNITY_ADNROID
                     if (!string.IsNullOrEmpty(item.GooglePlayProductId))
                     {
                         ids.Add(item.GooglePlayProductId, GooglePlay.Name);
                     }
                     else
                     {
-#if UNITY_ADNROID
                         emptyIDs = true;
                         LogE($"[IAP] --- GoogleProductId is empty, please check the product setting: {item.ProductName}");
-#endif
                     }
+#endif
 
-
+#if UNITY_IOS
                     if (!string.IsNullOrEmpty(item.AppStoreProductId))
                     {
                         ids.Add(item.AppStoreProductId, AppleAppStore.Name);
                     }
                     else
                     {
-#if UNITY_IOS
-                       emptyIDs = true;
+                        emptyIDs = true;
                         LogE($"[IAP] --- AppleProductId is empty, please check the product setting: {item.ProductName}");
-#endif
                     }
-
+#endif
+                    
                     if (emptyIDs)
                     {
                         continue;
@@ -248,8 +238,12 @@ namespace Guru.IAP
                     _productNameList[i] = item.ProductName;
                 }
             }
+            
+            //--------------- V5 版升级接口 -------------------------
+            
             // 调用插件初始化
             UnityPurchasing.Initialize(this, _configBuilder);
+            
         }
         
          /// <summary>
@@ -270,7 +264,7 @@ namespace Guru.IAP
                 uuid = IDHelper.GenUUID(_uid);
             }
             LogI($"--- IAP Initialized Success. With UID: {_uid} UUID: {uuid} DeviceId: {IPMConfig.IPM_DEVICE_ID}");
-
+            
 #if UNITY_IOS
             _appleExtensions = extensions.GetExtension<IAppleExtensions>();
             _appleExtensions.SetApplicationUsername(uuid);  // SetUp UUID (8)-(4)-(4)-(12): xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -292,7 +286,7 @@ namespace Guru.IAP
             _configBuilder.Configure<IGooglePlayConfiguration>().SetObfuscatedAccountId(_uid); // SetUp UID
             _googlePlayStoreExtensions = extensions.GetExtension<IGooglePlayStoreExtensions>();
             //添加安装游戏后第一次初试化进行恢复购买的回调 只有安卓才有
-            _googlePlayStoreExtensions.RestoreTransactions(OnRestoreHandle);
+            //_googlePlayStoreExtensions.RestoreTransactions(OnRestoreHandle);
 #endif
             
             foreach (var product in _storeController.products.all)
@@ -461,7 +455,7 @@ namespace Guru.IAP
         public bool IsProductHasReceipt(string productName)
         {
             var product = GetProduct(productName);
-            if (product != null) return product.hasReceipt;
+            if (product != null) return  product.hasReceipt;
             return false;
         }
 
@@ -510,6 +504,7 @@ namespace Guru.IAP
                     if (_googlePublicKey != null && _appleRootCert != null)
                     {
                         _validator = new CrossPlatformValidator(_googlePublicKey, _appleRootCert, Application.identifier);
+                        _appleValidator = new AppleValidator(_appleRootCert);
                     }
                     else
                     {
@@ -545,7 +540,7 @@ namespace Guru.IAP
                 for (int i = 0; i < _storeController.products.all.Length; i++)
                 {
                     var product = _storeController.products.all[i];
-                    if (product.hasReceipt)
+                    if (product.definition.type != ProductType.Consumable && product.hasReceipt)
                     {
                         isIAPUser = true;
                     }
@@ -562,7 +557,6 @@ namespace Guru.IAP
         public virtual void Restore()
         {
             if (!IsInitialized) return;
-
 #if UNITY_IOS
             _appleExtensions.RestoreTransactions(OnRestoreHandle);
 #elif UNITY_ANDROID
@@ -579,20 +573,20 @@ namespace Guru.IAP
         /// 购买商品
         /// </summary>
         /// <param name="productName"></param>
-        public virtual T Buy(string productName, string category = "")
+        public virtual void Purchase(string productName, string category = "")
         {
             if (!IsInitialized)
             {
                 LogE("Buy FAIL. Not initialized.");
                 OnBuyEnd?.Invoke(productName, false);
-                return (T)this;
+                return;
             }
             ProductInfo info = GetInfo(productName);
             if (info == null)
             {
                 LogE($"Buy FAIL. No product with name: {productName}");
                 OnBuyEnd?.Invoke(productName, false);
-                return (T)this;
+                return;
             }
             
             Product product = _storeController.products.WithID(info.Setting.ProductId);
@@ -607,15 +601,12 @@ namespace Guru.IAP
                 
                 // Analytics.IAPClick(_curProductCategory, product.definition.id);
                 // Analytics.IAPImp(_curProductCategory, product.definition.id);  // <--- Client should report this Event
-                return (T)this;
+                return;
             }
 
             // 找不到商品
             LogE($"Can't find product by name: {productName}, pay canceled.");
-            OnPurchaseOver(false, productName);
             OnBuyEnd?.Invoke(productName, false);
-
-            return (T)this;
         }
         
         /// <summary>
@@ -674,8 +665,23 @@ namespace Guru.IAP
             
             LogI($"{Tag} --- Call OnBuyEnd [{productName}] :: {OnBuyEnd}");
             OnBuyEnd?.Invoke(productName, success);
-            OnPurchaseOver(success, productName); // 支付成功处理逻辑
             ClearCurPurchasingProduct(); // 清除购买缓存
+            
+           
+            if (purchaseEvent.purchasedProduct == null)
+            {
+                LogI($"[IAP] -- storeController.ConfirmPendingPurchase Failed: {info?.Name ?? "Unknown"} is Null");
+            }
+            else
+            {
+                // 尝试消费订单：
+                LogI($"[IAP] --- storeController.ConfirmPendingPurchase : {purchaseEvent.purchasedProduct.definition.id}");
+                _storeController.ConfirmPendingPurchase(purchaseEvent.purchasedProduct);
+                
+                
+                
+                
+            }
             
             return PurchaseProcessingResult.Complete; // 直接Consume 掉当前的商品
         }
@@ -700,7 +706,6 @@ namespace Guru.IAP
 
             LogI($"{Tag} --- OnPurchaseFailed :: Reason = {reasonStr}");
             // 失败的处理逻辑
-            OnPurchaseOver(false, info.Name);
             OnBuyEnd?.Invoke(info.Name, false);
             // 失败原因
             OnBuyFailed?.Invoke(info.Name, reasonStr);
@@ -759,7 +764,7 @@ namespace Guru.IAP
         /// 需要游戏侧继承并完成Blevel的取值上报
         /// </summary>
         /// <returns></returns>
-        protected abstract int GetBLevel();
+        private int GetBLevel() => _dataProvider.BLevel;
 
         /// <summary>
         /// 获取商品品配置列表
@@ -767,13 +772,7 @@ namespace Guru.IAP
         /// <returns></returns>
         protected virtual ProductSetting[] GetProductSettings()
             => GuruSettings.Instance.Products;
-
-        /// <summary>
-        /// 支付回调
-        /// </summary>
-        /// <param name="success">是否成功</param>
-        /// <param name="productName">商品名称</param>
-        protected abstract void OnPurchaseOver(bool success, string productName);
+        
 
         #endregion
         
@@ -849,13 +848,12 @@ namespace Guru.IAP
                         appleReceiptString = recp.ToString();
                         LogI($"--- [{productId}] iOS receipt: {appleReceiptString}");      
                     }
-                
                     Debug.Log($"[IAP] --- Full receipt: \n{args.purchasedProduct.receipt}");
-                    
+                    allReceipts = ValidateiOS(args.purchasedProduct.receipt);
                     foreach (var receipt in allReceipts)
                     {
                         if (receipt is AppleInAppPurchaseReceipt appleReceipt
-                            && receipt.productID == args.purchasedProduct.definition.id)
+                            && receipt.transactionID == args.purchasedProduct.transactionID)
                         {
                             ReportAppleOrder(orderType, 
                                 appleReceipt.productID,
@@ -950,17 +948,18 @@ namespace Guru.IAP
         /// 标记是否为付费用户
         /// </summary>
         /// <param name="value"></param>
-        private static void SetIsIAPUser(bool value = true)
+        private void SetIsIAPUser(bool value = true)
         {
-            if (Instance != null && Instance._model != null && value)
+            if (_model != null && value)
             {
-                Instance._model.SetIsIapUser(true); // 用户属性
+                _model.SetIsIapUser(true); // 用户属性
             }
             Analytics.SetIsIapUser(value);
         }
 
 
         #endregion
+
 
         #region 数据初始化
 
@@ -1400,7 +1399,59 @@ namespace Guru.IAP
         }
         
         #endregion
+
+        #region Region V5 添加接口
+        public IPurchaseReceipt[] ValidateiOS(string unityIAPReceipt)
+        {
+            try
+            {
+                var wrapper = JsonConvert.DeserializeObject<Dictionary<string, object>>(unityIAPReceipt);
+                if (null == wrapper)
+                {
+                    throw new Exception();
+                }
+
+                var store = (string)wrapper["Store"];
+                var payload = (string)wrapper["Payload"];
+
+                switch (store)
+                {
+                    case "AppleAppStore":
+                    case "MacAppStore":
+                    {
+                        if (null == _appleValidator)
+                        {
+                            throw new Exception(
+                                "Cannot validate an Apple receipt without supplying an Apple root certificate");
+                        }
+                        var r = _appleValidator.Validate(Convert.FromBase64String(payload));
+                        if (!Application.identifier.Equals(r.bundleID))
+                        {
+                            throw new Exception();
+                        }
+                        return r.inAppPurchaseReceipts.ToArray();
+                    }
+                    default:
+                    {
+                        throw new Exception("Store not supported: " + store);
+                    }
+                }
+            }
+            catch (IAPSecurityException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot validate due to unhandled exception. (" + ex + ")");
+            }
+        }
+        
+
+        #endregion
         
     }
 
 }
+
+#endif
