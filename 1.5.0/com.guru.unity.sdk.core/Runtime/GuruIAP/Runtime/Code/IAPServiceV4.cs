@@ -200,7 +200,7 @@ namespace Guru.IAP
                 for (int i = 0; i < len; i++)
                 {
                     var item = settings[i];
-                    var ids = new StoreSpecificIds();
+                    var ids = new IDs();
 #if UNITY_ADNROID
                     if (!string.IsNullOrEmpty(item.GooglePlayProductId))
                     {
