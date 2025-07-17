@@ -52,10 +52,9 @@ namespace Guru
             switch (evt)
             {
                 // Debug.Log($"{logTag} --- FlushTrackingEvent: {trackingEvent.eventName}");
-                
-                case AbstractAdPaidEvent adPaidEvent:
+                case AdImpressionEvent adImpEvent:
                     // Ads 广告收益事件
-                    _service?.ReportAdRevenue(adPaidEvent.ToAdImpressionEvent());
+                    _service?.ReportAdRevenue(adImpEvent);
                     return;
                 
                 case IAPEvent iapEvent:
