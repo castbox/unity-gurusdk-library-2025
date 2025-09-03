@@ -83,6 +83,12 @@ public class GuruAnalytics: NSObject {
         setUserProperty(firebaseId, forName: .firebaseId)
     }
     
+    /// 设置appsflyerId
+    @objc
+    public class func setAppFlyersId(_ appFlyersId: String?) {
+        setUserProperty(appFlyersId, forName: .appsflyerId)
+    }
+    
     /// screen name
     @objc
     public class func setScreen(_ name: String) {

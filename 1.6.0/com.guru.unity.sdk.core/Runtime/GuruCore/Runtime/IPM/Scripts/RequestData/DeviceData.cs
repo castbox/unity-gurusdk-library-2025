@@ -34,7 +34,8 @@ namespace Guru
 		public string adid; // 可选, adjust id 
 		public string gpsAdid; // 可选, android广告id
 		public string userUuid; // 可选, 用户唯一ID，由 uid 关联生成的 uuid
-
+		public string appsflyer_id;
+		
 		public DeviceData(bool pushServiceEnable = true)
 		{
 			DeviceUtil.GetDeviceInfo();
@@ -64,6 +65,7 @@ namespace Guru
 			adid = IPMConfig.ADJUST_DEVICE_ID;
 			gpsAdid = IPMConfig.GOOGLE_ADID;
 			userUuid = IPMConfig.IPM_UUID;
+			appsflyer_id = IPMConfig.APPSFLYER_ID;
 		}
 
 		public override string ToString()
@@ -73,7 +75,7 @@ namespace Guru
 			       $"{nameof(language)}: {language}, {nameof(locale)}: {locale}, {nameof(deviceToken)}: {deviceToken}, {nameof(deviceType)}: {deviceType}, " +
 			       $"{nameof(pushType)}: {pushType}, {nameof(appIdentifier)}: {appIdentifier}, {nameof(appVersion)}: {appVersion}, {nameof(brand)}: {brand}, " +
 			       $"{nameof(model)}: {model}, {nameof(timezone)}: {timezone}, {nameof(pushNotificationEnable)}: {pushNotificationEnable}, " +
-			       $"{nameof(firebaseAppInstanceId)}: {firebaseAppInstanceId}, {nameof(idfa)}: {idfa}, {nameof(idfv)}: {idfv}, {nameof(adid)}: {adid}, {nameof(gpsAdid)}: {gpsAdid}, {nameof(userUuid)}: {userUuid}";
+			       $"{nameof(firebaseAppInstanceId)}: {firebaseAppInstanceId}, {nameof(idfa)}: {idfa}, {nameof(idfv)}: {idfv}, {nameof(adid)}: {adid}, {nameof(gpsAdid)}: {gpsAdid}, {nameof(userUuid)}: {userUuid},{nameof(appsflyer_id)}: {appsflyer_id}";
 		}
 
 	}

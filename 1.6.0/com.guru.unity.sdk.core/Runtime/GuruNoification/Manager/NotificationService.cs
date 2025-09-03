@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+
 namespace Guru.Notification
 {
     using UnityEngine;
@@ -69,6 +71,22 @@ namespace Guru.Notification
         #endregion
         
         #region 接口
+        
+#if UNITY_IOS
+        public static async UniTask<string> GetIOSDeviceToken()
+        {
+            try
+            {
+                return await ((NotificationAgentIOS)Agent).GetDeviceToken();
+            }
+            catch (Exception e)
+            {
+                Log.W($"[SDK][Noti] GetIOSDeviceToken failed: {e}");
+                return null;
+            }
+        }
+        
+#endif
         
         /// <summary>
         /// 拉起 Noti 请求

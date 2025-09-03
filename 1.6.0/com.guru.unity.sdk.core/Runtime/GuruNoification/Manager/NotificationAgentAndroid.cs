@@ -213,6 +213,7 @@ namespace Guru.Notification
                     // 低版本处理方式
                     Debug.Log($"[SDK][Noti] --- #2 SDK {sdkInt} not requested -> open channel");
                     SetGrantStatus(STATUS_GRANTED);
+                    callback?.Invoke(STATUS_GRANTED);
                 }
                 else
                 {

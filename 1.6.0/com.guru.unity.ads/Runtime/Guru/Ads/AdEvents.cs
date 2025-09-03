@@ -326,6 +326,7 @@ namespace Guru.Ads
         public readonly string adCreativeId;
         public readonly string placement;
         public readonly string reviewCreativeId;
+        public readonly string countryCode;
         
         protected AbstractAdPaidEvent(string eventName, 
             string adUnitId, 
@@ -337,7 +338,8 @@ namespace Guru.Ads
             string adFormat, 
             string placement,
             string adPlatform,
-            string reviewCreativeId)
+            string reviewCreativeId,
+            string countryCode)
         {
             EventName = eventName;
             this.adUnitId = adUnitId;
@@ -350,6 +352,8 @@ namespace Guru.Ads
             this.adPlatform = adPlatform;
             this.placement = placement;
             this.reviewCreativeId = reviewCreativeId;
+            this.countryCode = countryCode;
+         
 
             Setting = EventSetting.FirebaseAndGuru();
             Priority = EventPriority.Default;
@@ -389,7 +393,8 @@ namespace Guru.Ads
                 this.adCreativeId,
                 this.adFormat,
                 this.adPlatform,
-                this.reviewCreativeId);
+                this.reviewCreativeId,
+                this.countryCode);
         }
         
     }
@@ -415,7 +420,8 @@ namespace Guru.Ads
         public readonly string adPlacement;
         public readonly string adCreativeId;
         public readonly string reviewCreativeId;
-
+        public readonly string countryCode;
+        
         public AdImpressionEvent(
             string adUnitId,
             string currency,
@@ -425,7 +431,8 @@ namespace Guru.Ads
             string adCreativeId,
             string adFormat,
             string adPlatform,
-            string reviewCreativeId)
+            string reviewCreativeId,
+            string countryCode)
         {
             this.EventName = AdEvent.AD_IMPRESSION;
             this.adUnitId = adUnitId;
@@ -437,6 +444,7 @@ namespace Guru.Ads
             this.adPlacement = adPlacement;
             this.adCreativeId = adCreativeId;
             this.reviewCreativeId = reviewCreativeId;
+            this.countryCode = countryCode;
 
             if (string.IsNullOrEmpty(this.adPlacement)) this.adPlacement = AdConst.VALUE_NOT_SET;
             if (string.IsNullOrEmpty(this.adCreativeId)) this.adCreativeId = AdConst.VALUE_NOT_SET;
@@ -483,7 +491,6 @@ namespace Guru.Ads
                 this.currency);
             return evt;
         }
-       
     }
 
     #endregion
@@ -590,7 +597,8 @@ namespace Guru.Ads
             string adFormat,
             string placement,
             string adPlatform,
-            string reviewCreativeId) : 
+            string reviewCreativeId,
+            string countryCode): 
             base(AdEvent.BADS_PAID, 
                 adUnitId, 
                 currency, 
@@ -601,7 +609,8 @@ namespace Guru.Ads
                 adFormat,      
                 placement,
                 adPlatform, 
-                reviewCreativeId)
+                reviewCreativeId, 
+                countryCode)
         {
 
         }
@@ -704,8 +713,9 @@ namespace Guru.Ads
             string adCreativeId,
             string placement,
             string adPlatform,
-            string reviewCreativeId) :
-            base(AdEvent.IADS_PAID, adUnitId, currency, value, adSource, adPlacement, adCreativeId, adFormat, placement, adPlatform, reviewCreativeId)
+            string reviewCreativeId, 
+            string countryCode) :
+            base(AdEvent.IADS_PAID, adUnitId, currency, value, adSource, adPlacement, adCreativeId, adFormat, placement, adPlatform, reviewCreativeId, countryCode)
         {
 
         }
@@ -850,8 +860,9 @@ namespace Guru.Ads
             string adCreativeId,
             string placement,
             string adPlatform,
-            string reviewCreativeId) :
-            base(AdEvent.RADS_PAID, adUnitId, currency, value, adSource, adPlacement, adCreativeId, adFormat, placement, adPlatform, reviewCreativeId)
+            string reviewCreativeId, 
+            string countryCode) :
+            base(AdEvent.RADS_PAID, adUnitId, currency, value, adSource, adPlacement, adCreativeId, adFormat, placement, adPlatform, reviewCreativeId, countryCode)
         {
 
         }

@@ -343,7 +343,12 @@ extern "C" {
     void unitySetFirebaseId(const char *firebaseId){
         [GuruAnalytics setFirebaseId:[U3DAnalytics charToString:firebaseId]];
     }
-
+    
+    // 设置用户 AppsFlyerID
+    void unitySetAppsflyerId(const char *appsFlyerId){
+        [GuruAnalytics setAppFlyersId:[U3DAnalytics charToString:appsFlyerId]];
+    }
+    
     // 设置用户设备ID
     void unitySetDeviceId(const char *did){
         [GuruAnalytics setDeviceId:[U3DAnalytics charToString:did]];

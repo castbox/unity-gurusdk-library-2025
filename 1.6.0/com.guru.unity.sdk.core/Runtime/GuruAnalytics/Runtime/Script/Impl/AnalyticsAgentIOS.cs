@@ -20,7 +20,7 @@ namespace Guru
         [DllImport(K_INTERNAL)] private static extern void unitySetScreen(string screenName);
         [DllImport(K_INTERNAL)] private static extern void unitySetAdId(string adId);
         [DllImport(K_INTERNAL)] private static extern void unitySetAdjustID(string adjustId);
-        // [DllImport(K_INTERNAL)] private static extern void unitySetAppsflyerId(string appsflyerId); //TODO: 需要升级自打点库实现
+        [DllImport(K_INTERNAL)] private static extern void unitySetAppsflyerId(string appsflyerId);
         [DllImport(K_INTERNAL)] private static extern void unitySetFirebaseId(string fid);
         [DllImport(K_INTERNAL)] private static extern void unitySetDeviceId(string did);
         [DllImport(K_INTERNAL)] private static extern void unitySetUserProperty(string key, string value);
@@ -113,8 +113,7 @@ namespace Guru
         public void SetAppsflyerId(string id)
         {
             if (string.IsNullOrEmpty(id)) return;
-            // unitySetAppsflyerId(id);
-            // TODO: 需要在后面升级实现
+            unitySetAppsflyerId(id);
         }
 
         public void SetDeviceId(string deviceId)

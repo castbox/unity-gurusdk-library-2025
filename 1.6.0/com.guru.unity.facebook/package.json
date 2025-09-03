@@ -1,7 +1,7 @@
 {
   "name": "com.guru.unity.facebook",
   "displayName": "Guru Facebook",
-  "version": "0.0.2",
+  "version": "1.0.1",
   "description": "Facebook SDK for unity project",
   "unity": "2020.3",
   "author": {

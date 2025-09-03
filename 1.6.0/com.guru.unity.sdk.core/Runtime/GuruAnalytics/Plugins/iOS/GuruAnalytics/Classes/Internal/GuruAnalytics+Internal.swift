@@ -18,6 +18,7 @@ internal extension GuruAnalytics {
         case firebaseId
         case screen = "screen_name"
         case firstOpenTime = "first_open_time"
+        case appsflyerId
     }
     
     ///built-in events

@@ -123,7 +123,7 @@ namespace Guru
         public bool custom_keystore = false;
         public bool enable_adjust = true;
         public bool enable_appsflyer = false;
-        public bool enable_thinkingdata = true;
+        public bool enable_thinkingdata = false;
     }
     
     /// <summary>

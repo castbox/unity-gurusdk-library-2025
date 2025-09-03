@@ -426,11 +426,7 @@ namespace Guru
         
         private static string TryGetCurrentProductId()
         {
-            if (GuruIAP.Instance != null && IsIAPReady)
-            {
-                return GuruIAP.Instance.CurrentBuyingProductId;
-            }
-            return "";
+            return IsIAPReady ? _guruIAPService?.CurrentBuyingProductId : "";
         }
         
         

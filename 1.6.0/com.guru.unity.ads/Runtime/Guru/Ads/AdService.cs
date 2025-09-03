@@ -27,7 +27,7 @@ namespace Guru.Ads
             nameof(OnEventIadsClick),
             nameof(OnEventIadsClose),
             
-            // RAADS
+            // RADS
             nameof(OnEventRadsImp),
             nameof(OnEventRadsLoaded),
             nameof(OnEventRadsFailed),
@@ -76,8 +76,6 @@ namespace Guru.Ads
         private IAdManager _adManager;
         private bool? _invokeEventOnMainThread;
         
-        private bool _hasGetRvRewarded = false;
-        
         #region 对外回调接口定义
         
         // ----------------- 广告事件的回调接口 ----------------- 
@@ -111,13 +109,8 @@ namespace Guru.Ads
         #region 客户端回调接口
 
         private Action _customIadsCloseHandler;
-        
-        [Obsolete("已废弃")]
         private Action _customRadsRewardedHandler;
-        [Obsolete("已废弃")]
         private Action _customRadsCloseHandler;
-        
-        private Action<bool, string> _customRadsResultHandler;
         
         #endregion
 
@@ -246,7 +239,7 @@ namespace Guru.Ads
         public void OnEventBadsLoad(BadsLoadEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventBadsLoad, evt);
+            InvokeOnMainThread(ForwardEventBadsLoad, evt).Forget();
         }
         private void ForwardEventBadsLoad(BadsLoadEvent evt)
         {
@@ -256,7 +249,7 @@ namespace Guru.Ads
         public void OnEventBadsLoaded(BadsLoadedEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventBadsLoaded, evt);
+            InvokeOnMainThread(ForwardEventBadsLoaded, evt).Forget();
         }
         private void ForwardEventBadsLoaded(BadsLoadedEvent evt)
         {
@@ -266,7 +259,7 @@ namespace Guru.Ads
         public void OnEventBadsFailed(BadsFailedEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventBadsFailed, evt);
+            InvokeOnMainThread(ForwardEventBadsFailed, evt).Forget();
         }
         private void ForwardEventBadsFailed(BadsFailedEvent evt)
         {
@@ -276,7 +269,7 @@ namespace Guru.Ads
         public void OnEventBadsImp(BadsImpEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventBadsImp, evt);
+            InvokeOnMainThread(ForwardEventBadsImp, evt).Forget();
         }
 
         private void ForwardEventBadsImp(BadsImpEvent evt)
@@ -287,7 +280,7 @@ namespace Guru.Ads
         public void OnEventBadsHide(BadsHideEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventBadsHide, evt);
+            InvokeOnMainThread(ForwardEventBadsHide, evt).Forget();
         }
 
         private void ForwardEventBadsHide(BadsHideEvent evt)
@@ -298,7 +291,7 @@ namespace Guru.Ads
         public void OnEventBadsClick(BadsClickEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventBadsClick, evt);
+            InvokeOnMainThread(ForwardEventBadsClick, evt).Forget();
         }
         private void ForwardEventBadsClick(BadsClickEvent evt)
         {
@@ -309,7 +302,7 @@ namespace Guru.Ads
         {
             // ad_impression
             ReportAdPaidEvent(evt);
-            PostToMainThread(ForwardEventBadsPaid, evt);
+            InvokeOnMainThread(ForwardEventBadsPaid, evt).Forget();
         }
         private void ForwardEventBadsPaid(BadsPaidEvent evt)
         {
@@ -322,7 +315,7 @@ namespace Guru.Ads
         public void OnEventIadsLoad(IadsLoadEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventIadsLoad, evt);
+            InvokeOnMainThread(ForwardEventIadsLoad, evt).Forget();
         }
         private void ForwardEventIadsLoad(IadsLoadEvent evt)
         {
@@ -332,7 +325,7 @@ namespace Guru.Ads
         public void OnEventIadsLoaded(IadsLoadedEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventIadsLoaded, evt);
+            InvokeOnMainThread(ForwardEventIadsLoaded, evt).Forget();
         }
 
         private void ForwardEventIadsLoaded(IadsLoadedEvent evt)
@@ -343,7 +336,7 @@ namespace Guru.Ads
         public void OnEventIadsFailed(IadsFailedEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventIadsFailed, evt);
+            InvokeOnMainThread(ForwardEventIadsFailed, evt).Forget();
         }
 
         private void ForwardEventIadsFailed(IadsFailedEvent evt)
@@ -354,7 +347,7 @@ namespace Guru.Ads
         public void OnEventIadsImp(IadsImpEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventIadsImp, evt);
+            InvokeOnMainThread(ForwardEventIadsImp, evt).Forget();
         }
         private void ForwardEventIadsImp(IadsImpEvent evt)
         {
@@ -364,7 +357,7 @@ namespace Guru.Ads
         public void OnEventIadsClick(IadsClickEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventIadsClick, evt);
+            InvokeOnMainThread(ForwardEventIadsClick, evt).Forget();
         }
         private void ForwardEventIadsClick(IadsClickEvent evt)
         {
@@ -374,20 +367,19 @@ namespace Guru.Ads
         public void OnEventIadsClose(IadsCloseEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventIadsClose, evt);
+            InvokeOnMainThread(ForwardEventIadsClose, evt).Forget();
         }
         private void ForwardEventIadsClose(IadsCloseEvent evt)
         {
             _onIadsClose?.Invoke(evt);
             _customIadsCloseHandler?.Invoke();
-            _customIadsCloseHandler = null;
         }
         
         public void OnEventIadsPaid(IadsPaidEvent evt)
         {
             // ad_impression
             ReportAdPaidEvent(evt);
-            PostToMainThread(ForwardEventIadsPaid, evt);
+            InvokeOnMainThread(ForwardEventIadsPaid, evt).Forget();
         }
 
         private void ForwardEventIadsPaid(IadsPaidEvent evt)
@@ -399,7 +391,7 @@ namespace Guru.Ads
         public void OnEventRadsLoad(RadsLoadEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventRadsLoad, evt);
+            InvokeOnMainThread(ForwardEventRadsLoad, evt).Forget();
         }
         private void ForwardEventRadsLoad(RadsLoadEvent evt)
         {
@@ -409,7 +401,7 @@ namespace Guru.Ads
         public void OnEventRadsLoaded(RadsLoadedEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventRadsLoaded, evt);
+            InvokeOnMainThread(ForwardEventRadsLoaded, evt).Forget();
         }
         private void ForwardEventRadsLoaded(RadsLoadedEvent evt)
         {
@@ -419,7 +411,7 @@ namespace Guru.Ads
         public void OnEventRadsFailed(RadsFailedEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventRadsFailed, evt);
+            InvokeOnMainThread(ForwardEventRadsFailed, evt).Forget();
         }
 
         private void ForwardEventRadsFailed(RadsFailedEvent evt)
@@ -430,7 +422,7 @@ namespace Guru.Ads
         public void OnEventRadsImp(RadsImpEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventRadsImp, evt);
+            InvokeOnMainThread(ForwardEventRadsImp, evt).Forget();
         }
 
         private void ForwardEventRadsImp(RadsImpEvent evt)
@@ -441,7 +433,7 @@ namespace Guru.Ads
         public void OnEventRadsClick(RadsClickEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventRadsClick, evt);
+            InvokeOnMainThread(ForwardEventRadsClick, evt).Forget();
         }
         private void ForwardEventRadsClick(RadsClickEvent evt)
         {
@@ -452,26 +444,23 @@ namespace Guru.Ads
         public void OnEventRadsClose(RadsCloseEvent evt)
         {
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventRadsCloseEvent, evt);
+            InvokeOnMainThread(ForwardEventRadsCloseEvent, evt).Forget();
         }
         private void ForwardEventRadsCloseEvent(RadsCloseEvent evt)
         {
             _onRadsClose?.Invoke(evt);
-            // _customRadsCloseHandler?.Invoke();
-            _customRadsResultHandler.Invoke(_hasGetRvRewarded, evt.placement);
-            _customRadsResultHandler = null;
+            _customRadsCloseHandler?.Invoke();
         }
 
         public void OnEventRadsRewarded(RadsRewardedEvent evt)
         {
-            _hasGetRvRewarded = true;
             ReportAdEvent(evt);
-            PostToMainThread(ForwardEventRadsRewarded, evt);
+            InvokeOnMainThread(ForwardEventRadsRewarded, evt).Forget();
         }
         private void ForwardEventRadsRewarded(RadsRewardedEvent evt)
         {
-            _onRadsRewarded?.Invoke(evt); // 外部回调方法
-            // _customRadsRewardedHandler?.Invoke();
+            _onRadsRewarded?.Invoke(evt);
+            _customRadsRewardedHandler?.Invoke();
             
             // 校验是否是首次 Rads 奖励
             if (Model.HasFirstRadsReward) return;
@@ -491,30 +480,28 @@ namespace Guru.Ads
         {
             // Impression Data
             ReportAdPaidEvent(evt);
-            PostToMainThread(ForwardEventRadsPaid, evt);
+            InvokeOnMainThread(ForwardEventRadsPaid, evt).Forget();
         }
         private void ForwardEventRadsPaid(RadsPaidEvent evt)
         {
             _onRadsPaid?.Invoke(evt);
         }
 
+
         /// <summary>
-        /// 为了保证时序，想主线程发送事件
+        /// 对项目组回调，使用主线程回归调用
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="evt"></param>
         /// <typeparam name="T"></typeparam>
-        private void PostToMainThread<T>(Action<T> callback, T evt)
+        private async UniTaskVoid InvokeOnMainThread<T>(Action<T> callback, T evt)
         {
-            if (callback == null) return;
-            
-            UniTask.Post(() =>
-            {
-                callback.Invoke(evt);
-            });
+            await UniTask.SwitchToMainThread();
+            callback?.Invoke(evt);
         }
 
 
+       
 
         #endregion
 
@@ -618,26 +605,8 @@ namespace Guru.Ads
             _adManager.LoadRewarded();
         }
         
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="placement"></param>
-        /// <param name="onRewardedResult"></param>
-        public void ShowRewarded(string placement, Action<bool, string> onRewardedResult = null)
-        {
-            _hasGetRvRewarded = false;
-            _customRadsResultHandler = onRewardedResult;
-            _adManager.ShowRewarded(placement);
-        }
-
-
-
-        [Obsolete("此方法已经废弃， 请勿再调用! 可使用 ShowRewarded(string placement, Action<bool, string, string> onCloseHandler = null) 来执行回调")]
         public void ShowRewarded(string placement, Action onRewardedHandler = null, Action onCloseHandler = null)
         {
-
-            throw new Exception("Can not call ShowRewarded function is Obsolete");
-            
             _customRadsRewardedHandler = onRewardedHandler;
             _customRadsCloseHandler = onCloseHandler;
             _adManager.ShowRewarded(placement);

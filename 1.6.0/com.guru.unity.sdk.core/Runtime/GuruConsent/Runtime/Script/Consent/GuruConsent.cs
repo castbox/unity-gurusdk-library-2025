@@ -1,13 +1,13 @@
-
+#nullable enable
+using System;
+using System.Collections;
+using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace Guru
 {
-    using System;
-    using System.Collections;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using UnityEngine;
-    
     /// <summary>
     /// GuruConsent 流程封装
     /// </summary>
@@ -19,7 +19,8 @@ namespace Guru
 
         #region 公用接口
 
-        private static Action<int> onCompleteHandler = null;
+        private static Action<int>? _onGdprResultHandler = null;
+        private static Action<ConsentData>? _onConsentResultHandler = null;
 
         private static IConsentAgent _agent;
         private static IConsentAgent Agent
@@ -47,29 +48,51 @@ namespace Guru
         /// <summary>
         /// 对外公开接口
         /// </summary>
-        /// <param name="onComplete"></param>
-        /// <param name="deviceId"></param>
+        /// <param name="onGdprResult"></param>
+        /// <param name="onConsentResult"></param>
+        /// <param name="testDeviceId"></param>
         /// <param name="debugGeography"></param>
         /// <param name="dmaMapRule"></param>
         /// <param name="enableCountryCheck"></param>
-        public static void StartConsent(Action<int> onComplete = null, 
-            string deviceId = "", int debugGeography = -1,
+        public static void StartConsent(Action<int> onGdprResult, Action<ConsentData>? onConsentResult = null,
+            string? testDeviceId = null, int debugGeography = -1,
             string dmaMapRule = "", bool enableCountryCheck = false)
         {
-            Debug.Log($"{Tag} --- GuruConsent::StartConsent [{Version}] - deviceId:[{deviceId}]  debugGeography:[{debugGeography}]  dmaMapRule:[{dmaMapRule}]  enableCountryCheck:[{enableCountryCheck}]");
+            Debug.Log($"{Tag} --- GuruConsent::StartConsent [{Version}] - deviceId:[{testDeviceId}]  debugGeography:[{debugGeography}]  dmaMapRule:[{dmaMapRule}]  enableCountryCheck:[{enableCountryCheck}]");
 
             _dmaMapRule = dmaMapRule;
             _enableCountryCheck = enableCountryCheck;
-            onCompleteHandler = onComplete;
+            _onGdprResultHandler = onGdprResult;
+            _onConsentResultHandler = onConsentResult;
             // 初始化SDK对象
             GuruSDKCallback.AddCallback(OnSDKCallback);
             if (debugGeography == -1) debugGeography = DebugGeography.DEBUG_GEOGRAPHY_EEA;
 
-            Agent?.RequestGDPR(deviceId, debugGeography);
+            testDeviceId ??= string.Empty;
+            Agent?.RequestGDPR(testDeviceId, debugGeography);
         }
 
+
+        public static void AddAttStatusListen(Action<TrackingAuthorizationStatus> listen)
+        {
+#if UNITY_IOS
+            listen?.Invoke(AttStatus);
+            if (listen != null)
+                ATTManager.Instance.OnTrackingAuthorization += listen;
+#endif
+        }
         
-        
+        /// <summary>
+        /// 更新 Conset 状态
+        /// </summary>
+        public static void RefreshConsentData()
+        {
+            var value = Agent?.GetPurposesValue() ?? "";
+            var consentData = GoogleDMAHelper.UpdateDmaStatus(value, _dmaMapRule, _enableCountryCheck);
+            _onConsentResultHandler?.Invoke(consentData);
+        }
+
+
         /// <summary>
         /// 获取SDK回调
         /// </summary>
@@ -79,8 +102,10 @@ namespace Guru
             GuruSDKCallback.RemoveCallback(OnSDKCallback); // 移除回调
             
             //-------- Fetch DMA status and report -----------
-            var value = Agent?.GetPurposesValue() ?? "";
-            GoogleDMAHelper.SetDMAStatus(value, _dmaMapRule, _enableCountryCheck);
+            // #1. 首次更新 ConsentData 在获取到 FirebaseID 后， 等待 2s 后开始更新
+            // #2. GDPR 拉取结束之后会再次刷新一下 ConsentData 
+            Debug.Log($"{Tag} #2. RefreshConsentData after Gdpr result: {msg}");
+            RefreshConsentData(); 
             
             int status = StatusCode.UNKNOWN;
             //------- message send to unity ----------
@@ -104,7 +129,7 @@ namespace Guru
                                 message = jMsg.ToString();
                             }
                             Debug.Log($"{Tag} ---  status: {status}    msg: {message}");
-                            onCompleteHandler?.Invoke(status);
+                            _onGdprResultHandler?.Invoke(status);
                             return;
                         }
                     }
@@ -116,13 +141,28 @@ namespace Guru
             }
             
             Debug.LogError($"{Tag} Parse callback Error");
-            if (onCompleteHandler != null)
+            if (_onGdprResultHandler != null)
             {
-                onCompleteHandler.Invoke(status);
-                onCompleteHandler = null;
+                _onGdprResultHandler.Invoke(status);
+                _onGdprResultHandler = null;
             }
         }
 
+        /// <summary>
+        /// 获取 ATT 状态
+        /// </summary>
+        /// <returns></returns>
+        public static int GetTrackingAuthorizationStatus()
+        {
+#if UNITY_IOS
+            return ATTManager.Instance.GetTrackingAuthorizationStatus();
+#endif
+            return StatusCode.OBTAINED; // Android 和 Editor 均直接获得授权
+        }
+
+
+        public static TrackingAuthorizationStatus AttStatus =>(TrackingAuthorizationStatus) GetTrackingAuthorizationStatus();
+        
         /// <summary>
         /// 上报异常
         /// </summary>
@@ -132,6 +172,17 @@ namespace Guru
             Analytics.LogCrashlytics(ex);
         }
 
+        public static string ToAttSummary(TrackingAuthorizationStatus attStatus)
+        {
+            return attStatus switch
+            {
+                TrackingAuthorizationStatus.NotDetermined => "notDetermined",
+                TrackingAuthorizationStatus.Restricted => "restricted",
+                TrackingAuthorizationStatus.Denied => "denied",
+                TrackingAuthorizationStatus.Authorized => "authorized",
+                _ => "unknown",
+            };
+        }
         #endregion
         
         #region 常量定义
@@ -158,8 +209,20 @@ namespace Guru
             public const int DEBUG_GEOGRAPHY_NOT_EEA = 2;
         }
 
+       
+        
         #endregion
         
     }
+    
+    public enum TrackingAuthorizationStatus
+    {
+        NotDetermined = 0,
+        Restricted,
+        Denied,
+        Authorized,
+        Unknown
+    }
+
     
 }

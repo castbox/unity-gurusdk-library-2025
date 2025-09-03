@@ -24,6 +24,8 @@ namespace Guru.Editor
         private const string KeyMaxAutoUpdateEnabled = "com.applovin.auto_update_enabled";
         private const string TYPE_SCRIPTABLE_OBJECT = "ScriptableObject";
         
+        private const string SDK_DOCUMENT_URL = "https://docs.google.com/document/d/19S3eWpz6my6WEqZAKswsWE9fovpyI4ASzCxVSbMC5_Y";
+        
         private static string ANDROID_KEYSTORE_NAME = "guru_key.jks";
         private static string GuruKeyStore => $"{ANDROID_PLUGINS_DIR}/{ANDROID_KEYSTORE_NAME}";
 
@@ -434,6 +436,10 @@ namespace Guru.Editor
             // Push
             GUILayout.Space(10);
             GUI_PushIconMaker();
+            
+            // Doc
+            GUILayout.Space(10);
+            GUI_JumpToDocument();
 
             // Keystore
             // if (_serviceConfig != null && _serviceConfig.UseCustomKeystore())
@@ -515,8 +521,9 @@ namespace Guru.Editor
         /// </summary>
         private void ExecuteAdditionalCommands()
         {
-            // TODO: 执行其他的命令
+            // 执行其他的命令
             RemoveOldAdjustSignatureFiles();
+            Add16KbFilesForAndroid();
         }
 
         
@@ -1280,7 +1287,32 @@ namespace Guru.Editor
                 EditorGUI.indentLevel--;
             }
         }
+
         
+        private bool _showSegmentDoc = false;
+        private void GUI_JumpToDocument()
+        {
+            _showSegmentDoc = EditorGUILayout.Foldout(_showSegmentDoc, "[ Documents ]");
+            if (_showSegmentDoc)
+            {
+                EditorGUI.indentLevel++;
+                var s = new GUIStyle("label")
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                    normal =
+                    {
+                        textColor = Color.cyan
+                    }
+                };
+                EditorGUILayout.BeginHorizontal("box");
+                GUI_Button("    \u2192 打开 GuruSDK 接入文档", () => { Application.OpenURL(SDK_DOCUMENT_URL); }, s);
+                EditorGUILayout.EndHorizontal();
+             
+                EditorGUI.indentLevel--;
+            }
+        }
+
+
         #endregion
 
         #region Custom Keystore
@@ -1372,12 +1404,16 @@ namespace Guru.Editor
         #endregion
 
         #region OtherCommands
-
-
+        
         private void RemoveOldAdjustSignatureFiles()
         {
             // 删除无用的 Adjust 文件
-            AdjustEditorHelper.RemoveOldSignatureFiles();        
+            AdjustFileCleaner.RemoveOldSignatureFiles();        
+        }
+
+        private void Add16KbFilesForAndroid()
+        {
+            Guru16KbHelper.Apply();
         }
 
         #endregion

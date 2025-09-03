@@ -1,4 +1,6 @@
 #nullable enable
+using Cysharp.Threading.Tasks;
+
 namespace Guru
 {
     using System;
@@ -86,7 +88,7 @@ namespace Guru
         /// </summary>
         private void StartConsentFlow()
         {
-            LogI($"#4.5 ---  StartConsentFlow ---");
+            LogI($"#4.6.1 ---  StartConsentFlow ---");
             
             float time = 1;
             if (!_adServiceHasStarted && _appServicesConfig != null)
@@ -110,15 +112,22 @@ namespace Guru
 #if UNITY_IOS
             InitAttStatus(); // Consent 启动前记录 ATT 初始值
 #endif
+            
             UnityEngine.Debug.Log($"{LOG_TAG}  --- Call:StartConsentFlow ---");
-            GuruConsent.StartConsent(OnGuruConsentOver, dmaMapRule:dmaMapRule, enableCountryCheck:enableCountryCheck);
+            GuruConsent.StartConsent(OnGuruGdprResult, 
+                OnRefreshConsentResult, // 新添加的回调， 用于广播 ConsentData 状态
+                dmaMapRule:dmaMapRule, 
+                enableCountryCheck:enableCountryCheck);
         }
+        
+        
+        
 
         /// <summary>
         /// Guru Consent flow is Over
         /// </summary>
         /// <param name="code"></param>
-        private void OnGuruConsentOver(int code)
+        private void OnGuruGdprResult(int code)
         {
             
             // 无论状态如何, 都在回调内启动广告初始化
@@ -143,6 +152,12 @@ namespace Guru
                     break;
             }
         }
+
+        private void OnRefreshConsentResult(ConsentData consentData)
+        {
+            Analytics.DispatchConsentData(consentData);
+        }
+
 
         /// <summary>
         /// 启动广告服务
@@ -194,7 +209,7 @@ namespace Guru
         {
             var status = ATTManager.Instance.GetAttStatusString();
             LogI($"[SDK] ---- OnCheckAttStatusComplete");
-            AdjustService.Instance.CheckNewAttStatus(); // 通知 Adjust 更新一下 ATT 状态
+            // AdjustService.Instance.CheckNewAttStatus(); // 通知 Adjust 更新一下 ATT 状态
             Callbacks.SDK.InvokeOnAttResult(status); // 返回 ATT 状态回调
             CheckNotiPermission();
         }
@@ -226,6 +241,25 @@ namespace Guru
             if (isGranted)
             {
                 var status = NotificationService.GetStatus();
+                
+#if UNITY_IOS
+                try
+                {
+                    NotificationService.GetIOSDeviceToken().ContinueWith(iosDeviceToken =>
+                        {
+                            if (string.IsNullOrEmpty(iosDeviceToken)) return;
+                            Log.I($"[SDK] ---- IOS Device Token: {iosDeviceToken.ToSecretString()}");
+                            Analytics.OnIOSDeviceTokenReceived(iosDeviceToken ?? string.Empty);
+                        }).CatchError(
+                            exception => { Log.W("[SDK] ---- Failed to get IOS Device Token: " + exception); })
+                        .Forget();
+                }
+                catch (Exception e)
+                {
+                    Log.E($"[SDK] ---- GetIOSDeviceToken failed: {e}");
+                }
+ #endif
+                
                 LogI($"[SDK] ---- Set Notification Permission: {status}");
                 Analytics.SetNotiPerm(status);
                 NotificationService.CreatePushChannels();

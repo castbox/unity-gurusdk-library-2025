@@ -29,7 +29,7 @@ public class GuruConsetDemo : MonoBehaviour
         // GuruConsent.StartConsent();
         
         var deviceId = _inputBox.text;
-        GuruConsent.StartConsent(OnGetConsentStatus, deviceId);
+        GuruConsent.StartConsent(OnGetGdprResult,  OnGetConsentResult, deviceId);
     }
 
     
@@ -37,10 +37,18 @@ public class GuruConsetDemo : MonoBehaviour
     /// 获取到 ConsentStatus
     /// </summary>
     /// <param name="status"></param>
-    private void OnGetConsentStatus(int status)
+    private void OnGetGdprResult(int status)
     {
         string msg = $"--- [Unity] Get Status: {status}";
         Debug.Log(msg);
         _txtInfo.text = msg;
+    }
+
+    private void OnGetConsentResult(ConsentData consentData)
+    {
+        Debug.Log($"--- Get Consent Data ---");
+        Debug.Log($"  isEeaUser: {consentData.IsEea}");
+        Debug.Log($"  Consents: \n{consentData.PrintConsents()}");
+        
     }
 }

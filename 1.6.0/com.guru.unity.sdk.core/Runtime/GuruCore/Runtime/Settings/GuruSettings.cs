@@ -162,6 +162,29 @@ namespace Guru
 			public string AndroidToken;
 			public string IOSToken;
 		}
+
+
+		public Dictionary<string, string> GetEventMap()
+		{
+			var eventMap = new Dictionary<string, string>();
+
+			if (adjustEventList == null || adjustEventList.Count == 0)
+			{
+				return eventMap;
+			}
+
+			foreach (var kvp in adjustEventList)
+			{
+#if UNITY_ANDROID
+				eventMap[kvp.EventName] = kvp.AndroidToken;
+#else
+				eventMap[kvp.EventName] = kvp.IOSToken;
+#endif
+			}
+			
+			return eventMap;
+		}
+
 	}
 
 	[Serializable]

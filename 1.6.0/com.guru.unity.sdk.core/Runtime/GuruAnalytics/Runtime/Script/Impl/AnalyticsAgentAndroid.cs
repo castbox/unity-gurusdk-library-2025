@@ -147,7 +147,7 @@ namespace Guru
         public void SetAppsflyerId(string id)
         {
             if (string.IsNullOrEmpty(id)) return;
-            CallStatic("setAdjustId", id);
+            CallStatic("setAppsflyerId", id);
         }
 
         public void SetDeviceId(string deviceId)

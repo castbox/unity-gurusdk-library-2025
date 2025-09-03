@@ -1,19 +1,11 @@
-
-
+#nullable enable
+using System;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Text;
+using Firebase.Analytics;
 namespace Guru
 {
-    using System;
-    using System.Text.RegularExpressions;
-    using System.Collections.Generic;
-    using Firebase.Analytics;
-
-#if GURU_ADJUST
-    using AdjustSdk;
-#endif
-    
-#if GURU_APPSFLYER
-    using AppsFlyerSDK;
-#endif
     
     using UnityEngine;
     
@@ -58,20 +50,20 @@ namespace Guru
         /// <param name="value"></param>
         /// <param name="mapRule">map rules </param>
         /// <param name="enableCountryCheck"></param>
-        public static void SetDMAStatus(string value, string mapRule = "", bool enableCountryCheck = false)
+        public static ConsentData UpdateDmaStatus(string value, string mapRule = "", bool enableCountryCheck = false)
         {
-            if (!IsUserInEEACountry(value, enableCountryCheck))
+            if (!IsUserInEeaCountry(value, enableCountryCheck))
             {
                 // No EEA countries skip reporting the data
                 Debug.Log($"{Tag} --- GoogleDMAHelper:: User is not at EEA countries, purposes: {value}");
                 if (string.IsNullOrEmpty(DmaResult) || DmaResult != "not_eea" )
                 {
                     DmaResult = "not_eea";
-                    ReportAdjustDMAValue(false);
-                    ReportAppsflyerDMAValue(false);
-                    return;
+                    // ReportAdjustDMAValue(false);
+                    // ReportAppsflyerDMAValue(false);
+                    // return NotEea();
                 }
-                return;
+                return NotEea();
             }
             
             // build an array<bool> for record result from native callback
@@ -110,65 +102,16 @@ namespace Guru
             // // adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", $"{result[3]}");  // From Haoyi's advice we don't give the value so Adjust will still receive the data as a trick.
             // Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
-            ReportAdjustDMAValue(true, result[2].ToString(), result[3].ToString());
-            ReportAppsflyerDMAValue(true, consentData);
+            // ReportAdjustDMAValue(true, result[2].ToString(), result[3].ToString());
+            // ReportAppsflyerDMAValue(true, consentData);
             //----------- Guru DMA report ---------------
             ReportResult(purposeStr, result);
+
+            return new ConsentData(true, consentData);
         }
-
-
-        private static void ReportAdjustDMAValue(bool isEEAUser, string personalization = "1", string userData = "1")
-        {
-#if GURU_ADJUST
-            AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
-            
-            if (isEEAUser)
-            {
-                // From Haoyi's advice we don't give the value so Adjust will still receive the data as a trick.
-                adjustThirdPartySharing.AddGranularOption("google_dma", "eea", "1");
-                adjustThirdPartySharing.AddGranularOption("google_dma", "ad_personalization", personalization);
-                // adjustThirdPartySharing.addGranularOption("google_dma", "ad_user_data", userData);  
-            }
-            else
-            {
-                // No eea user, all set to granted
-                adjustThirdPartySharing.AddGranularOption("google_dma", "eea", "0");
-                adjustThirdPartySharing.AddGranularOption("google_dma", "ad_personalization", "1");
-                adjustThirdPartySharing.AddGranularOption("google_dma", "ad_user_data", $"1");
-            }
-            
-            Adjust.TrackThirdPartySharing(adjustThirdPartySharing);
-#endif
-        }
-
-        private static void ReportAppsflyerDMAValue(bool isEEAUser, Dictionary<ConsentType, ConsentStatus> consentData = null)
-        {
-#if GURU_APPSFLYER
-            bool? isUserSubjectToGdpr;
-            bool? hasConsentForDataUsage;
-            bool? hasConsentForAdsPersonalization;
-            
-            Log.I($"Adjust SetConsent {isEEAUser}");
-            if (isEEAUser)
-            {
-                isUserSubjectToGdpr = true;
-                hasConsentForDataUsage = true;
-                hasConsentForAdsPersonalization = 
-                    consentData.TryGetValue(ConsentType.AdPersonalization, out var adPersonalization)
-                        ? adPersonalization == ConsentStatus.Granted
-                        : null;
-            }
-            else
-            {
-                isUserSubjectToGdpr = false;
-                hasConsentForDataUsage = true;
-                hasConsentForAdsPersonalization = true;
-            }
-
-            var appsFlyerConsent = new AppsFlyerConsent(isUserSubjectToGdpr, hasConsentForDataUsage, hasConsentForAdsPersonalization);
-            AppsFlyer.setConsentData(appsFlyerConsent);
-#endif
-        }
+        
+        private static ConsentData NotEea() => new ConsentData(false);
+        
         
         private static void ReportResult(string purposeStr, string result)
         {
@@ -276,7 +219,7 @@ namespace Guru
         }
 
 
-        private static bool IsUserInEEACountry(string value, bool enableCountryCheck = true)
+        private static bool IsUserInEeaCountry(string? value = null, bool enableCountryCheck = true)
         {
             //#1. Empty string
             if(string.IsNullOrEmpty(value)) return false;
@@ -288,7 +231,7 @@ namespace Guru
 #if UNITY_IOS 
             //#3. country code is not in list
             Debug.Log($"{Tag} --- regionCode: [{RegionCode}]");
-            if(enableCountryCheck && IsUserNotInEEACountry()) return false;
+            if(enableCountryCheck && IsUserNotInEeaCountry()) return false;
 #endif
             
             return true;
@@ -296,7 +239,7 @@ namespace Guru
         
 
 #if UNITY_IOS
-        private static bool IsUserNotInEEACountry()
+        private static bool IsUserNotInEeaCountry()
         {
             return !EEARegionCodes.Contains(RegionCode.ToLower());
         }
@@ -304,4 +247,40 @@ namespace Guru
         private static string RegionCode => ConsentAgentIOS.GetRegionCode().ToLower();
 #endif
     }
+    
+    
+    
+    /// <summary>
+    /// ConsentData
+    /// </summary>
+    public class ConsentData
+    {
+        public readonly bool IsEea;
+        public readonly Dictionary<ConsentType, ConsentStatus> Consents;
+        
+        public ConsentData(bool isEea, Dictionary<ConsentType, ConsentStatus>? consents = null)
+        {
+            IsEea = isEea;
+            Consents = consents ?? new Dictionary<ConsentType, ConsentStatus>();
+        }
+
+        public string PrintConsents()
+        {
+            var sb = new StringBuilder("----- Consents -----");
+            if (Consents != null && Consents.Count > 0)
+            {
+                foreach (var kvp in Consents)
+                {
+                    sb.Append($"\n  {kvp.Key}: {kvp.Value}");
+                }
+            }
+            else
+            {
+                sb.Append($"\n  {"None"}");
+            }
+            sb.Append("----- Consents -----");
+            return sb.ToString();
+        }
+    }
+    
 }

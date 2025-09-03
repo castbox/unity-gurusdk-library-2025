@@ -1,0 +1,10 @@
+{
+  "name": "Guru.AppsFlyer.Runtime",
+  "references":[ 
+    "AppsFlyer",
+    "Guru.Runtime",
+    "Guru.Ads",
+    "UniTask",
+    "GuruUtils.Runtime"
+  ]
+}

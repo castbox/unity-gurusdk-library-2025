@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Firebase.Messaging;
 using UnityEngine;
 
 namespace Guru
@@ -262,6 +263,27 @@ namespace Guru
                 _predefinedPropertyDelayedActions.Add(new MidWarePropertyDelayedAction(Analytics.PropertyIDFA, idfa, ReportIDFA));
             }
         }
+
+        /// <summary>
+        /// 接收到Android FCM
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="token"></param>
+        public virtual void TransmitFCMTokenReceived(object sender, TokenReceivedEventArgs token)
+        {
+            
+        }
+        
+#if UNITY_IOS
+        /// <summary>
+        /// iOS 接收到DeviceToken
+        /// </summary>
+        /// <param name="token"></param>
+        public virtual void OnIOSDeviceTokenReceived(string token)
+        {
+            
+        }
+#endif
         
         /// <summary>
         /// 设置用户ID
@@ -307,7 +329,4 @@ namespace Guru
         protected abstract void ReportIDFA(string idfa);
         
     }
-    
-    
-
 }

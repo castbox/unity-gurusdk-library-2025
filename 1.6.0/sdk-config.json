@@ -1,18 +1,8 @@
 {
   "version": "1.6.0",
-  "ts": "1745999465",
-  "desc": "1.新增添 Adjust，Appsflyer, Thinkingdata的开关及相关的打点库实现\\n2.MAX 中取消 Moloco 和 Pubmatic 的 Custom Adapter\\n3.Debugger 模式的广告状态窗 添加关闭功能\\n4.优化现有的激励视频广告打点回调接口\\n5.修复请求云控拉取结果回调没有正常返回的 BUG\\n6.CDNConfig流程优化",
+  "ts": "1756884475",
+  "desc": "1.更新Appsflyer版本6.17.1\\n2.Appsflyer打点优化\\n3.新增Android16kb支持需要升级Unity2022.3.62以上&6000.0.54f以上\\n4.修复i2Unity6支持\\n5.更新Facebook广告版本6.20.0",
   "packages": {
-    "com.coffee.git-dependency-resolver": {
-      "group": "third-party",
-      "embedded": true,
-      "dependencies": []
-    },
-    "com.coffee.upm-git-extension": {
-      "group": "third-party",
-      "embedded": true,
-      "dependencies": []
-    },
     "com.google.android.appbundle": {
       "group": "google",
       "embedded": true,
@@ -28,7 +18,7 @@
       "embedded": true,
       "dependencies": []
     },
-    "com.google.firebase.app": {
+    "com.google.firebase.app-core": {
       "group": "firebase",
       "embedded": true,
       "dependencies": []
@@ -79,6 +69,11 @@
       "dependencies": []
     },
     "com.guru.unity.adjust": {
+      "group": "guru-sdk",
+      "embedded": true,
+      "dependencies": []
+    },
+    "com.guru.unity.appsflyer": {
       "group": "guru-sdk",
       "embedded": true,
       "dependencies": []
@@ -144,16 +139,6 @@
       "dependencies": []
     },
     "com.guru.unity.unitask": {
-      "group": "guru-sdk",
-      "embedded": true,
-      "dependencies": []
-    },
-    "com.guru.unity.appsflyer": {
-      "group": "guru-sdk",
-      "embedded": true,
-      "dependencies": []
-    },
-    "com.thinkingdata.analytics": {
       "group": "guru-sdk",
       "embedded": true,
       "dependencies": []

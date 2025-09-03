@@ -166,7 +166,7 @@ extension Entity {
             
             let eventValue: EventValue
             if let value = preprocessedValue as? String {
-                eventValue = Entity.EventValue(stringValue: String(value.prefix(maxParameterStringValueLength)))
+                eventValue = Entity.EventValue(stringValue: normalizeStringValue(String(value.prefix(maxParameterStringValueLength))))
             } else if let value = preprocessedValue as? Int {
                 eventValue = Entity.EventValue(longValue: Int64(value))
             } else if let value = preprocessedValue as? Int64 {
@@ -174,9 +174,16 @@ extension Entity {
             } else if let value = preprocessedValue as? Double {
                 eventValue = Entity.EventValue(doubleValue: value)
             } else {
-                eventValue = Entity.EventValue(stringValue: String("\(value)".prefix(maxParameterStringValueLength)))
+                eventValue = Entity.EventValue(stringValue: normalizeStringValue(String("\(value)".prefix(maxParameterStringValueLength))))
             }
             return eventValue
+        }
+        
+        static func normalizeStringValue(_ value: String) -> String {
+            let normalizedString = value.replacingOccurrences(of: "'", with: "''")
+            cdPrint("original string value: \(value)")
+            cdPrint("normalized string value: \(normalizedString)")
+            return normalizedString
         }
         
         static func normalizeKey(_ key: String) -> String? {
@@ -212,6 +219,8 @@ extension Entity {
         let adId: String?
         ///用户的pseudo_id
         let firebaseId: String?
+        ///appsFlyerId
+        let appsflyerId: String?
         
         ///IDFV
         let vendorId: String? = UIDevice().identifierForVendor?.uuidString
@@ -223,6 +232,7 @@ extension Entity {
             case adId
             case firebaseId
             case vendorId
+            case appsflyerId
         }
     }
     

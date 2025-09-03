@@ -198,10 +198,10 @@ namespace I2.Loc
 				GUILayout.Space (118);
 				if (GUILayout.Button(new GUIContent("Install", "This opens the Web Service Script and shows you steps to install and authorize it on your Google Drive"), EditorStyles.toolbarButton))
 				{
-    					ClearErrors();
-                        Application.OpenURL("https://script.google.com/d/1zcsLSmq3Oddd8AsLuoKNDG1Y0eYBOHzyvGT7v94u1oN6igmsZb_PJzEm/newcopy");  // V5
-                        //Application.OpenURL("https://goo.gl/RBCO0o");  // V4:https://script.google.com/d/1T7e5_40NcgRyind-yeg4PAkHz9TNZJ22F4RcbOvCpAs03JNf1vKNNTZB/newcopy
-                        //Application.OpenURL("https://goo.gl/wFSbv2");// V3:https://script.google.com/d/1CxQDSXflsXRaH3M7xGfrIDrFwOIHWPsYTWi4mRZ_k77nyIInTgIk63Kd/newcopy");
+					ClearErrors();
+					Application.OpenURL("https://script.google.com/home/projects/1zcsLSmq3Oddd8AsLuoKNDG1Y0eYBOHzyvGT7v94u1oN6igmsZb_PJzEm/edit");  // V5
+					//Application.OpenURL("https://goo.gl/RBCO0o");  // V4:https://script.google.com/d/1T7e5_40NcgRyind-yeg4PAkHz9TNZJ22F4RcbOvCpAs03JNf1vKNNTZB/newcopy
+					//Application.OpenURL("https://goo.gl/wFSbv2");// V3:https://script.google.com/d/1CxQDSXflsXRaH3M7xGfrIDrFwOIHWPsYTWi4mRZ_k77nyIInTgIk63Kd/newcopy");
                 }
                 if (GUILayout.Button("Verify", EditorStyles.toolbarButton))
 				{

@@ -159,6 +159,7 @@ namespace Guru
 #if UNITY_IOS
 	        DeviceUtil.SetiOSBadge();
 #endif
+	        Analytics.TransmitFCMTokenReceived(sender, token);
         }
 
 		private static void OnMessageReceived(object sender, MessageReceivedEventArgs e)

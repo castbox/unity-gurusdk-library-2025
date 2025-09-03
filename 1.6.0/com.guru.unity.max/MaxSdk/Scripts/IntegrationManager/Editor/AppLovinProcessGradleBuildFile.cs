@@ -1,4 +1,4 @@
-﻿//  AppLovin MAX Unity Plugin
+//  AppLovin MAX Unity Plugin
 //
 //  Created by Santosh Bagadi on 9/3/19.
 //  Copyright © 2019 AppLovin. All rights reserved.
@@ -39,11 +39,11 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 
         private const string PluginsMatcher = "plugins";
         private const string PluginManagementMatcher = "pluginManagement";
-        private const string QualityServicePluginRoot = "    id 'com.applovin.quality' version '+' apply false // NOTE: Requires version 4.8.3+ for Gradle version 7.2+";
+        private static string QualityServicePluginRoot = $"    id 'com.applovin.quality' version '{ AppLovinSettings.Instance.QualityServiceVersion }' apply false // NOTE: Requires version 4.8.3+ for Gradle version 7.2+ "; // Service version fixed by Guru.
 
         private const string BuildScriptMatcher = "buildscript";
         private const string QualityServiceMavenRepo = "maven { url 'https://artifacts.applovin.com/android'; content { includeGroupByRegex 'com.applovin.*' } }";
-        private const string QualityServiceDependencyClassPath = "classpath 'com.applovin.quality:AppLovinQualityServiceGradlePlugin:+'";
+        private static string QualityServiceDependencyClassPath = $"classpath 'com.applovin.quality:AppLovinQualityServiceGradlePlugin:{ AppLovinSettings.Instance.QualityServiceVersion }'"; // Service version fixed by Guru.
         private const string QualityServiceApplyPlugin = "apply plugin: 'applovin-quality-service'";
         private const string QualityServicePlugin = "applovin {";
         private const string QualityServiceApiKey = "    apiKey '{0}'";

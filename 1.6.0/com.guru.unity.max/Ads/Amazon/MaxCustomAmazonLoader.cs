@@ -116,7 +116,7 @@ namespace Guru.Ads.Max
             
             // 初始化Amazon
             Amazon.Initialize (apsAppId);
-            Amazon.SetAdNetworkInfo(new AdNetworkInfo(DTBAdNetwork.MAX));
+            // Amazon.SetAdNetworkInfo(new AdNetworkInfo(DTBAdNetwork.MAX));
             Debug.Log($"[Ads] --- Amazon init start isDebug:{isDebug},    AmazonID:{apsAppId}");
             Amazon.EnableTesting (isDebug); // Make sure to take this off when going live.
             Amazon.EnableLogging (isDebug);
@@ -146,7 +146,7 @@ namespace Guru.Ads.Max
             }
             
             Debug.Log($"[Ads] --- Amazon banner start load: {_apsBannerSlotId}");
-            var apsBanner = new APSBannerAdRequest(_bannerSize.width, _bannerSize.height, _apsBannerSlotId);
+            var apsBanner = new APSBannerAdRequest(_bannerSize.width, _bannerSize.height, _apsBannerSlotId, new AdNetworkInfo(ApsAdNetwork.MAX));
             apsBanner.onSuccess += (adResponse) =>
             {
                 Debug.Log($"[Ads] --- Amazon Banner Load Success ---");
@@ -192,7 +192,7 @@ namespace Guru.Ads.Max
             }
             
             Debug.Log($"[Ads] --- Amazon INTER start load: {_apsInterSlotId}");
-            var interstitialAd = new APSInterstitialAdRequest(_apsInterSlotId);
+            var interstitialAd = new APSInterstitialAdRequest(_apsInterSlotId, new AdNetworkInfo(ApsAdNetwork.MAX));
             interstitialAd.onSuccess += (adResponse) =>
             {
                 Debug.Log($"[Ads] --- Amazon INTER Load Success ---");
@@ -237,7 +237,7 @@ namespace Guru.Ads.Max
             }
             
             Debug.Log($"[Ads] --- Amazon Reward start load: {_apsRewardedSlotId}");
-            var rewardedVideoAd = new APSVideoAdRequest(_videoSize.width, _videoSize.height, _apsRewardedSlotId);
+            var rewardedVideoAd = new APSVideoAdRequest(_videoSize.width, _videoSize.height, _apsRewardedSlotId, new AdNetworkInfo(ApsAdNetwork.MAX));
             rewardedVideoAd.onSuccess += (adResponse) =>
             {
                 Debug.Log($"[Ads] --- Amazon Reward Load Success ---");

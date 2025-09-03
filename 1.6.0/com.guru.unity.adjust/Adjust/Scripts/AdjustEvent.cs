@@ -78,4 +78,14 @@ namespace AdjustSdk
             this.innerPartnerParameters.Add(value);
         }
     }
+    
+    public static class AdjustEventExtension
+    {
+        public static AdjustEvent AddEventParameter(this AdjustEvent adjustEvent, string key, string value)
+        {
+            adjustEvent.AddCallbackParameter(key, value);
+            adjustEvent.AddPartnerParameter(key, value);
+            return adjustEvent;
+        }
+    }
 }

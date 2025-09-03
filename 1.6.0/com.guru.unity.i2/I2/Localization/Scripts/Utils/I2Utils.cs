@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -44,59 +45,85 @@ namespace I2.Loc
         }
 
 
-        public static string RemoveNonASCII(string text, bool allowCategory = false)
-        {
-            if (string.IsNullOrEmpty(text))
-                return text;
-
-            //return new string(text.ToCharArray().Where(c => (ValidChars.IndexOf(c)>=0 || c==' ' || (c == '\\' && allowCategory) || (c == '/' && allowCategory))).ToArray());
-            //return new string(text.ToCharArray().Select(c => (char.IsControl(c) || (c == '\\' && !allowCategory) || (c == '\"') || (c == '/')) ? ' ' : c).ToArray());
-            //return new string(text.ToCharArray().Select(c => ((allowCategory && (c == '\\' || c == '\"' || (c == '/'))) || char.IsLetterOrDigit(c))?c:' ').ToArray());
-
-
-            // Remove Non-Letter/Digits and collapse all extra espaces into a single space
-            int current = 0;
-            char[] output = new char[text.Length];
-            bool skipped = false;
-
-            foreach (char cc in text.Trim())
-            {
-                char c = ' ';
-                if (allowCategory && (cc == '\\' || cc == '\"' || cc == '/') ||
-                     char.IsLetterOrDigit(cc) ||
-                     ValidNameSymbols.IndexOf(cc) >= 0)
-                {
-                    c = cc;
-                }
-
-                if (char.IsWhiteSpace(c))
-                {
-                    if (!skipped)
-                    {
-                        if (current > 0)
-                            output[current++] = ' ';
-
-                        skipped = true;
-                    }
-                }
-                else
-                {
-                    skipped = false;
-                    output[current++] = c;
-                }
-            }
-
-            return new string(output, 0, current);
-        }
-
         public static string GetValidTermName( string text, bool allowCategory = false)
         {
             if (text == null)
                 return null;
-            text = RemoveTags(text);
-            return RemoveNonASCII(text, allowCategory);
-        }
 
+            // Remove Tags and NonASCII
+            
+            var result = new StringBuilder();
+            bool insideTag = false; // Indicates if we're currently inside a tag
+            bool shouldAppend; // Flag to determine whether to append the current character
+            char tagType = '\0'; // Tracks the type of the opening tag
+            bool skipped = false;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                char c = text[i]; // Current character being processed
+                shouldAppend = true; // By default, we append the character unless a condition says otherwise
+
+                // Check if the current character is the start of a tag
+                if ((c == '{' || c == '[' || c == '<') && !insideTag)
+                {
+                    // Special case for '{' not followed by '['
+                    if (c == '{' && (i + 1 < text.Length && text[i + 1] != '['))
+                    {
+                        // We'll append '{' as it's not considered a tag in this context
+                    }
+                    else
+                    {
+                        // We're now inside a tag, so don't append the current character
+                        insideTag = true;
+                        shouldAppend = false;
+                        tagType = c; // Remember the type of the tag we're in
+                    }
+                }
+                // Check if the current character is the end of a tag
+                else if (insideTag && ((c == '}' && tagType == '{') || (c == ']' && tagType == '[') || (c == '>' && tagType == '<')))
+                {
+                    // We've found the end of the tag, so stop skipping characters
+                    insideTag = false;
+                    shouldAppend = false; // Don't append the closing tag character
+                }
+                else if (insideTag)
+                {
+                    // We're inside a tag, so don't append the current character
+                    shouldAppend = false;
+                }
+
+                // Append the current character if it's not part of a tag
+                if (shouldAppend)
+                {
+                    char new_char = ' ';
+                    if (allowCategory && (c == '\\' || c == '\"' || c == '/') ||
+                        char.IsLetterOrDigit(c) ||
+                        ValidNameSymbols.IndexOf(c) >= 0)
+                    {
+                        new_char = c;
+                    }
+
+                    if (char.IsWhiteSpace(c))
+                    {
+                        if (!skipped)
+                        {
+                            if (result.Length > 0)
+                                result.Append(' ');
+
+                            skipped = true;
+                        }
+                    }
+                    else
+                    {
+                        skipped = false;
+                        result.Append(new_char);
+                    }                    
+                }
+            }
+
+            return result.ToString(); // Convert the StringBuilder to a string and return it
+        }
+        
         public static string SplitLine(string line, int maxCharacters)
         {
             if (maxCharacters <= 0 || line.Length < maxCharacters)

@@ -62,7 +62,8 @@ namespace Guru.Ads.Max
                 GetNotNullStringValue(adInfo.AdFormat),
                 GetNotNullStringValue(placement), 
                 AdConst.AD_PLATFORM_MAX,
-                reviewedCreativeId);
+                reviewedCreativeId,
+                MaxSdk.GetSdkConfiguration().CountryCode);
         }
         
         //----------------- INTERSTITIAL --------------------
@@ -126,7 +127,8 @@ namespace Guru.Ads.Max
                 GetNotNullStringValue(adInfo.CreativeIdentifier),
                 GetNotNullStringValue(placement),
                 AdConst.AD_PLATFORM_MAX,
-                reviewedCreativeId);
+                reviewedCreativeId,
+                MaxSdk.GetSdkConfiguration().CountryCode);
         }
         
         //----------------- REWARDED --------------------
@@ -190,7 +192,8 @@ namespace Guru.Ads.Max
                 GetNotNullStringValue(adInfo.CreativeIdentifier),
                 GetNotNullStringValue(placement),
                 AdConst.AD_PLATFORM_MAX,
-                reviewedCreativeId);
+                reviewedCreativeId,
+                MaxSdk.GetSdkConfiguration().CountryCode);
         }
         public static RadsRewardedEvent BuildRadsRewarded(string adUnitId, MaxSdkBase.AdInfo adInfo, string placement, string reviewedCreativeId)
         {

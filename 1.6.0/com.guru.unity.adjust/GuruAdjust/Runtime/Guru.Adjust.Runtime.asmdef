@@ -1,0 +1,8 @@
+{
+  "name": "Guru.Adjust.Runtime",
+  "references": [
+    "Guru.Runtime",
+    "AdjustSdk.Scripts",
+    "UniTask"
+  ]
+}

@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+
 #if UNITY_IOS
 
 namespace Guru
@@ -22,6 +24,8 @@ namespace Guru
         public const string GUIDE_TYPE_CUSTOM = "custom";
         public const string GUIDE_TYPE_MAX = "max";
         private ATTrackingStatusBinding.AuthorizationTrackingStatus _attBeginStatus;
+        
+        public event Action<TrackingAuthorizationStatus> OnTrackingAuthorization;
         
         private static ATTManager _instance;
         public static ATTManager Instance
@@ -57,6 +61,21 @@ namespace Guru
             // 初始化的时候获取一下状态
             _attBeginStatus = GetAttAuthStatus();
             SetAttStatus(ToStatusString(_attBeginStatus));
+            SafeExecute(() => {
+                OnTrackingAuthorization?.Invoke((TrackingAuthorizationStatus)GetTrackingAuthorizationStatus());
+            });
+        }
+
+        private void SafeExecute(Action executeFunc)
+        {
+            try
+            {
+                executeFunc?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+            }
         }
 
 
@@ -68,11 +87,17 @@ namespace Guru
             if (!IsATTSupported())
             {
                 callback?.Invoke(ATT_STATUS_NOT_APPLICABLE); //  不支持
+                SafeExecute(() => {
+                    OnTrackingAuthorization?.Invoke((TrackingAuthorizationStatus)GetTrackingAuthorizationStatus());
+                });
                 return;
             }
             
             ATTrackingStatusBinding.RequestAuthorizationTracking(value =>{
                 callback?.Invoke(ToStatusString(value));
+                SafeExecute(() => {
+                    OnTrackingAuthorization?.Invoke((TrackingAuthorizationStatus)value);
+                });
             });
         }
 
@@ -91,6 +116,9 @@ namespace Guru
             if (!IsATTSupported())
             {
                 SetAttStatus(ATT_STATUS_NOT_APPLICABLE);
+                SafeExecute(() => {
+                    OnTrackingAuthorization?.Invoke((TrackingAuthorizationStatus)GetTrackingAuthorizationStatus());
+                });
                 _onCheckComplete?.Invoke(); //  不支持
                 return;
             }
@@ -105,6 +133,18 @@ namespace Guru
             return ATTrackingStatusBinding.GetAuthorizationTrackingStatus();
         }
 
+        
+        /// <summary>
+        /// 获取 ATTStatus
+        /// </summary>
+        /// <returns></returns>
+        public int GetTrackingAuthorizationStatus()
+        {
+            var status = ATTrackingStatusBinding.GetAuthorizationTrackingStatus();
+            return (int) status;
+        }
+
+        
         /// <summary>
         /// 获取状态
         /// </summary>
@@ -185,6 +225,9 @@ namespace Guru
             var status = GetAttAuthStatus(); // 延迟后的状态
             var result = ToStatusString(status);
             SetAttStatus(result);
+            SafeExecute(() => {
+                OnTrackingAuthorization?.Invoke((TrackingAuthorizationStatus)GetTrackingAuthorizationStatus());
+            });
             
             // 判断用户数是否点击了 Att Dialog
             if (_attBeginStatus == ATTrackingStatusBinding.AuthorizationTrackingStatus.NOT_DETERMINED
@@ -195,6 +238,9 @@ namespace Guru
                 ReportAttResultEvent(result, _attType);
                 SetAttStatus(result);
                 _onCheckComplete?.Invoke();
+                SafeExecute(() => {
+                    OnTrackingAuthorization?.Invoke((TrackingAuthorizationStatus)GetTrackingAuthorizationStatus());
+                });
                 return;
             }
 

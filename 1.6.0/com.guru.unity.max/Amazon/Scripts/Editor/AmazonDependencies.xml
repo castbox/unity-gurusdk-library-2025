@@ -3,7 +3,7 @@
   <androidPackages>
     <androidPackage spec="com.iabtcf:iabtcf-decoder:2.0.10"/>
     <androidPackage spec="androidx.appcompat:appcompat:1.1.0"/>
-    <androidPackage spec="com.amazon.android:aps-sdk:9.10.3@aar">
+    <androidPackage spec="com.amazon.android:aps-sdk:10.1.1@aar">
       <repositories>
         <repository>https://aws.oss.sonatype.org/content/repositories/releases/</repository>
       </repositories>
@@ -11,6 +11,6 @@
   </androidPackages>
   <iosPods>
     <iosPod name="Amazon-SDK-Plugin" minTargetSdk="12.5" path="Packages/com.guru.unity.max/Amazon/Plugins/iOS"/>
-    <iosPod name="AmazonPublisherServicesSDK" version="4.10.1"/>
+    <iosPod name="AmazonPublisherServicesSDK" version="5.0.1"/>
   </iosPods>
 </dependencies>

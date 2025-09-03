@@ -11,7 +11,7 @@ namespace Guru
         public string adid; // adjust设备id（ios）
         public string gpsAdid; // adjust广告id
         public string idfv; // 
-        public string afid; //AppsflyerId
+        public string appsflyer_id; //AppsflyerId
 
         public static EventConfig Build()
         {
@@ -22,7 +22,7 @@ namespace Guru
                 idfv = IPMConfig.IDFV,
                 adid = IPMConfig.ADJUST_DEVICE_ID,
                 gpsAdid = IPMConfig.GOOGLE_ADID,
-                afid = IPMConfig.APPSFLYER_ID,
+                appsflyer_id = IPMConfig.APPSFLYER_ID,
             };
             
             return config;
@@ -41,7 +41,7 @@ namespace Guru
 
         public string ToJson()
         {
-            return $"{{\"firebaseAppInstanceId\":{firebaseAppInstanceId},\"idfa\":{idfa},\"idfv\":{idfv},\"adid\":{adid},\"gpsAdid\":{gpsAdid},\"afid\":{afid}}}";
+            return $"{{\"firebaseAppInstanceId\":{firebaseAppInstanceId},\"idfa\":{idfa},\"idfv\":{idfv},\"adid\":{adid},\"gpsAdid\":{gpsAdid},\"appsflyer_id\":{appsflyer_id}}}";
         }
 
     }

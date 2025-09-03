@@ -5,7 +5,7 @@
         "Guru.Runtime",
         "Guru.Ads",
         "MaxSdk.Scripts",
-        "Amazon",
+        "Amazon.Scripts",
         "OpenWrapSDK",
         "UniTask"
     ],

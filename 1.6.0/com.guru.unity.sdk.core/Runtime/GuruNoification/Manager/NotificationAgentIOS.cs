@@ -1,5 +1,8 @@
 
 
+using System.Threading;
+using Cysharp.Threading.Tasks;
+
 namespace Guru.Notification
 {
     using System;
@@ -138,6 +141,11 @@ namespace Guru.Notification
                         yield return new WaitForSeconds(1);
                     }
                     
+                    if (req?.Granted == true)
+                    {
+                        Analytics.OnIOSDeviceTokenReceived(req.DeviceToken);
+                    }
+                    
                     if (timePassed >= _waitSeconds)
                     {
                         Debug.LogWarning($"[SDK][Noti][iOS] --- RequestIOSPermission timeout");
@@ -154,7 +162,100 @@ namespace Guru.Notification
         
 #endif
         
+        #if UNITY_IOS
+        private static async UniTask<string?> WaitForDeviceTokenWithSameRequest(AuthorizationRequest req,
+            CancellationToken cancellationToken = default)
+        {
+            const int maxRetries = 15; // 最大重试次数
+            for (var i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    var token = req.DeviceToken;
+                    Log.I($"DeviceToken: {token} (Attempt {i + 1}/{maxRetries})");
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        Log.I($"Device token obtained and cached: {token.ToSecretString()}");
+                        return token;
+                    }
+
+                    await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    Log.W("Error while waiting for device token: " + e.Message);
+                }
+            }
+
+            return null;
+        }
         
+        public async UniTask<string?> GetDeviceToken(float timeoutSeconds = 10f,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                // 先检查当前权限状态
+                var settings = iOSNotificationCenter.GetNotificationSettings();
+                Log.I($"Current authorization status: {settings.AuthorizationStatus}");
+                Log.I($"Alert setting: {settings.AlertSetting}");
+                Log.I($"Badge setting: {settings.BadgeSetting}");
+
+                if (settings.AuthorizationStatus == AuthorizationStatus.Authorized)
+                {
+                    Log.I("Permission granted, requesting device token...");
+                    // 已有权限，使用最小权限请求获取token
+                    using var req =
+                        new AuthorizationRequest(
+                            AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound, true);
+                    // 带超时的等待
+                    await UniTask.WaitUntil(() => req.IsFinished, cancellationToken: cancellationToken)
+                        .Timeout(TimeSpan.FromSeconds(timeoutSeconds));
+                    
+                    Log.I($"Request finished. Granted: {req.Granted}");
+                    Log.I($"Device token length: {req.DeviceToken?.Length ?? 0}");
+                    Log.I($"Device token value: '{req.DeviceToken}'");
+
+                    if (req.Granted)
+                    {
+                        Log.I($"GetDeviceToken: Request finished successfully: {req.DeviceToken.ToSecretString()}");
+                        if (string.IsNullOrEmpty(req.DeviceToken))
+                        {
+                            return await WaitForDeviceTokenWithSameRequest(req, cancellationToken);
+                        }
+                        else
+                        {
+                            return req.DeviceToken;  
+                        }
+                    }
+                    else
+                    {
+                        Log.W($"GetDeviceToken: Request finished with error: {req.Error}");
+                        return null;
+                    }
+                }
+
+                Log.W($"No notification permission. Current status: {settings.AuthorizationStatus}");
+                return null;
+            }
+            catch (TimeoutException)
+            {
+                Log.W($"Device token request timed out after {timeoutSeconds} seconds");
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                Log.W("Device token request was cancelled");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.W($"Failed to get device token: {ex.Message}");
+                return null;
+            }
+
+        }
+#endif
         
         
     }

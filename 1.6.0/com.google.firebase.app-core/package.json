@@ -1,0 +1,11 @@
+{
+  "name": "com.google.firebase.app-core",
+  "version": "12.10.0",
+  "displayName": "[Guru] FirebaseApp",
+  "author": {
+    "name": "Google LLC",
+    "url": "https://firebase.google.com/docs/unity/setup"
+  },
+  "description": "Firebase Unity Pacakge : [com.google.firebase.app-core]",
+  "unity": "2020.1"
+}

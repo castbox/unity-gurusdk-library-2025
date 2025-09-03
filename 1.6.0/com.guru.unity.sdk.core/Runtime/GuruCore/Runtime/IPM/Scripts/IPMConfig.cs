@@ -332,7 +332,7 @@ namespace Guru
 			{
 				if (string.IsNullOrEmpty(_appsflyerId))
 				{
-					_appsflyerId = PlayerPrefs.GetString(nameof(APPSFLYER_ID), "");
+					_appsflyerId = PlayerPrefs.GetString(nameof(APPSFLYER_ID), "unknown");
 				}
 				return _appsflyerId;
 			}

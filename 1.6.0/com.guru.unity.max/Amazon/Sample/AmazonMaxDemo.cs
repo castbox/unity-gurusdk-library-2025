@@ -4,6 +4,7 @@ using AmazonAds;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
 
 public class AmazonMaxDemo : MonoBehaviour {
 
@@ -50,8 +51,22 @@ public class AmazonMaxDemo : MonoBehaviour {
         Amazon.UseGeoLocation(true);
         Amazon.IsLocationEnabled();
         Amazon.SetMRAIDPolicy(Amazon.MRAIDPolicy.CUSTOM);
-        Amazon.SetAdNetworkInfo(new AdNetworkInfo(DTBAdNetwork.MAX));
-        Amazon.SetMRAIDSupportedVersions(new string[] { "1.0", "2.0", "3.0" }); 
+        Amazon.SetMRAIDSupportedVersions(new string[] { "1.0", "2.0", "3.0" });
+
+        Dictionary<string, object> dsaData = new Dictionary<string, object>();
+
+        dsaData.Add("dsarequired", 0);
+        dsaData.Add("datatopub", 1);
+        dsaData.Add("pubrender", 0);
+
+        Dictionary<string, List<int>> paltformDomain = new Dictionary<string, List<int>>();
+        paltformDomain.Add("platform2domain.com", new List<int>() {1,1,1});
+        paltformDomain.Add("platform1domain.com", new List<int>() { 1 });
+
+        dsaData.Add("transparency", paltformDomain);
+
+        Amazon.SetDsaTransparency(JsonConvert.SerializeObject(dsaData));
+
 
         MaxSdk.SetSdkKey(maxKey);
         MaxSdk.InitializeSdk();
@@ -94,7 +109,7 @@ public class AmazonMaxDemo : MonoBehaviour {
     public void RequestInterstitial () {
         if (isFirstInterstitialRequest) {
             isFirstInterstitialRequest = false;
-            interstitialAdRequest = new APSInterstitialAdRequest(amzonInterstitialSlotId);
+            interstitialAdRequest = new APSInterstitialAdRequest(amzonInterstitialSlotId, new AdNetworkInfo(ApsAdNetwork.MAX));
 
             interstitialAdRequest.onSuccess += (adResponse) =>
             {
@@ -123,7 +138,9 @@ public class AmazonMaxDemo : MonoBehaviour {
         const int width = 320;
         const int height = 50;
 
-        bannerAdRequest = new APSBannerAdRequest(width, height, amazonBannerSlotId);
+        AdNetworkInfo adNetworkInfo = null;
+
+        bannerAdRequest = new APSBannerAdRequest(width, height, amazonBannerSlotId, adNetworkInfo);
         bannerAdRequest.onFailedWithError += (adError) =>
         {
             MaxSdk.SetBannerLocalExtraParameter(maxBannerAdId, "amazon_ad_error", adError.GetAdError());
@@ -139,10 +156,17 @@ public class AmazonMaxDemo : MonoBehaviour {
         bannerAdRequest.LoadAd();
     }
 
+    public void RequestSkAdnBanner () 
+    {
+        Amazon.SetSkAdnTestMode("4.0");
+        RequestBanner();
+    }
+
     public void RequestInterstitialVideo () {
         if(isFirstVideoInterstitialRequest) {
             isFirstVideoInterstitialRequest = false;
-            interstitialVideoAdRequest = new APSVideoAdRequest(320, 480, amazonInterstitialVideoSlotId);
+
+            interstitialVideoAdRequest = new APSVideoAdRequest(320, 480, amazonInterstitialVideoSlotId, new AdNetworkInfo(ApsAdNetwork.MAX));
 
             interstitialVideoAdRequest.onSuccess += (adResponse) =>
             {
@@ -164,7 +188,7 @@ public class AmazonMaxDemo : MonoBehaviour {
     public void RequestRewardedVideo () {
         if (isFirstRewardedVideoRequest) {
             isFirstRewardedVideoRequest = false;
-            rewardedVideoAdRequest = new APSVideoAdRequest(320, 480, amazonRewardedVideoSlotId);
+            rewardedVideoAdRequest = new APSVideoAdRequest(320, 480, amazonRewardedVideoSlotId, new AdNetworkInfo(ApsAdNetwork.MAX));
 
             rewardedVideoAdRequest.onSuccess += (adResponse) =>
             {

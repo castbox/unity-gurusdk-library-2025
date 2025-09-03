@@ -706,14 +706,14 @@ namespace I2.Loc
 		static public object Reflection_InvokeMethod ( object instanceObject, string methodName, params object[] p_args )
 		{
 			BindingFlags _flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
-			MethodInfo mi = instanceObject.GetType().GetMethods( _flags ).Where( x => x.Name==methodName ).FirstOrDefault();
+			MethodInfo mi = instanceObject.GetType().GetMethods( _flags ).FirstOrDefault(x => x.Name==methodName);
 			if (mi == null) return null;
 			return mi.Invoke( instanceObject, p_args );
 		}
 		static public object Reflection_InvokeMethod ( Type targetType, string methodName, params object[] p_args )
 		{
 			BindingFlags _flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
-			MethodInfo mi = targetType.GetMethods( _flags ).Where( x => x.Name==methodName ).FirstOrDefault();
+			MethodInfo mi = targetType.GetMethods( _flags ).FirstOrDefault(x => x.Name==methodName);
 			if (mi == null) return null;
 			return mi.Invoke( null, p_args );
 		}
@@ -724,8 +724,13 @@ namespace I2.Loc
 		{
             if (s_RecycledEditor==null)
             {
-                FieldInfo info = typeof(EditorGUI).GetField("s_RecycledEditor", BindingFlags.NonPublic | BindingFlags.Static);
-                s_RecycledEditor = info.GetValue(null);
+                var info = typeof(EditorGUI).GetField("s_RecycledEditor", BindingFlags.NonPublic | BindingFlags.Static);
+                
+                // s_RecycledEditor was renamed to s_RecycledEditorInternal in Unity 6
+                if (info==null)
+	                info = typeof(EditorGUI).GetField("s_RecycledEditorInternal", BindingFlags.NonPublic | BindingFlags.Static);
+
+                s_RecycledEditor = info == null ? null : info.GetValue(null);
             }
 
             if (s_RecycledEditor == null)

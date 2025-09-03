@@ -1,8 +1,10 @@
+#nullable enable
+using System;
+using System.Globalization;
+using System.Collections.Generic;
 
 namespace Guru
 {
-    using System.Collections.Generic;
-
     
     public static class DictionaryUtil
     {
@@ -50,6 +52,28 @@ namespace Guru
         }
 
 
+        public static Dictionary<string, string> ToStringDictionary(Dictionary<string, object>? dict)
+        {
+            var result = new Dictionary<string, string>();
+            if(dict == null) return result;
 
+            // 数据转换
+            foreach (var kvp in dict)
+            {
+                if (kvp.Value != null)
+                {
+                    // 这里需要判断一下 kvp.Value 的类型，
+                    // 所有 int, float, double, decimal 等数值类型或者带有精度的值类型，在转化字符串的时候均需要加入 CultureInfo.InvariantCulture
+                    // 确保转换不受设备语言或文本格式限制， 小数点必须为 '.'
+                    result[kvp.Key] = kvp.Value switch
+                    {
+                        IConvertible convertible => convertible.ToString(CultureInfo.InvariantCulture),
+                        _ => kvp.Value.ToString()
+                    };
+                    
+                }
+            }
+            return result;
+        }
     }
 }

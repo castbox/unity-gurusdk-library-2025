@@ -3,7 +3,7 @@ guid: 78466de0dce747f9bf1d009be141cf6f
 labels:
 - gvh
 - gvh_targets-editor
-- gvh_version-12.2.1
+- gvh_version-12.10.0
 - gvhp_exportpath-Firebase/Editor/Firebase.Crashlytics.Editor.pdb
 timeCreated: 1480838400
 PluginImporter:
@@ -20,7 +20,7 @@ PluginImporter:
       enabled: 0
       settings: {}
     Editor:
-      enabled: 1
+      enabled: 0
       settings:
         CPU: AnyCPU
         DefaultValueInitialized: true
@@ -80,3 +80,4 @@ PluginImporter:
   userData:
   assetBundleName:
   assetBundleVariant:
+  validateReferences: 0

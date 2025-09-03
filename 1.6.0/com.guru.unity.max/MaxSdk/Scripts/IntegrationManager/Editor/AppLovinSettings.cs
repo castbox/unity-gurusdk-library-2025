@@ -178,4 +178,17 @@ public class AppLovinSettings : ScriptableObject
     {
         EditorUtility.SetDirty(instance);
     }
+
+//---------------- GuruExtensionBegin ----------------//
+    #region Guru 属性扩展
+    [Header("[AdReview] 服务版本")]
+    [SerializeField] private string qualityServiceVersion = "5.9.1";
+    public string QualityServiceVersion
+    {
+        get => Instance.qualityServiceVersion;
+        set => Instance.qualityServiceVersion = value;
+    }
+    #endregion
+//---------------- GuruExtensionEnd ----------------//
+
 }

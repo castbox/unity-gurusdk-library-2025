@@ -16,7 +16,7 @@ namespace Guru.Editor
         private const string SourceFileName = "PrivacyInfo.plist";
         private static string IosPrivacyInfoPath => $"{Application.dataPath}/Plugins/iOS/{SourceFileName}";
         
-        [PostProcessBuild(200)]
+        [PostProcessBuild(0)]
         public static void OnPostProcessBuild(BuildTarget target,  string buildPath)
         {
             if (target == BuildTarget.iOS)

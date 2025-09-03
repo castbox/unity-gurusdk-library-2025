@@ -98,6 +98,7 @@ namespace Guru
 		/// </summary>
 		public static void SetAdjustDeviceId(string adjustId)
 		{
+			if (string.IsNullOrEmpty(adjustId)) adjustId = "not_set";
 			_propertiesManager.ReportAdjustId(adjustId);
 		}
 		
@@ -200,11 +201,11 @@ namespace Guru
 
 		private readonly GuruEventDriver _guruEventDriver;
 		private readonly FirebaseEventDriver _firebaseEventDriver;
-		private readonly ExternalEventDriverManager? _extEventDriverManager;
+		private readonly CustomEventDriverManager? _extEventDriverManager;
 		
 		public MidWarePropertiesManager(GuruEventDriver guruDriver, 
 			FirebaseEventDriver firebaseDriver, 
-			ExternalEventDriverManager? extEventDriverManager)
+			CustomEventDriverManager? extEventDriverManager)
 		{
 			_guruEventDriver = guruDriver;
 			_firebaseEventDriver = firebaseDriver;

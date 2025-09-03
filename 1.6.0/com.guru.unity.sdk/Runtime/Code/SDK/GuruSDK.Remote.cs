@@ -63,35 +63,5 @@ namespace Guru
             
             return configValues;
         }
-
-
-        /// <summary>
-        /// 获取 CDNLoader
-        /// </summary>
-        /// <returns></returns>
-        public static CDNLoader CreateCdnLoader(string defaultConfigValue, string remoteKey = "")
-        {
-            GuruCdnLoaderDataProvider provider = new GuruCdnLoaderDataProvider(defaultConfigValue, remoteKey);
-            
-            if (Instance._firstFetchSuccess)
-            {
-                // 首次拉取成功，立即更新
-                provider.OnRemoteFetchSuccess();
-            }
-            else
-            {
-                // 拉取成功回调
-                void InterFetchRemoteHandler(bool success)
-                {
-                    if (!success) return;
-                    Callbacks.Remote.OnRemoteFetchComplete -= InterFetchRemoteHandler;
-                    provider.OnRemoteFetchSuccess();
-                }
-                Callbacks.Remote.OnRemoteFetchComplete += InterFetchRemoteHandler;
-            }
-            
-            return CDNLoader.Create(provider);
-        }
-       
     }
 }
